@@ -1,3 +1,5 @@
+#include <excpt.h>
+
 #include "CEntity.h"
 
 #include "../Memory/GameData.h"
@@ -60,4 +62,12 @@ C_Entity *Level::getEntity() {
 		}
 	});
 	return retval;
+}
+
+bool C_Entity::checkNameTagFunc() {
+	__try {
+		return this->getNameTag() != nullptr;
+	} __except (EXCEPTION_EXECUTE_HANDLER) {
+		return false;
+	}
 }
