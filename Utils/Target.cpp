@@ -21,7 +21,7 @@ bool Target::isValidTarget(C_Entity* ent) {
 		return false;
 
 	if (std::time(nullptr) < g_Hooks.connecttime + 1)
-		return;
+		return false;
 
 	if (!ent->checkNameTagFunc())
 		return false;
