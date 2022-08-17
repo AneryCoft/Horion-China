@@ -1,4 +1,5 @@
 #include "LevelFunctions.h"
+#include "../../../Memory/Hooks.h"
 
 JsValueRef createBlock(C_BlockLegacy *block) {
 	JsValueRef ref;
@@ -46,16 +47,20 @@ JsValueRef CALLBACK LevelFunctions::getAllEntities(JsValueRef callee, bool isCon
 
 JsValueRef CALLBACK LevelFunctions::getAllTargetEntities(JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, void* callbackState) {
 	std::vector<C_Entity*> entList;
-	g_Data.forEachEntity([&](auto ent, bool isNew) {
-		static auto noFriendsMod = moduleMgr->getModule<NoFriends>();
-		if (!noFriendsMod->isEnabled() && FriendList::findPlayer(ent->getNameTag()->getText()))
-			return;
+	if (std::time(nullptr) > g_Hooks.connecttime + 1)
+		g_Data.forEachEntity([&](auto ent, bool isNew) {
+			static auto noFriendsMod = moduleMgr->getModule<NoFriends>();
+			if (!ent->checkNameTagFunc())
+				return false;
+	
+			if (!noFriendsMod->isEnabled() && FriendList::findPlayer(ent->getNameTag()->getText()))
+				return;
 
-		if (!Target::isValidTarget(ent))
-			return;
+			if (!Target::isValidTarget(ent))
+				return;
 
-		entList.push_back(ent);
-	});
+			entList.push_back(ent);
+		});
 
 	JsValueRef jsList;
 	chakra.JsCreateArray_((unsigned int)entList.size(), &jsList);
