@@ -2,6 +2,7 @@
 
 #include "../../../Utils/Target.h"
 #include "../ModuleManager.h"
+#include "../../../Memory/Hooks.h"
 
 NameTags::NameTags() : IModule(0, Category::VISUAL, "Shows better nametags.") {
 	registerBoolSetting("Underline", &underline, underline);
@@ -23,6 +24,8 @@ void drawNameTags(C_Entity* ent, bool) {
 	if (ent != localPlayer) {
 		if (ent->timeSinceDeath > 0)
 			return;
+		if (!ent->checkNameTagFunc())
+			return;
 		if (ent->getNameTag()->getTextLength() < 1)
 			return;
 		if (Target::isValidTarget(ent) && nameTagsMod != nullptr) {
@@ -35,6 +38,10 @@ void drawNameTags(C_Entity* ent, bool) {
 }
 
 void NameTags::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
+
+	if (std::time(nullptr) < g_Hooks.connecttime + 1)
+		return;
+
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	if (localPlayer == nullptr || !GameData::canUseMoveKeys()) return;
 
