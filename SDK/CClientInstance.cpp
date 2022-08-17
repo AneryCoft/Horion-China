@@ -1,28 +1,43 @@
 #include "CClientInstance.h"
 
 #include <cstdarg>
-
+#include <future>
 #include "../Utils/Logger.h"
 #include "../Utils/Utils.h"
+#include "../Memory/Hooks.h"
 
 __int64 MinecraftGame::getServerEntries() {
 	return Utils::CallVFunc<30, __int64>(this);
 }
+
 void C_GuiData::displayClientMessage(std::string *a2) {
 	using displayClientMessage = void(__thiscall *)(void *, TextHolder &);
 	static displayClientMessage displayMessageFunc = reinterpret_cast<displayClientMessage>(FindSignature("48 89 5C 24 ? 48 89 74 24 ? 55 57 41 54 41 56 41 57 48 8D 6C 24 ? 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 45 30 4C 8B F1"));
 
 	TextHolder text = TextHolder(*a2);
 
-	if (displayMessageFunc != nullptr)
-		displayMessageFunc(this, text);
+	if (displayMessageFunc != nullptr) {
+		auto displayMessageLazy = std::async(std::launch::deferred, displayMessageFunc, this, text);
+
+		if (std::time(nullptr) < g_Hooks.connecttime + 1) {
+			using std::chrono::operator""ms;
+			displayMessageLazy.wait_for(20ms);
+		}
+		else {
+			displayMessageLazy.get();
+		}
+	}
+	//if (displayMessageFunc != nullptr)
+	//	displayMessageFunc(this, text);
 }
+
 void C_GuiData::displayClientMessageF(const char *fmt, ...) {
 	va_list arg;
 	va_start(arg, fmt);
 	displayClientMessageVA(fmt, arg, true);
 	va_end(arg);
 }
+
 void C_GuiData::displayClientMessageVA(const char *fmt, va_list lis, bool sendToInjector) {
 	auto lengthNeeded = _vscprintf(fmt, lis) + 1;
 	if (lengthNeeded >= 300) {
@@ -37,6 +52,7 @@ void C_GuiData::displayClientMessageVA(const char *fmt, va_list lis, bool sendTo
 		Logger::SendToConsoleF(message);
 	displayClientMessage(&msg);
 }
+
 void C_GuiData::displayClientMessageNoSendF(const char *fmt, ...) {
 	va_list arg;
 	va_start(arg, fmt);
