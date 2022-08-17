@@ -1,4 +1,4 @@
-﻿#include "Hooks.h"
+#include "Hooks.h"
 
 #include <algorithm>
 #include <glm/ext/matrix_clip_space.hpp>
@@ -223,7 +223,7 @@ void Hooks::Init() {
 
 		void* levelRendererBobView = reinterpret_cast<void*>(FindSignature("48 8B C4 48 89 58 20 57 48 ?? ?? ?? ?? 00 00 0F ?? ?? ?? 0F ?? ?? ?? ?? 0F ?? ?? ?? ?? 0F ?? ?? ??"));
 
-		static auto bobViewHookF = [](__int64 _this, glm::mat4& matrix, float lerpT){
+		static void (*bobViewHookF)(__int64, glm::mat4&, float) = [](__int64 _this, glm::mat4& matrix, float lerpT) -> void {
 			static auto origFunc = g_Hooks.lambdaHooks.at(lambda_counter)->GetFastcall<void, __int64, glm::mat4&, float>();
 			
 			static auto testMod = moduleMgr->getModule<ViewModel>();
@@ -246,7 +246,7 @@ void Hooks::Init() {
 			return origFunc(_this, matrix, lerpT);
 		};
 		
-		std::shared_ptr<FuncHook> bobViewHook = std::make_shared<FuncHook>(levelRendererBobView, (decltype(&bobViewHookF.operator()))bobViewHookF);
+		std::shared_ptr<FuncHook> bobViewHook = std::make_shared<FuncHook>(levelRendererBobView, bobViewHookF);
 
 		g_Hooks.lambdaHooks.push_back(bobViewHook);
 
@@ -270,11 +270,15 @@ void Hooks::Enable() {
 	MH_EnableHook(MH_ALL_HOOKS);
 }
 
+static std::shared_mutex pcblock;
+
 bool Hooks::playerCallBack(C_Player* lp, __int64 a2, __int64 a3) {
 	static auto oTick = g_Hooks.playerCallBack_Hook->GetFastcall<bool, C_Player*, __int64, __int64>();
 	//if (lp == g_Data.getLocalPlayer())
 		//moduleMgr->onPlayerTick(lp);
 		if (g_Data.getLocalPlayer() != nullptr && lp == g_Data.getLocalPlayer()) {
+			auto lock = std::shared_lock(pcblock);
+
 			if (!g_Data.getLocalPlayer() || !g_Data.getLocalPlayer()->level || !*(&g_Data.getLocalPlayer()->region + 1))
 				g_Hooks.entityList.clear();
 
@@ -1405,6 +1409,8 @@ __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager
 	static auto oFunc = g_Hooks.ConnectionRequest_createHook->GetFastcall<__int64, __int64, __int64, void*, TextHolder*, TextHolder*, __int64, TextHolder*, SkinData*, __int64, CoolSkinData*, TextHolder*, int, int, int, TextHolder*, bool, TextHolder*, __int64, TextHolder*, TextHolder*, bool, TextHolder*, TextHolder*, TextHolder*>();
 
 	auto geoOverride = g_Data.getCustomGeoOverride();
+
+	g_Hooks.connecttime = std::time(nullptr);
 
 	if (g_Data.allowWIPFeatures()) {
 		logF("Connection Request: InputMode: %i UiProfile: %i GuiScale: %i", inputMode, uiProfile, guiScale);
