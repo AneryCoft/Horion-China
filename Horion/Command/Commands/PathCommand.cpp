@@ -64,6 +64,8 @@ bool PathCommand::execute(std::vector<std::string> *args) {
 		auto playerFinder = [&](C_Entity* e, bool isNewList){
 			if(e == g_Data.getLocalPlayer())
 				return;
+			if (!e->checkNameTagFunc())
+				return;
 			std::string name(e->getNameTag()->getText());
 			std::transform(name.begin(), name.end(), name.begin(), ::tolower);
 
