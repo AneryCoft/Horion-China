@@ -28,6 +28,9 @@ bool PlayerTeleportCommand::execute(std::vector<std::string>* args) {
 	for (size_t i = 0; i < listSize; i++) {
 		C_Entity* currentEntity = entList->get(i);
 
+		if (!currentEntity->checkNameTagFunc())
+			return false;
+
 		std::string name(currentEntity->getNameTag()->getText());
 
 		std::transform(name.begin(), name.end(), name.begin(), ::tolower);
