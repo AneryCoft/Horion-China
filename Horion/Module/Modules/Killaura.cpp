@@ -1,4 +1,6 @@
 #include "Killaura.h"
+#include "../../../Memory/Hooks.h"
+
 
 Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around you automatically.") {
 	registerBoolSetting("MultiAura", &isMulti, isMulti);
@@ -20,6 +22,9 @@ const char* Killaura::getModuleName() {
 
 static std::vector<C_Entity*> targetList;
 void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
+	if (std::time(nullptr) < g_Hooks.connecttime + 1)
+		return;
+
 	static auto killauraMod = moduleMgr->getModule<Killaura>();
 
 	if (currentEntity == nullptr)
@@ -28,10 +33,10 @@ void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 	if (currentEntity == g_Data.getLocalPlayer())  // Skip Local player
 		return;
 
-	if (!g_Data.getLocalPlayer()->canAttack(currentEntity, false))
+	if (!g_Data.getLocalPlayer()->isAlive())
 		return;
 
-	if (!g_Data.getLocalPlayer()->isAlive())
+	if (!currentEntity->checkNameTagFunc())
 		return;
 
 	if (!currentEntity->isAlive())
