@@ -51,7 +51,7 @@ JsValueRef CALLBACK LevelFunctions::getAllTargetEntities(JsValueRef callee, bool
 		g_Data.forEachEntity([&](auto ent, bool isNew) {
 			static auto noFriendsMod = moduleMgr->getModule<NoFriends>();
 			if (!ent->checkNameTagFunc())
-				return false;
+				return;
 	
 			if (!noFriendsMod->isEnabled() && FriendList::findPlayer(ent->getNameTag()->getText()))
 				return;
