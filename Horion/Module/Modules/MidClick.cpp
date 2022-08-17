@@ -1,4 +1,5 @@
 #include "MidClick.h"
+#include "../../../Memory/Hooks.h"
 
 MidClick::MidClick() : IModule(0, Category::PLAYER, "Click a player with your mouse wheel to add em as a friend.") {
 }
@@ -11,8 +12,15 @@ const char* MidClick::getModuleName() {
 }
 
 void MidClick::onTick(C_GameMode* gm) {
+
+	if (std::time(nullptr) < g_Hooks.connecttime + 1)
+		return;
+
 	C_Entity* entity = g_Data.getLocalPlayer()->level->getEntity();
 	if (entity == nullptr) 
+		return;
+
+	if (!entity->checkNameTagFunc())
 		return;
 
 	std::string name = entity->getNameTag()->getText();
