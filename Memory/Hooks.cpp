@@ -272,30 +272,40 @@ void Hooks::Enable() {
 
 static std::shared_mutex pcblock;
 
+static bool pcbCheckEntity(C_Entity* entity) {
+	__try {
+		return (entity != nullptr && (__int64)entity != 0xFFFFFFFFFFFFFCD7 && (__int64)entity != 0xFFFFFF00FFFFFF00 && entity != nullptr && *(__int64*)entity != 0xFFFFFFFFFFFFFCD7 && *(__int64*)entity > 0x6FF000000000 && *(__int64*)entity < 0x800000000000 && *((int64_t*)entity + 1) < 0x6FF000000000 && *(__int64*)entity <= Utils::getBase() + 0x10000000 && entity->isAlive());
+	} __except (EXCEPTION_EXECUTE_HANDLER) {
+		return false;
+	}
+}
+
 bool Hooks::playerCallBack(C_Player* lp, __int64 a2, __int64 a3) {
 	static auto oTick = g_Hooks.playerCallBack_Hook->GetFastcall<bool, C_Player*, __int64, __int64>();
 	//if (lp == g_Data.getLocalPlayer())
 		//moduleMgr->onPlayerTick(lp);
-		if (g_Data.getLocalPlayer() != nullptr && lp == g_Data.getLocalPlayer()) {
-			auto lock = std::shared_lock(pcblock);
+	if (g_Data.getLocalPlayer() != nullptr && lp == g_Data.getLocalPlayer()) {
+		auto lock = std::shared_lock(pcblock);
 
-			if (!g_Data.getLocalPlayer() || !g_Data.getLocalPlayer()->level || !*(&g_Data.getLocalPlayer()->region + 1))
-				g_Hooks.entityList.clear();
-
-			std::vector<EntityListPointerHolder> validEntities;
-			for (const auto& ent : g_Hooks.entityList) {
-				auto entity = ent.ent;
-				MEMORY_BASIC_INFORMATION info;
-				VirtualQuery(ent.ent, &info, sizeof(MEMORY_BASIC_INFORMATION));
-				if (info.State & MEM_FREE) continue;
-				if (info.State & MEM_RESERVE) continue;
-
-				if (entity->isAlive() && entity != nullptr && (__int64)entity != 0xFFFFFFFFFFFFFCD7 && ent.ent != nullptr && *(__int64*)ent.ent != 0xFFFFFFFFFFFFFCD7 && *(__int64*)ent.ent > 0x6FF000000000 && *(__int64*)ent.ent < 0x800000000000 && *((int64_t*)ent.ent + 1) < 0x6FF000000000 && *(__int64*)ent.ent <= Utils::getBase() + 0x10000000)
-					validEntities.push_back(ent);
-			}
+		if (!g_Data.getLocalPlayer() || !g_Data.getLocalPlayer()->level || !*(&g_Data.getLocalPlayer()->region + 1))
 			g_Hooks.entityList.clear();
-			g_Hooks.entityList = validEntities;
+
+		std::vector<EntityListPointerHolder> validEntities;
+
+		for (const auto& ent : g_Hooks.entityList) {
+			auto entity = ent.ent;
+			MEMORY_BASIC_INFORMATION info;
+			VirtualQuery(ent.ent, &info, sizeof(MEMORY_BASIC_INFORMATION));
+			if (info.State & MEM_FREE) continue;
+			if (info.State & MEM_RESERVE) continue;
+			
+			if (pcbCheckEntity(entity))
+				validEntities.push_back(ent);
+
 		}
+		g_Hooks.entityList.clear();
+		g_Hooks.entityList = validEntities;
+	}
 	return oTick(lp, a2, a3);
 }
 
