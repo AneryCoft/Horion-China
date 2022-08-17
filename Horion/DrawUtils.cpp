@@ -1,8 +1,9 @@
-﻿#include "DrawUtils.h"
+#include "DrawUtils.h"
 
 #include "Module/ModuleManager.h"
 #include <Windows.h>
 #include "../Utils/Logger.h"
+#include "../Memory/Hooks.h"
 
 struct MaterialPtr {
 	char padding[0x138];
@@ -360,6 +361,13 @@ void DrawUtils::drawImage(std::string FilePath, vec2_t& imagePos, vec2_t& ImageD
 }
 
 void DrawUtils::drawNameTags(C_Entity* ent, float textSize, bool drawHealth, bool useUnicodeFont) {
+
+	if (std::time(nullptr) < g_Hooks.connecttime + 1)
+		return;
+
+	if (!ent->checkNameTagFunc())
+		return;
+
 	vec2_t textPos;
 	vec4_t rectPos;
 	std::string text = ent->getNameTag()->getText();
