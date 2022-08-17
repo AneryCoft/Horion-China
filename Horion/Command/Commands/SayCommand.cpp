@@ -34,6 +34,9 @@ std::string parse(const std::string& s) {
 bool SayCommand::execute(std::vector<std::string>* args) {
 	assertTrue(args->size() > 1);
 
+	if (!g_Data.getLocalPlayer()->checkNameTagFunc())
+		return false;
+
 	std::ostringstream os;
 	for (int i = 1; i < args->size(); i++) {
 		if (i > 1)
