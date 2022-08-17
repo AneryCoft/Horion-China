@@ -1,5 +1,6 @@
 #include "Spammer.h"
 #include "../../../Utils/Utils.h"
+#include "../../../Memory/Hooks.h"
 
 Spammer::Spammer() : IModule(0, Category::MISC, "Spams a message in a specified delay.") {
 	registerIntSetting("Delay", &delay, delay, 1, 10);
@@ -15,6 +16,12 @@ const char* Spammer::getModuleName() {
 }
 
 void Spammer::onTick(C_GameMode* gm) {
+
+	if (std::time(nullptr) < g_Hooks.connecttime + 1)
+		return;
+
+	if (!g_Data.getLocalPlayer()->checkNameTagFunc())
+		return;
 	Odelay++;
 	if (Odelay > delay * 20) {
 		C_TextPacket textPacket;
