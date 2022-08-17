@@ -1,8 +1,9 @@
-﻿#include "Target.h"
+#include "Target.h"
 
 #include <regex>
 
 #include "../Horion/Module/ModuleManager.h"
+#include "../Memory/Hooks.h"
 
 C_LocalPlayer** localPlayer;
 
@@ -17,6 +18,12 @@ bool Target::isValidTarget(C_Entity* ent) {
 	auto localPlayer = g_Data.getLocalPlayer();
 
 	if (ent == localPlayer)
+		return false;
+
+	if (std::time(nullptr) < g_Hooks.connecttime + 1)
+		return;
+
+	if (!ent->checkNameTagFunc())
 		return false;
 
 	static auto antibot = moduleMgr->getModule<AntiBot>();
@@ -64,9 +71,6 @@ bool Target::isValidTarget(C_Entity* ent) {
 	if (!hitboxMod->isEnabled() && antibot->isHitboxCheckEnabled())
 		if ((ent->height < 1.5f || ent->width < 0.49f || ent->height > 2.1f || ent->width > 0.9f))
 			return false;
-
-	if (!localPlayer->canAttack(ent, false))
-		return false;
 
 	if (antibot->isExtraCheckEnabled() && !ent->canShowNameTag())
 		return false;
