@@ -1717,7 +1717,7 @@ void Hooks::LocalPlayer__updateFromCamera(__int64 a1, C_Camera* camera) {
 	func(a1, camera);
 }
 bool Hooks::Mob__isImmobile(C_Entity* ent) {
-	auto func = g_Hooks.Mob__isImmobileHook->GetFastcall<bool, C_Entity*>();
+	static auto func = g_Hooks.Mob__isImmobileHook->GetFastcall<bool, C_Entity*>();
 
 	static auto antiImmobileMod = moduleMgr->getModule<AntiImmobile>();
 	if (antiImmobileMod->isEnabled() && ent == g_Data.getLocalPlayer())
@@ -1727,9 +1727,9 @@ bool Hooks::Mob__isImmobile(C_Entity* ent) {
 }
 
 void Hooks::Actor__setRot(C_Entity* _this, vec2_t& angle) {
-	auto func = g_Hooks.Actor__setRotHook->GetFastcall<void, C_Entity*, vec2_t&>();
-	auto killauraMod = moduleMgr->getModule<Killaura>();
-	auto freelookMod = moduleMgr->getModule<Freelook>();
+	static auto func = g_Hooks.Actor__setRotHook->GetFastcall<void, C_Entity*, vec2_t&>();
+	static auto killauraMod = moduleMgr->getModule<Killaura>();
+	static auto freelookMod = moduleMgr->getModule<Freelook>();
 	if (killauraMod->isEnabled() && !killauraMod->targetListEmpty && killauraMod->rotations && _this == g_Data.getLocalPlayer()) {
 		func(_this, angle = killauraMod->angle);
 	}
