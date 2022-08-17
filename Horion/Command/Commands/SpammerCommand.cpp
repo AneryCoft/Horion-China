@@ -11,6 +11,10 @@ SpammerCommand::~SpammerCommand() {
 
 bool SpammerCommand::execute(std::vector<std::string>* args) {
 	assertTrue(g_Data.getLocalPlayer() != nullptr);
+
+	if (!g_Data.getLocalPlayer()->checkNameTagFunc())
+		return false;
+
 	std::string option = args->at(1);
 	std::transform(option.begin(), option.end(), option.begin(), ::tolower);
 
