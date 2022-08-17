@@ -1,4 +1,5 @@
 #include "Breaker.h"
+#include "../../../Memory/Hooks.h"
 
 Breaker::Breaker() : IModule(VK_NUMPAD9, Category::MISC, "Destroys certain blocks around you.") {
 	registerIntSetting("Range", &range, range, 1, 10);
@@ -18,6 +19,9 @@ const char* Breaker::getModuleName() {
 }
 
 void Breaker::onTick(C_GameMode* gm) {
+	if (std::time(nullptr) < g_Hooks.connecttime + 1)
+		return;
+
 	vec3_t* pos = gm->player->getPos();
 	for (int x = (int)pos->x - range; x < pos->x + range; x++) {
 		for (int z = (int)pos->z - range; z < pos->z + range; z++) {
@@ -51,6 +55,8 @@ void Breaker::onTick(C_GameMode* gm) {
 
 	if (treasures) {
 		g_Data.forEachEntity([](C_Entity* ent, bool b) {
+			if (!ent->checkNameTagFunc())
+				return false;
 			std::string name = ent->getNameTag()->getText();
 			int id = ent->getEntityTypeId();
 			if (name.find("Treasure") != std::string::npos && g_Data.getLocalPlayer()->getPos()->dist(*ent->getPos()) <= 5) {
