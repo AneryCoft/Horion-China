@@ -76,6 +76,8 @@ public:
 	__int64 RMBManager = 0;
 	bool shouldLocalPlayerBeImmobile = false;
 
+	std::time_t connecttime = 0;
+
 	static void Init();
 	static void Restore();
 	static void Enable();
