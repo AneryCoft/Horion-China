@@ -123,8 +123,8 @@ void Killaura::onGetPickRange() {
 		if (rotations.selected != 0) {
 			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*targetList[switchTarget]->getPos());
 			static std::default_random_engine engine;
-			angle.x = std::uniform_real_distribution<float>(0.f, pitchOffset)(engine);
-			angle.y = std::uniform_real_distribution<float>(0.f, yawOffset)(engine);
+			angle.x += std::uniform_real_distribution<float>(0.f, pitchOffset)(engine);
+			angle.y += std::uniform_real_distribution<float>(0.f, yawOffset)(engine);
 		}
 		if (rotations.selected == 2) {
 			localPlayer->setRot(angle);
