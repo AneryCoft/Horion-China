@@ -50,7 +50,7 @@ void NoFall::onTick(C_GameMode* gm) {
 			break;
 		case 3:{
 			C_PlayerActionPacket actionPacket;
-			actionPacket.action = 15;  //Open Elytra
+			actionPacket.action = 15;  //¿ªÆôÇÊ³á
 			actionPacket.entityRuntimeId = localPlayer->entityRuntimeId;
 			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&actionPacket);
 		}
