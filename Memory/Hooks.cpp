@@ -282,8 +282,8 @@ static bool pcbCheckEntity(C_Entity* entity) {
 
 bool Hooks::playerCallBack(C_Player* lp, __int64 a2, __int64 a3) {
 	static auto oTick = g_Hooks.playerCallBack_Hook->GetFastcall<bool, C_Player*, __int64, __int64>();
-	//if (lp == g_Data.getLocalPlayer())
-		//moduleMgr->onPlayerTick(lp);
+	if (lp == g_Data.getLocalPlayer())
+		moduleMgr->onPlayerTick(lp);
 	if (g_Data.getLocalPlayer() != nullptr && lp == g_Data.getLocalPlayer()) {
 		auto lock = std::shared_lock(pcblock);
 

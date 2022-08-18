@@ -265,5 +265,14 @@ void ModuleManager::onLevelRender() {
 			it->onLevelRender();
 	}
 }
+void ModuleManager::onPlayerTick(C_Player* player) {
+	if (!isInitialized())
+		return;
+	auto lock = lockModuleList();
+	for (auto& mod : moduleList) {
+		if (mod->isEnabled() || mod->callWhenDisabled())
+			mod->onPlayerTick(player);
+	}
+}
 
 ModuleManager* moduleMgr = new ModuleManager(&g_Data);
