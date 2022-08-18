@@ -171,7 +171,7 @@ void GameData::forEachEntity(std::function<void(C_Entity*, bool)> callback) {
 
 }
 
-void GameData::forEachMob(std::function<void(C_Entity*, bool)> callback) {
+void GameData::forEachValidEntity(std::function<void(C_Entity*, bool)> callback) {
 	if (localPlayer && localPlayer->level) {
 		for (const auto& ent : g_Hooks.entityList)
 			if (ent.ent != nullptr) callback(ent.ent, false);
