@@ -934,7 +934,7 @@ int Hooks::AppPlatform_getGameEdition(__int64 _this) {
 
 	static auto mod = moduleMgr->getModule<EditionFaker>();
 	if (mod->isEnabled()) {
-		return mod->getFakedEditon();
+		return mod->getFakedDevice();
 	}
 
 	return oGetEditon(_this);
