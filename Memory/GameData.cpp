@@ -164,37 +164,7 @@ void GameData::setRakNetInstance(C_RakNetInstance* raknet) {
 }
 
 void GameData::forEachEntity(std::function<void(C_Entity*, bool)> callback) {
-	/*//Player EntityList
-	C_EntityList* entityList = (C_EntityList*)g_Data.getLocalPlayer()->level;
-	uintptr_t start = ((uintptr_t)entityList + 0x70);
-	uintptr_t stop = ((uintptr_t)entityList + 0x78);
-	start = *(uintptr_t*)start;
-	stop = *(uintptr_t*)stop;
-	//logF("size: %i", (stop - start) / sizeof(uintptr_t*));
-	while (start < stop) {
-		C_Entity* ent = *(C_Entity**)start;
-		if (ent != nullptr)
-			callback(ent, false);
-		start += 8;
-	}
-	// New EntityList
-	{
-		// MultiplayerLevel::directTickEntities
-		__int64 region = reinterpret_cast<__int64>(g_Data.getLocalPlayer()->region);
-		__int64* entityIdMap = *(__int64**)(*(__int64*)(region + 0x20) + 0x138i64);
-		for (__int64* i = (__int64*)*entityIdMap; i != entityIdMap; i = (__int64*)*i) {
-			__int64 actor = i[3];
-			// !isRemoved() && !isGlobal()
-			if (actor && !*(char*)(actor + 993) && !*(char*)(actor + 994)) {
-				C_Entity* ent = reinterpret_cast<C_Entity*>(actor);
-				callback(ent, false);
-			}
-		}
-	}*/
-
 	if (localPlayer && localPlayer->level) {
-		for (const auto& ent : g_Hooks.entityList)
-			if (ent.ent != nullptr) callback(ent.ent, false);
 		for (const auto& ent : g_Data.getLocalPlayer()->level->getMiscEntityList())
 			if (ent != nullptr && ent->getEntityTypeId() >= 1 && ent->getEntityTypeId() <= 999999999) callback(ent, false);
 	}
