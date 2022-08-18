@@ -41,12 +41,19 @@ bool Target::isValidTarget(C_Entity* ent) {
 
 	if (entityTypeId == 63) {
 		if (teams->isColorCheckEnabled()) {
-			auto targetName = ent->getNameTag();
-			auto localName = localPlayer->getNameTag();
-			if (targetName->getTextLength() > 2 && localName->getTextLength() > 2) {
-				auto colorTargetName = std::regex_replace(targetName->getText(), std::regex("\\§r"), "");
-				auto colorLocalName = std::regex_replace(localName->getText(), std::regex("\\§r"), "");
-				if (colorTargetName.at(0) == colorLocalName.at(0)) 
+			std::string targetName = ent->getNameTag()->getText();
+			std::string localName = localPlayer->getNameTag()->getText();
+			targetName = std::string(targetName, 0, targetName.find('\n'));
+			localName = std::string(localName, 0, localName.find('\n'));
+
+			auto colorTargetName = std::regex_replace(targetName, std::regex(u8"§r"), "");
+			auto colorLocalName = std::regex_replace(localName, std::regex(u8"§r"), "");
+			if (colorLocalName.find(u8"§") != std::string::npos &&
+				colorTargetName.find(u8"§") != std::string::npos) {
+				char colorTarget = colorTargetName.at(colorTargetName.rfind(u8"§") + 2);
+				char colorLocal = colorLocalName.at(colorLocalName.rfind(u8"§") + 2);
+
+				if (colorLocal == colorTarget)
 					return false;
 			}
 		}
