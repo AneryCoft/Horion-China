@@ -1747,7 +1747,7 @@ void Hooks::Actor__setRot(C_Entity* _this, vec2_t& angle) {
 	static auto killauraMod = moduleMgr->getModule<Killaura>();
 	static auto freelookMod = moduleMgr->getModule<Freelook>();
 	
-	if (killauraMod->isEnabled() && !killauraMod->targetListEmpty && killauraMod->rotations.selected == 2 && _this == g_Data.getLocalPlayer()) {
+	if (killauraMod->isEnabled() && !killauraMod->targetListEmpty && killauraMod->rotations.selected == 3 && _this == g_Data.getLocalPlayer()) {
 		func(_this, angle = killauraMod->angle);
 	}
 	if (freelookMod->isEnabled() && g_Data.getLocalPlayer() == _this) {
