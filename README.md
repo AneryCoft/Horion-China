@@ -2,7 +2,7 @@
 <div align="center">
   <br />
     <p>
-      <a <img src="https://raw.githubusercontent.com/horionclient/Horion/master/.github/horion-banner.png" width="600" alt="Horion" /></a>
+      <a href="https://github.com/horionclient/Horion"><img src="https://raw.githubusercontent.com/horionclient/Horion/master/.github/horion-banner.png" width="600" alt="Horion" /></a>
     </p>
   <br />
   <p>
