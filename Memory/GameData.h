@@ -240,7 +240,7 @@ public:
 	TextHolder* getFakeName() { return fakeName; };
 	inline __int64 getLastUpdateTime() { return lastUpdate; };
 	void forEachEntity(std::function<void(C_Entity*, bool)>);
-	void forEachMob(std::function<void(C_Entity*, bool)>);
+	void forEachValidEntity(std::function<void(C_Entity*, bool)>);
 	int getFPS() { return fps; };
 	int getLeftCPS() { return cpsLeft; };
 	int getRightCPS() { return cpsRight; };
