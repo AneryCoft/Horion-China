@@ -39,33 +39,37 @@ void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 
 	static auto killauraMod = moduleMgr->getModule<Killaura>();
 
-	if (currentEntity == nullptr)
-		return;
-
-	if (currentEntity == g_Data.getLocalPlayer())  // Skip Local player
-		return;
-
-	if (!currentEntity->checkNameTagFunc())
-		return;
-
-	if (!currentEntity->isAlive())
-		return;
-
-	if (currentEntity->getEntityTypeId() == 66) // falling block
-		return;
-
-	if (currentEntity->getEntityTypeId() == 69)  // XP
-		return;
-
 	if (killauraMod->isMobAura) {
+		if (currentEntity == nullptr)
+			return;
+
+		if (currentEntity == g_Data.getLocalPlayer())  // Skip Local player
+			return;
+
+		if (!currentEntity->checkNameTagFunc())
+			return;
+
+		if (!currentEntity->isAlive())
+			return;
+
+		if (currentEntity->getEntityTypeId() == 66) // falling block
+			return;
+
+		if (currentEntity->getEntityTypeId() == 69)  // XP
+			return;
+
 		if (currentEntity->getNameTag()->getTextLength() <= 1 && currentEntity->getEntityTypeId() == 63)
 			return;
+
 		if (currentEntity->width <= 0.01f || currentEntity->height <= 0.01f) // Don't hit this pesky antibot on 2b2e.org
 			return;
+
 		if (currentEntity->getEntityTypeId() == 64) // item
 			return;
+
 		if (currentEntity->getEntityTypeId() == 80)  // Arrows
 			return;
+
 		if (currentEntity->getEntityTypeId() == 51) // NPC
 			return;
 	}
@@ -108,7 +112,12 @@ void Killaura::onGetPickRange() {
 
 	targetList.clear();
 
-	g_Data.forEachEntity(findEntity);
+	if (isMobAura) {
+		g_Data.forEachEntity(findEntity);
+	}
+	else {
+		g_Data.forEachValidEntity(findEntity);
+	}
 
 	targetListEmpty = targetList.empty();
 
