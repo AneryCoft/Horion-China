@@ -23,7 +23,7 @@ public:
 
 public:
 	virtual __int64 getPickRange(__int64 const &, bool);
-	virtual __int64 useItem(C_ItemStack &);
+	//virtual __int64 useItem(C_ItemStack &);
 	virtual __int64 useItemOn(__int64 &, vec3_ti const &, unsigned char, vec3_t const &, __int64 const *);
 	virtual __int64 interact(C_Entity &, vec3_t const &);
 
@@ -44,4 +44,5 @@ public:
 	C_Player *player;
 
 	void survivalDestroyBlockHack(vec3_ti const &block, int face, bool &isDestroyedOut, bool isFirst);
+	virtual void useItem(C_ItemStack& stack);
 };
