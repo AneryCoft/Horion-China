@@ -274,5 +274,14 @@ void ModuleManager::onPlayerTick(C_Player* player) {
 			mod->onPlayerTick(player);
 	}
 }
+void ModuleManager::onGetPickRange() {
+	if (!isInitialized())
+		return;
+	auto lock = lockModuleList();
+	for (auto& it : moduleList) {
+		if (it->isEnabled() || it->callWhenDisabled())
+			it->onGetPickRange();
+	}
+}
 
 ModuleManager* moduleMgr = new ModuleManager(&g_Data);

@@ -142,5 +142,6 @@ public:
 	virtual void onSendPacket(C_Packet*);
 	virtual bool callWhenDisabled();
 	virtual void onPlayerTick(C_Player*);
+	virtual void onGetPickRange();
 	const char* getTooltip();
 };

@@ -129,6 +129,7 @@ public:
 	void onMove(C_MoveInputHandler* handler);
 	void onSendPacket(C_Packet*);
 	void onPlayerTick(C_Player* player);
+	void onGetPickRange();
 
 	std::shared_lock<std::shared_mutex> lockModuleList() { return std::shared_lock(moduleListMutex); }
 	std::unique_lock<std::shared_mutex> lockModuleListExclusive() { return std::unique_lock(moduleListMutex); }

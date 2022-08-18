@@ -228,6 +228,9 @@ void IModule::onWorldTick(C_GameMode*) {
 void IModule::onPlayerTick(C_Player*) {
 }
 
+void IModule::onGetPickRange() {
+}
+
 void IModule::onLoadConfig(void* confVoid) {
 	json* conf = reinterpret_cast<json*>(confVoid);
 	if (conf->contains(this->getRawModuleName())) {

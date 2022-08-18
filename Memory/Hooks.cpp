@@ -1402,6 +1402,8 @@ void Hooks::RakNetInstance_tick(C_RakNetInstance* _this, __int64 a2, __int64 a3)
 float Hooks::GameMode_getPickRange(C_GameMode* _this, __int64 a2, char a3) {
 	static auto oFunc = g_Hooks.GameMode_getPickRangeHook->GetFastcall<float, C_GameMode*, __int64, char>();
 
+	moduleMgr->onGetPickRange();
+
 	if (g_Data.getLocalPlayer() != nullptr) {
 		static auto teleportModule = moduleMgr->getModule<Teleport>();
 		if (teleportModule->isEnabled())
@@ -1744,7 +1746,8 @@ void Hooks::Actor__setRot(C_Entity* _this, vec2_t& angle) {
 	static auto func = g_Hooks.Actor__setRotHook->GetFastcall<void, C_Entity*, vec2_t&>();
 	static auto killauraMod = moduleMgr->getModule<Killaura>();
 	static auto freelookMod = moduleMgr->getModule<Freelook>();
-	if (killauraMod->isEnabled() && !killauraMod->targetListEmpty && killauraMod->rotations && _this == g_Data.getLocalPlayer()) {
+	
+	if (killauraMod->isEnabled() && !killauraMod->targetListEmpty && killauraMod->rotations.selected == 2 && _this == g_Data.getLocalPlayer()) {
 		func(_this, angle = killauraMod->angle);
 	}
 	if (freelookMod->isEnabled() && g_Data.getLocalPlayer() == _this) {

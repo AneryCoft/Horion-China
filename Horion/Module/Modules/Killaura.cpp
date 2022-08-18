@@ -1,16 +1,28 @@
 #include "Killaura.h"
 #include "../../../Memory/Hooks.h"
-
+#include <random>
 
 Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around you automatically.") {
-	registerBoolSetting("MultiAura", &isMulti, isMulti);
+	mode = (*new SettingEnum(this))
+		.addEntry(EnumEntry("Single", 0))
+		.addEntry(EnumEntry("Multi", 1))
+		.addEntry(EnumEntry("Switch", 2));
+	registerEnumSetting("Mode", &mode, 0);
+	rotations = (*new SettingEnum(this))
+		.addEntry(EnumEntry("None", 0))
+		.addEntry(EnumEntry("Packet", 1))
+		.addEntry(EnumEntry("Vanilla", 2))
+		.addEntry(EnumEntry("Actual", 3));
+	registerEnumSetting("Rotations", &rotations, 0);
+	registerFloatSetting("Range", &range, range, 3.f, 10.f);
+	registerIntSetting("MaxCPS", &maxCPS, maxCPS, 1, 20);
+	registerIntSetting("MinCPS", &minCPS, minCPS, 1, 20);
+	registerFloatSetting("Switch Delay", &switchDelay, switchDelay, 1.f, 1000.f);
+	registerFloatSetting("Yaw Offset", &yawOffset, yawOffset, 0.f, 10.f);
+	registerFloatSetting("Pitch Offset", &pitchOffset, pitchOffset, 0.f, 10.f);
 	registerBoolSetting("MobAura", &isMobAura, isMobAura);
-	registerFloatSetting("Range", &range, range, 2.f, 20.f);
-	registerIntSetting("Delay", &delay, delay, 0, 20);
 	registerBoolSetting("Hurttime", &hurttime, hurttime);
 	registerBoolSetting("AutoWeapon", &autoweapon, autoweapon);
-	registerBoolSetting("Rotations", &rotations, rotations);
-	registerBoolSetting("Silent Rotations", &silent, silent);
 }
 
 Killaura::~Killaura() {
@@ -29,11 +41,8 @@ void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 
 	if (currentEntity == nullptr)
 		return;
-	
-	if (currentEntity == g_Data.getLocalPlayer())  // Skip Local player
-		return;
 
-	if (!g_Data.getLocalPlayer()->isAlive())
+	if (currentEntity == g_Data.getLocalPlayer())  // Skip Local player
 		return;
 
 	if (!currentEntity->checkNameTagFunc())
@@ -44,22 +53,23 @@ void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 
 	if (currentEntity->getEntityTypeId() == 66) // falling block
 		return;
-	  
+
 	if (currentEntity->getEntityTypeId() == 69)  // XP
 		return;
 
 	if (killauraMod->isMobAura) {
 		if (currentEntity->getNameTag()->getTextLength() <= 1 && currentEntity->getEntityTypeId() == 63)
 			return;
-		if(currentEntity->width <= 0.01f || currentEntity->height <= 0.01f) // Don't hit this pesky antibot on 2b2e.org
+		if (currentEntity->width <= 0.01f || currentEntity->height <= 0.01f) // Don't hit this pesky antibot on 2b2e.org
 			return;
-		if(currentEntity->getEntityTypeId() == 64) // item
+		if (currentEntity->getEntityTypeId() == 64) // item
 			return;
 		if (currentEntity->getEntityTypeId() == 80)  // Arrows
 			return;
 		if (currentEntity->getEntityTypeId() == 51) // NPC
 			return;
-	} else {
+	}
+	else {
 		if (!Target::isValidTarget(currentEntity))
 			return;
 	}
@@ -89,41 +99,88 @@ void Killaura::findWeapon() {
 	supplies->selectedHotbarSlot = slot;
 }
 
-void Killaura::onTick(C_GameMode* gm) {
-	targetListEmpty = targetList.empty();
-	//Loop through all our players and retrieve their information
+void Killaura::onGetPickRange() {
+	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
+	if (localPlayer == nullptr || !localPlayer->isAlive())
+		return;
+
+	static bool swing = !moduleMgr->getModule<NoSwing>()->isEnabled();
+
 	targetList.clear();
 
 	g_Data.forEachEntity(findEntity);
 
-	Odelay++;
-	if (!targetList.empty() && Odelay >= delay) {
+	targetListEmpty = targetList.empty();
 
-		if (autoweapon) findWeapon();
+	if (!targetList.empty()) {
+		if (autoweapon)
+			findWeapon();
 
-		if (g_Data.getLocalPlayer()->velocity.squaredxzlen() < 0.01) {
-			C_MovePlayerPacket p(g_Data.getLocalPlayer(), *g_Data.getLocalPlayer()->getPos());
-			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&p);  // make sure to update rotation if player is standing still
+		if (mode.selected != 2 || switchTarget >= targetList.size()) {
+			switchTarget = 0;
 		}
 
-		// Attack all entitys in targetList
-		if (isMulti) {
-			for (auto& i : targetList) {
-				if (!(i->damageTime > 1 && hurttime)) {
-					g_Data.getLocalPlayer()->swing();
-					g_Data.getCGameMode()->attack(i);
+		if (rotations.selected != 0) {
+			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*targetList[switchTarget]->getPos());
+			static std::default_random_engine engine;
+			angle.x = std::uniform_real_distribution<float>(0.f, pitchOffset)(engine);
+			angle.y = std::uniform_real_distribution<float>(0.f, yawOffset)(engine);
+		}
+		if (rotations.selected == 2) {
+			localPlayer->setRot(angle);
+		}
+
+		CPS = RandomNumber(minCPS, maxCPS);
+		//CPS = rand() % (maxCPS - minCPS + 1) + minCPS;
+		if (TimerUtil::hasTimedElapsed(1000.f / CPS, true)) {
+			if (rotations.selected == 1) {
+				if (localPlayer->velocity.squaredxzlen() < 0.01) {
+					C_MovePlayerPacket packet(localPlayer, *localPlayer->getPos());
+					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);  //不动的时候Packet转头也能工作
 				}
 			}
-		} else {
-			if (!(targetList[0]->damageTime > 1 && hurttime)) {
-				g_Data.getLocalPlayer()->swing();
-				g_Data.getCGameMode()->attack(targetList[0]);
+
+			switch (mode.selected) {
+			case 0:
+				if (!(targetList[0]->damageTime > 1 && hurttime)) {
+					if (swing)
+						localPlayer->swing();
+					g_Data.getCGameMode()->attack(targetList[0]);
+				}
+				break;
+			case 1:
+				for (auto& i : targetList) {
+					if (!(i->damageTime > 1 && hurttime)) {
+						if (swing)
+							localPlayer->swing();
+						g_Data.getCGameMode()->attack(i);
+					}
+				}
+				break;
+			case 2:
+				if (!(targetList[switchTarget]->damageTime > 1 && hurttime)) {
+					if (swing)
+						localPlayer->swing();
+					g_Data.getCGameMode()->attack(targetList[switchTarget]);
+				}
 			}
 		}
-		if (rotations) {
-			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*targetList[0]->getPos());
+
+		if (mode.selected == 2) {
+			if (TimerUtil::hasTimedElapsed(1000.f / CPS, true)) {
+				++switchTarget;
+			}
 		}
-		Odelay = 0;
+	}
+}
+
+void Killaura::onPlayerTick(C_Player* player) {
+	if (rotations.selected == 1) {
+		if (!targetList.empty()) {
+			player->pitch = angle.x;
+			player->bodyYaw = angle.y;
+			player->yawUnused1 = angle.y;
+		}
 	}
 }
 
@@ -133,13 +190,20 @@ void Killaura::onEnable() {
 }
 
 void Killaura::onSendPacket(C_Packet* packet) {
-	if (packet->isInstanceOf<C_MovePlayerPacket>() && g_Data.getLocalPlayer() != nullptr && silent) {
+	if (rotations.selected == 1) {
 		if (!targetList.empty()) {
-			auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
-			vec2_t angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*targetList[0]->getPos());
-			movePacket->pitch = angle.x;
-			movePacket->headYaw = angle.y;
-			movePacket->yaw = angle.y;
+			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
+				auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
+				movePacket->pitch = angle.x;
+				movePacket->headYaw = angle.y;
+				movePacket->yaw = angle.y;
+			}
+			if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+				auto* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
+				authInputPacket->pitch = angle.x;
+				authInputPacket->yawUnused = angle.y;
+				authInputPacket->yaw = angle.y;
+			}
 		}
 	}
 }
