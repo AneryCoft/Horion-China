@@ -165,6 +165,8 @@ void GameData::setRakNetInstance(C_RakNetInstance* raknet) {
 
 void GameData::forEachEntity(std::function<void(C_Entity*, bool)> callback) {
 	if (localPlayer && localPlayer->level) {
+		for (const auto& ent : g_Hooks.entityList) 
+			if (ent.ent != nullptr) callback(ent.ent, false);
 		for (const auto& ent : g_Data.getLocalPlayer()->level->getMiscEntityList())
 			if (ent != nullptr && ent->getEntityTypeId() >= 1 && ent->getEntityTypeId() <= 999999999) callback(ent, false);
 	}
