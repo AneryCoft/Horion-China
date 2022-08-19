@@ -98,6 +98,7 @@
 #include "Modules/Twerk.h"
 #include "Modules/FontChanger.h"
 #include "Modules/ClientTheme.h"
+#include "Modules/AutoFish.h"
 
 #ifdef _DEBUG
 #include "Modules/PacketLogger.h"
