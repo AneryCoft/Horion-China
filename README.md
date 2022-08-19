@@ -11,7 +11,7 @@
 </div>
 
 ## Horion-China是什么
-Horion-China是基于NRGJobro/Horion-Open-SRC创作，由中国人开发的一款Mod。
+Horion-China是基于[NRGJobro/Horion-Open-SRC](https://github.com/NRGJobro/Horion-Open-SRC)创作，由中国人开发的一款Mod。
 
 * 我们遵守Horion使用的NonCommercial 4.0许可证，这代表我们的程序是合法的。
 * 如果以后要使用其他客户端的开源代码，我们也将遵守许可证。
