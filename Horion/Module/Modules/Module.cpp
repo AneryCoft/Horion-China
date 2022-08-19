@@ -219,7 +219,7 @@ void IModule::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 void IModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 }
 
-void IModule::onSendPacket(C_Packet*) {
+void IModule::onSendPacket(C_Packet*, bool&) {
 }
 
 void IModule::onWorldTick(C_GameMode*) {

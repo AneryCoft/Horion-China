@@ -20,7 +20,7 @@ void Crasher::onTick(C_GameMode* gm) {
 		setEnabled(false);
 }
 
-void Crasher::onSendPacket(C_Packet* packet) {
+void Crasher::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 		PlayerAuthInputPacket* InputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
 		InputPacket->pos.x = static_cast<float>(0xFFFFFFFF);

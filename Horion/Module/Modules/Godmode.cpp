@@ -20,12 +20,12 @@ void Godmode::onTick(C_GameMode* gm) {
 	}
 }
 
-void Godmode::onSendPacket(C_Packet* p) {
-	if (p->isInstanceOf<C_MovePlayerPacket>()) {
-		C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(p);
+void Godmode::onSendPacket(C_Packet* packet, bool& cancelSend) {
+	if (packet->isInstanceOf<C_MovePlayerPacket>()) {
+		C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
 		movePacket->onGround = true;
-	} /*else if (p->isInstanceOf<C_ActorFallPacket>()) {
-		C_ActorFallPacket* fallPacket = reinterpret_cast<C_ActorFallPacket*>(p);
+	} /*else if (packet->isInstanceOf<C_ActorFallPacket>()) {
+		C_ActorFallPacket* fallPacket = reinterpret_cast<C_ActorFallPacket*>(packet);
 		fallPacket->fallDistance = 0.f;
 	}*/
 }

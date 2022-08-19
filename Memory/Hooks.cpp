@@ -1091,7 +1091,12 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 			return;  //dont send uncrouch
 	}
 
-	moduleMgr->onSendPacket(packet);
+	bool cancelSend = false;
+
+	moduleMgr->onSendPacket(packet, cancelSend);
+
+	if (cancelSend)
+		return;
 
 	/*if (strcmp(packet->getName()->getText(), "EmotePacket") == 0) {
 		auto varInt = reinterpret_cast<__int64*>(reinterpret_cast<__int64>(packet) + 0x28);

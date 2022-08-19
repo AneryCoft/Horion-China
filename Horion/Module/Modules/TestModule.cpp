@@ -58,7 +58,7 @@ void TestModule::onMove(C_MoveInputHandler* hand){
 void TestModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 }
 
-void TestModule::onSendPacket(C_Packet* p) {
+void TestModule::onSendPacket(C_Packet* packet, bool& cancelSend) {
 }
 
 void TestModule::onDisable() {

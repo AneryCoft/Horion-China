@@ -16,7 +16,7 @@ const char* NoFall::getModuleName() {
 	return ("NoFall");
 }
 
-void NoFall::onSendPacket(C_Packet* packet) {
+void NoFall::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	if (localPlayer == nullptr)
 		return;

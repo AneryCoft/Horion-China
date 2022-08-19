@@ -139,7 +139,7 @@ public:
 	virtual void setEnabled(bool enabled);
 	virtual void toggle();
 	virtual bool isEnabled();
-	virtual void onSendPacket(C_Packet*);
+	virtual void onSendPacket(C_Packet*, bool&);
 	virtual bool callWhenDisabled();
 	virtual void onPlayerTick(C_Player*);
 	virtual void onGetPickRange();

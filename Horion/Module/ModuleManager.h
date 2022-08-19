@@ -127,13 +127,13 @@ public:
 	void onPostRender(C_MinecraftUIRenderContext* renderCtx);
 	void onLevelRender();
 	void onMove(C_MoveInputHandler* handler);
-	void onSendPacket(C_Packet*);
+	void onSendPacket(C_Packet* packet, bool& cancelSend);
 	void onPlayerTick(C_Player* player);
 	void onGetPickRange();
 
 	std::shared_lock<std::shared_mutex> lockModuleList() { return std::shared_lock(moduleListMutex); }
 	std::unique_lock<std::shared_mutex> lockModuleListExclusive() { return std::unique_lock(moduleListMutex); }
-	
+
 	std::shared_mutex* getModuleListLock() { return &moduleListMutex; }
 
 	bool isInitialized() { return initialized; };
@@ -143,9 +143,9 @@ public:
 	int getEnabledModuleCount();
 
 	/*
-	 *	Use as follows: 
-	 *		IModule* mod = moduleMgr.getModule<NoKnockBack>(); 
-	 *	Check for nullptr directly after that call, as Hooks::init is called before ModuleManager::initModules !	
+	 *	Use as follows:
+	 *		IModule* mod = moduleMgr.getModule<NoKnockBack>();
+	 *	Check for nullptr directly after that call, as Hooks::init is called before ModuleManager::initModules !
 	 */
 	template <typename TRet>
 	TRet* getModule() {
@@ -153,8 +153,8 @@ public:
 			return nullptr;
 		auto lock = lockModuleList();
 		for (auto pMod : moduleList) {
-			if (auto pRet = dynamic_cast<typename std::remove_pointer<TRet>::type*>(pMod.get())){
-				
+			if (auto pRet = dynamic_cast<typename std::remove_pointer<TRet>::type*>(pMod.get())) {
+
 				return pRet;
 			}
 		}
@@ -167,7 +167,7 @@ public:
 			return nullptr;
 		std::string nameCopy = name;
 		std::transform(nameCopy.begin(), nameCopy.end(), nameCopy.begin(), ::tolower);
-		
+
 		auto lock = lockModuleList();
 		for (std::vector<std::shared_ptr<IModule>>::iterator it = moduleList.begin(); it != moduleList.end(); ++it) {
 			std::shared_ptr<IModule> mod = *it;

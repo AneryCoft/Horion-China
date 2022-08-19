@@ -92,7 +92,7 @@ void BowAimbot::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	}
 }
 
-void BowAimbot::onSendPacket(C_Packet* packet) {
+void BowAimbot::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (packet->isInstanceOf<C_MovePlayerPacket>() && silent) {
 		if (!targetList.empty()) {
 			auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);

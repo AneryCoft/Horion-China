@@ -105,7 +105,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new FollowPathModule()));
 		moduleList.push_back(std::shared_ptr<IModule>(new FontChanger()));
 		moduleList.push_back(std::shared_ptr<IModule>(new ClientTheme()));
-//		moduleList.push_back(std::shared_ptr<IModule>(new Notifications()));
+		//		moduleList.push_back(std::shared_ptr<IModule>(new Notifications()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));
@@ -116,12 +116,12 @@ void ModuleManager::initModules() {
 		std::sort(moduleList.begin(), moduleList.end(), [](auto lhs, auto rhs) {
 			auto current = lhs;
 			auto other = rhs;
-			return std::string{*current->getModuleName()} < std::string{*other->getModuleName()};
-		});
+			return std::string{ *current->getModuleName() } < std::string{ *other->getModuleName() };
+			});
 
 		initialized = true;
 	}
-	
+
 	getModule<HudModule>()->setEnabled(true);
 	getModule<ClickGuiMod>()->setEnabled(false);
 	getModule<AntiBot>()->setEnabled(true);
@@ -221,13 +221,13 @@ void ModuleManager::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	}
 }
 
-void ModuleManager::onSendPacket(C_Packet* packet) {
+void ModuleManager::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (!isInitialized())
 		return;
 	auto lock = lockModuleList();
 	for (auto& it : moduleList) {
 		if (it->isEnabled() || it->callWhenDisabled())
-			it->onSendPacket(packet);
+			it->onSendPacket(packet, cancelSend);
 	}
 }
 

@@ -198,7 +198,7 @@ void Killaura::onEnable() {
 		setEnabled(false);
 }
 
-void Killaura::onSendPacket(C_Packet* packet) {
+void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (rotations.selected == 1) {
 		if (!targetList.empty()) {
 			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
