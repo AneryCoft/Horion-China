@@ -176,7 +176,7 @@ void Killaura::onGetPickRange() {
 		}
 
 		if (mode.selected == 2) {
-			if (TimerUtil::hasTimedElapsed(1000.f / CPS, true)) {
+			if (TimerUtil::hasTimedElapsed(switchDelay, true)) {
 				++switchTarget;
 			}
 		}
