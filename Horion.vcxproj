@@ -299,6 +299,7 @@
     <ClCompile Include="Horion\Module\Modules\FastEat.cpp" />
     <ClCompile Include="Horion\Module\Modules\FastStop.cpp" />
     <ClCompile Include="Horion\Module\Modules\InfiniteAura.cpp" />
+    <ClCompile Include="Horion\Module\Modules\InventoryView.cpp" />
     <ClCompile Include="Horion\Module\Modules\StorageESP.cpp" />
     <ClCompile Include="Horion\Module\Modules\ChestStealer.cpp" />
     <ClCompile Include="Horion\Module\Modules\ClickGuiMod.cpp" />
@@ -522,6 +523,7 @@
     <ClInclude Include="Horion\Module\Modules\InstaBreak.h" />
     <ClInclude Include="Horion\Module\Modules\InventoryCleaner.h" />
     <ClInclude Include="Horion\Module\Modules\InventoryMove.h" />
+    <ClInclude Include="Horion\Module\Modules\InventoryView.h" />
     <ClInclude Include="Horion\Module\Modules\JavascriptModule.h" />
     <ClInclude Include="Horion\Module\Modules\Jesus.h" />
     <ClInclude Include="Horion\Module\Modules\Jetpack.h" />
