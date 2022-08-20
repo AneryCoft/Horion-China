@@ -108,6 +108,7 @@ void ModuleManager::initModules() {
 		//moduleList.push_back(std::shared_ptr<IModule>(new Notifications()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoFish()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Disabler()));
+		moduleList.push_back(std::shared_ptr<IModule>(new FastStop()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));

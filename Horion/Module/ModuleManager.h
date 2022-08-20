@@ -100,6 +100,7 @@
 #include "Modules/ClientTheme.h"
 #include "Modules/AutoFish.h"
 #include "Modules/Disabler.h"
+#include "Modules/FastStop.h"
 
 #ifdef _DEBUG
 #include "Modules/PacketLogger.h"
