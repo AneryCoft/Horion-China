@@ -6,10 +6,11 @@
 class AntiVoid : public IModule {
 private:
 	int distance = 5;
-	vec3_t savepos;
+	bool onlyVoid = true;
+	vec3_t savePos;
+	vec3_t tempPos;
 
 public:
-	C_MoveInputHandler* inputHandler = nullptr;
 	AntiVoid();
 	~AntiVoid();
 
