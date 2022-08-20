@@ -101,6 +101,7 @@
 #include "Modules/AutoFish.h"
 #include "Modules/Disabler.h"
 #include "Modules/FastStop.h"
+#include "Modules/InventoryView.h"
 
 #ifdef _DEBUG
 #include "Modules/PacketLogger.h"
