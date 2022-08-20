@@ -99,6 +99,7 @@
 #include "Modules/FontChanger.h"
 #include "Modules/ClientTheme.h"
 #include "Modules/AutoFish.h"
+#include "Modules/Disabler.h"
 
 #ifdef _DEBUG
 #include "Modules/PacketLogger.h"
