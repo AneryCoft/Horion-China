@@ -5,14 +5,17 @@
 
 class AutoGapple : public IModule {
 private:
-	int health;
-
+	float health = 15.f;
+	int itemID;
+	bool rotation = false;
 public:
-	C_MoveInputHandler* inputHandler = nullptr;
+	SettingEnum mode;
+
 	AutoGapple();
 	~AutoGapple();
 
 	// Inherited via IModule
 	virtual const char* getModuleName() override;
 	virtual void onTick(C_GameMode* gm) override;
+	virtual void onSendPacket(C_Packet* packet, bool& cancelSend) override;
 };

@@ -51,7 +51,7 @@ void InventoryView::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			DrawUtils::setColor(255, 255, 255, opacity);
 		}
 
-		DrawUtils::drawRectangle(vec2_t(invX, invY), vec2_t(invX + 152.f + sideBars, invY + 80.f + sideBars), sideBars / 2);
+		DrawUtils::drawRectangle(vec2_t(invX, invY), vec2_t(invX + 152.f + sideBars, invY + 60.f + sideBars), sideBars / 2);
 
 		for (int j = 9; j < 18; j++) {
 			if ((item->getItemStack(j)->item != nullptr)) {
@@ -84,6 +84,7 @@ void InventoryView::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			xVal += 17.f;
 		}
 		xVal -= 180.f;
+		/*
 		for (int j = 0; j < 9; j++) {
 			if ((item->getItemStack(j)->item != nullptr)) {
 				DrawUtils::drawItem(item->getItemStack(j), vec2_t(xVal + 80.f, yVal + 60.f), 1.f, 1.f - .30f, false);
@@ -94,5 +95,6 @@ void InventoryView::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			xVal += 17.f;
 		}
 		xVal -= 180.f;
+		*/
 	}
 }
