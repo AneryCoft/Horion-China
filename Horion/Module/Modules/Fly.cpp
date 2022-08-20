@@ -11,6 +11,8 @@ Fly::Fly() : IModule('F', Category::MOVEMENT, "Fly to the sky") {
 	registerEnumSetting("Mode", &mode, 0);
 	registerFloatSetting("Horizontal Speed", &this->horizontalSpeed, this->horizontalSpeed, 0.1f, 10.f);
 	registerFloatSetting("Vertical Speed", &this->verticalSpeed, this->verticalSpeed, 0.1f, 10.f);
+	this->registerBoolSetting("Ground Spoof", &this->groundSpoof, this->groundSpoof);
+	this->registerBoolSetting("Elytra Spoof", &this->elytraSpoof, this->elytraSpoof);
 }
 
 Fly::~Fly() {
@@ -176,5 +178,30 @@ void Fly::onMove(C_MoveInputHandler *input) {
 			localPlayer->lerpMotion(moveVec);
 		}
 	} break;
+	}
+}
+
+void Fly::onEnable() {
+	if (elytraSpoof && g_Data.getLocalPlayer() != nullptr) {
+		C_PlayerActionPacket actionPacket;
+		actionPacket.action = 15;  //开启鞘翅
+		actionPacket.entityRuntimeId = g_Data.getLocalPlayer()->entityRuntimeId;
+		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&actionPacket);
+	}
+}
+
+void Fly::onSendPacket(C_Packet* packet, bool& cancelSend) {
+	if (packet->isInstanceOf<C_PlayerActionPacket>()) {
+		C_PlayerActionPacket* packets = reinterpret_cast<C_PlayerActionPacket*>(packet);
+		if (elytraSpoof) {
+			if (packets->action == 16) { //客户端自动发送的关闭鞘翅包
+				cancelSend = true; //取消发送这个包
+			}
+		}
+	}
+
+	if (packet->isInstanceOf<C_MovePlayerPacket>() && groundSpoof) {
+		C_MovePlayerPacket* packets = reinterpret_cast<C_MovePlayerPacket*>(packet);
+		packets->onGround = true;
 	}
 }
