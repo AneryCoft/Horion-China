@@ -28,7 +28,7 @@ void FastEat::onDisable() {
 	if (g_Data.getLocalPlayer() == nullptr)
 		return;
 
-	for (C_Item* i : items) { //这里为啥要刻意改auto
+	for (C_Item* i : items) {
 		i->setMaxUseDuration(32);
 	}
 
