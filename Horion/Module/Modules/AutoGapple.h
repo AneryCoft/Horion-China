@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Module.h"
+#include "../../../SDK/CAttribute.h"
 
 class AutoGapple : public IModule {
 private:
