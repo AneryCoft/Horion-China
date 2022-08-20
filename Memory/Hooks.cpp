@@ -271,16 +271,6 @@ void Hooks::Enable() {
 }
 
 static std::shared_mutex pcblock;
-
-static bool pcbCheckEntity(C_Entity* entity) {
-	__try {
-		return (entity != nullptr && (__int64)entity != 0xFFFFFFFFFFFFFCD7 && (__int64)entity != 0xFFFFFF00FFFFFF00 && entity != nullptr && *(__int64*)entity != 0xFFFFFFFFFFFFFCD7 && *(__int64*)entity > 0x6FF000000000 && *(__int64*)entity < 0x800000000000 && *((int64_t*)entity + 1) < 0x6FF000000000 && *(__int64*)entity <= Utils::getBase() + 0x10000000 && entity->isAlive());
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER) {
-		return false;
-	}
-}
-
 bool Hooks::playerCallBack(C_Player* lp, __int64 a2, __int64 a3) {
 	static auto oTick = g_Hooks.playerCallBack_Hook->GetFastcall<bool, C_Player*, __int64, __int64>();
 	if (lp == g_Data.getLocalPlayer())
@@ -299,10 +289,15 @@ bool Hooks::playerCallBack(C_Player* lp, __int64 a2, __int64 a3) {
 			VirtualQuery(ent.ent, &info, sizeof(MEMORY_BASIC_INFORMATION));
 			if (info.State & MEM_FREE) continue;
 			if (info.State & MEM_RESERVE) continue;
-
-			if (pcbCheckEntity(entity))
-				validEntities.push_back(ent);
-
+			
+			if ([entity]() -> bool {	
+				__try {
+					return (entity != nullptr && (__int64)entity != 0xFFFFFFFFFFFFFCD7 && (__int64)entity != 0xFFFFFF00FFFFFF00 && entity != nullptr && *(__int64*)entity != 0xFFFFFFFFFFFFFCD7 && *(__int64*)entity > 0x6FF000000000 && *(__int64*)entity < 0x800000000000 && *((int64_t*)entity + 1) < 0x6FF000000000 && *(__int64*)entity <= Utils::getBase() + 0x10000000 && entity->isAlive());
+				} __except (EXCEPTION_EXECUTE_HANDLER) {
+					return false;
+				} 
+			}()) validEntities.push_back(ent);
+			
 		}
 		g_Hooks.entityList.clear();
 		g_Hooks.entityList = validEntities;

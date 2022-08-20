@@ -263,8 +263,7 @@ public:
 	C_Item **item;     //0x08
 	CompoundTag *tag;  //0x10
 	C_ItemData *itemData;  // 0x18 
-private:
-	char pad_0x20[0x2];  // 0x20
+	uint16_t extraData; // 0x20
 public:
 	char count;  //0x22
 private:
