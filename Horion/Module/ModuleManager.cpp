@@ -61,7 +61,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new NoWeb()));
 		moduleList.push_back(std::shared_ptr<IModule>(new FastLadder()));
 		moduleList.push_back(std::shared_ptr<IModule>(new StackableItem()));
-		//moduleList.push_back(std::shared_ptr<IModule>(new FastEat()));
+		moduleList.push_back(std::shared_ptr<IModule>(new FastEat()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Jesus()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoArmor()));
 		moduleList.push_back(std::shared_ptr<IModule>(new BlockReach()));

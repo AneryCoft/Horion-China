@@ -35,7 +35,7 @@
 #include "Modules/Derp.h"
 #include "Modules/ESP.h"
 #include "Modules/EditionFaker.h"
-//#include "Modules/FastEat.h"
+#include "Modules/FastEat.h"
 #include "Modules/FastLadder.h"
 #include "Modules/Fly.h"
 #include "Modules/Freecam.h"
