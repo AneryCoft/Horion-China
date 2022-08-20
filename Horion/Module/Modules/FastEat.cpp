@@ -1,7 +1,7 @@
 #include "FastEat.h"
 
 FastEat::FastEat() : IModule(0, Category::PLAYER, "Eat food almost instant") {
-	registerIntSetting("Duration", &this->duration, this->duration, 1, 32);
+	registerIntSetting("Duration", &this->duration, this->duration, 1, 31);
 }
 
 FastEat::~FastEat() {
