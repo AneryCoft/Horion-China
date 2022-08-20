@@ -246,14 +246,25 @@ public:
 	ItemDescriptor(int id, int16_t itemData);
 };
 
+class C_ItemData {
+private:
+	char pad_0x0[0x8];  //0x00
+public:
+	uint16_t data;    //0x08
+private:
+	char pad_0x0A[0xB6]; //0x0A
+};
+
+
 class C_ItemStack {
 private:
 	uintptr_t **vTable;  //0x0000
 public:
 	C_Item **item;     //0x08
 	CompoundTag *tag;  //0x10
+	C_ItemData *itemData;  // 0x18 
 private:
-	char pad_0x18[0xA];  //0x18
+	char pad_0x20[0x2];  // 0x20
 public:
 	char count;  //0x22
 private:
@@ -329,6 +340,12 @@ public:
 
 	void setShowPickUp(bool b) {
 		*(bool *)(reinterpret_cast<__int64>(this) + 0x30) = b;
+	}
+	
+	uint16_t getItemData() {
+		if (itemData != nullptr)
+			return itemData->data; 
+		return 0;
 	}
 
 private:
