@@ -113,6 +113,21 @@ std::string Utils::getRttiBaseClassName(void* ptr) {
 
 	return std::string("invalid");
 }
+
+void Utils::patchBytes(unsigned char* dst, unsigned char* src, unsigned int size) {
+	DWORD oldprotect;
+	VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldprotect);
+	memcpy(dst, src, size);
+	VirtualProtect(dst, size, oldprotect, &oldprotect);
+}
+
+void Utils::nopBytes(unsigned char* dst, unsigned int size) {
+	DWORD oldprotect;
+	VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oldprotect);
+	memset(dst, 0x90, size);
+	VirtualProtect(dst, size, oldprotect, &oldprotect);
+}
+
 size_t Utils::posToHash(const vec3_ti& pos) {
 	return rotBy(pos.x, 0) | rotBy(pos.z, 24) | (static_cast<unsigned __int64>(pos.y) << 48u);
 }
