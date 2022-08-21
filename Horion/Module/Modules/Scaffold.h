@@ -7,7 +7,7 @@ class Scaffold : public IModule {
 private:
 	//bool spoof = false;
 	bool tryScaffold(vec3_t blockBelow);
-	void findBlock();
+	bool findBlock();
 	int length = 5;
 	vec2_t angle;
 	bool showBlockCount = false;
@@ -19,6 +19,9 @@ private:
 	bool rotations = false;
 	bool render = false;
 	vec3_t renderPos;
+	
+	bool canrot = false;
+	vec3_t rotpos;
 public:
 	SettingEnum mode;
 
@@ -34,4 +37,5 @@ public:
 	virtual void onEnable() override;
 	virtual void onPostRender(C_MinecraftUIRenderContext* renderCtx) override;
 	virtual void onGetPickRange() override;
+	virtual void onTick(C_GameMode*) override;
 };
