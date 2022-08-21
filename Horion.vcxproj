@@ -232,7 +232,6 @@
   <ItemGroup>
     <ClCompile Include="Horion\Command\CommandMgr.cpp" />
     <ClCompile Include="Horion\Command\Commands\BindCommand.cpp" />
-    <ClCompile Include="Horion\Command\Commands\BruhCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\CommandBlockExploitCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\ConfigCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\CoordsCommand.cpp" />
@@ -426,7 +425,6 @@
   <ItemGroup>
     <ClInclude Include="Horion\Command\CommandMgr.h" />
     <ClInclude Include="Horion\Command\Commands\BindCommand.h" />
-    <ClInclude Include="Horion\Command\Commands\BruhCommand.h" />
     <ClInclude Include="Horion\Command\Commands\CommandBlockExploitCommand.h" />
     <ClInclude Include="Horion\Command\Commands\ConfigCommand.h" />
     <ClInclude Include="Horion\Command\Commands\CoordsCommand.h" />
