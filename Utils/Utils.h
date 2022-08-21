@@ -475,4 +475,6 @@ public:
 	}
 
 	static std::string getRttiBaseClassName(void* ptr);
+	static void patchBytes(unsigned char* dst, unsigned char* src, unsigned int size);
+	static void nopBytes(unsigned char* dst, unsigned int size);
 };
