@@ -1,30 +1,15 @@
 #include "AutoClicker.h"
+#include <random>
 
-#ifdef _ZH_CN
-AutoClicker::AutoClicker() : IModule('G', Category::COMBAT, u8"A simple autoclicker, automatically clicks for you. (Turn on Hold mode when both LeftClick and RightClick are disabled.)") {
-	LRclick = SettingEnum(this)
-				  .addEntry(EnumEntry(u8"按住按键点击", 0))
-				  .addEntry(EnumEntry(u8"持续左键点击", 1))
-				  .addEntry(EnumEntry(u8"持续右键点击", 2))
-				  .addEntry(EnumEntry(u8"持续同时点击", 3));
-	registerEnumSetting(u8"模式", &LRclick, 0);
-	registerIntSetting(u8"每秒点击次数", &cps, cps, 1, 20);
-	// registerBoolSetting("cpspertick", &cpspertick, cpspertick);
-	registerBoolSetting(u8"拿着剑斧攻击", &weapons, weapons);
-	registerBoolSetting(u8"不破坏方块", &breakBlocks, breakBlocks);
-	registerBoolSetting(u8"播放点击音效", &playsound, playsound);
-	registerBoolSetting(u8"快速放置", &fastplace, fastplace);
-	registerBoolSetting(u8"使用物品", &useitem, useitem);
-}
-#else
-AutoClicker::AutoClicker() : IModule('G', Category::COMBAT, "A simple autoclicker, automatically clicks for you. (Turn on Hold mode when both LeftClick and RightClick are disabled.)") {
+AutoClicker::AutoClicker() : IModule(0, Category::COMBAT, "A simple autoclicker, automatically clicks for you. (Turn on Hold mode when both LeftClick and RightClick are disabled.)") {
 	LRclick = SettingEnum(this)
 				  .addEntry(EnumEntry("Hold", 0))
 				  .addEntry(EnumEntry("Left click", 1))
 				  .addEntry(EnumEntry("Right click", 2))
 				  .addEntry(EnumEntry("Both", 3));
 	registerEnumSetting("Mode", &LRclick, 0);
-	registerIntSetting("CPS", &cps, cps, 1, 20);
+	registerIntSetting("Max CPS", &maxcps, maxcps, 1, 20);
+	registerIntSetting("Min CPS", &mincps, mincps, 1, 20);
 	// registerBoolSetting("cpspertick", &cpspertick, cpspertick);
 	registerBoolSetting("Only Weapons", &weapons, weapons);
 	registerBoolSetting("Not Break Blocks", &breakBlocks, breakBlocks);
@@ -32,22 +17,17 @@ AutoClicker::AutoClicker() : IModule('G', Category::COMBAT, "A simple autoclicke
 	registerBoolSetting("Fast Place", &fastplace, fastplace);
 	registerBoolSetting("Use Item", &useitem, useitem);
 }
-#endif
-
 
 AutoClicker::~AutoClicker() {
 }
 
 const char* AutoClicker::getModuleName() {
-#ifdef _ZH_CN
-	return (u8"连点器");
-#else
+
 	return ("AutoClicker");
-#endif
 	
 }
 
-int __fastcall gcd_func(int x, int y) {
+static int __fastcall gcd_func(int x, int y) {
 	while (x != y) {
 		if (x > y)
 			x = x - y;
@@ -58,15 +38,18 @@ int __fastcall gcd_func(int x, int y) {
 }
 
 void AutoClicker::onTick(C_GameMode* gm) {
-	if (oldcps != cps) {
-		oldcps = cps;
-		if (cps % 20 != 0) 
-			lcm = cps % 20 / gcd_func(cps % 20, 20) * 20;
+	if (oldcps != maxcps) {
+		oldcps = maxcps;
+		if (maxcps % 20 != 0) 
+			lcm = maxcps % 20 / gcd_func(maxcps % 20, 20) * 20;
 		R_Odelay = 0.f;
 		L_Odelay = 0.f;
 		clock_temp_R = 0;
 		clock_temp_L = 0;
 	}
+	if (mincps > maxcps) 
+		mincps = maxcps;
+
 	if (GameData::canUseMoveKeys()) {
 		if (!fastplace && ((GameData::isRightClickDown() && LRclick.GetSelectedEntry().GetValue() == 0) || LRclick.GetSelectedEntry().GetValue() == 2 || LRclick.GetSelectedEntry().GetValue() == 3)) {
 			Level* level = g_Data.getLocalPlayer()->level;
@@ -78,7 +61,7 @@ void AutoClicker::onTick(C_GameMode* gm) {
 				if (level->rayHitType == 0)
 					gm->buildBlock(&vec3_ti(level->block), level->blockSide, idk);
 
-				R_Odelay += 20.f / float(cps);
+				R_Odelay += 20.f / float(maxcps == mincps ? maxcps : mincps + rand() % (maxcps - mincps + 1));
 			}
 
 			if (useitem)
@@ -114,7 +97,7 @@ void AutoClicker::onTick(C_GameMode* gm) {
 				} else if (playsound) 
 					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&sounds);
 
-				L_Odelay += 20.f / float(cps);
+				L_Odelay += 20.f / float(maxcps == mincps ? maxcps : mincps + rand() % (maxcps - mincps + 1));
 			}
 		}
 	}
@@ -160,9 +143,9 @@ void AutoClicker::onEnable() {
 	clock_temp_L = 0;
 	R_Odelay = 0.f;
 	L_Odelay = 0.f;
-	lcm = cps / gcd_func(cps, 20) * 20;
+	lcm = maxcps / gcd_func(maxcps, 20) * 20;
 
-	// ftemp1 = 20.f / float(cps) ;
+	// ftemp1 = 20.f / float(maxcps) ;
 }
 
 void AutoClicker::onDisable() {
