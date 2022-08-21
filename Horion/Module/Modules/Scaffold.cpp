@@ -61,7 +61,6 @@ bool Scaffold::tryScaffold(vec3_t blockBelow) {
 		if (foundCandidate) {
 			//if (spoof) findBlock();
 			bool idk = true;
-			canRender = true;
 			g_Data.getCGameMode()->buildBlock(&blok, i, idk);
 
 			return true;

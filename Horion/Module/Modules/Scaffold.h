@@ -19,7 +19,6 @@ private:
 	bool rotations = false;
 	bool render = false;
 	vec3_t renderPos;
-	bool canRender = false;
 public:
 	SettingEnum mode;
 
