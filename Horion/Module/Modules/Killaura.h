@@ -4,6 +4,7 @@
 #include "../ModuleManager.h"
 #include "../../../Utils/Target.h"
 #include "../../../Utils/TimerUtil.h"
+#include "../../../SDK/CAttribute.h"
 
 class Killaura : public IModule
 {
@@ -28,6 +29,7 @@ public:
 
 	SettingEnum mode;
 	SettingEnum rotations;
+	SettingEnum priority;
 
 	Killaura();
 	~Killaura();

@@ -14,6 +14,11 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 		.addEntry(EnumEntry("Vanilla", 2))
 		.addEntry(EnumEntry("Actual", 3));
 	registerEnumSetting("Rotations", &rotations, 0);
+	priority = (*new SettingEnum(this))
+		.addEntry(EnumEntry("Distance", 0))
+		.addEntry(EnumEntry("Angle", 1))
+		.addEntry(EnumEntry("Health", 2));
+	registerEnumSetting("Priority", &priority, 0);
 	registerFloatSetting("Range", &range, range, 3.f, 10.f);
 	registerIntSetting("MaxCPS", &maxCPS, maxCPS, 1, 20);
 	registerIntSetting("MinCPS", &minCPS, minCPS, 1, 20);
@@ -52,11 +57,11 @@ void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 		if (!currentEntity->isAlive())
 			return;
 
-		if (currentEntity->getEntityTypeId() == 66) // falling block
-			return;
+		//if (currentEntity->getEntityTypeId() == 66) // falling block
+		//	return;
 
-		if (currentEntity->getEntityTypeId() == 69)  // XP
-			return;
+		//if (currentEntity->getEntityTypeId() == 69)  // XP
+		//	return;
 
 		if (currentEntity->getNameTag()->getTextLength() <= 1 && currentEntity->getEntityTypeId() == 63)
 			return;
@@ -64,11 +69,11 @@ void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 		if (currentEntity->width <= 0.01f || currentEntity->height <= 0.01f) // Don't hit this pesky antibot on 2b2e.org
 			return;
 
-		if (currentEntity->getEntityTypeId() == 64) // item
-			return;
+		//if (currentEntity->getEntityTypeId() == 64) // item
+		//	return;
 
-		if (currentEntity->getEntityTypeId() == 80)  // Arrows
-			return;
+		//if (currentEntity->getEntityTypeId() == 80)  // Arrows
+		//	return;
 
 		if (currentEntity->getEntityTypeId() == 51) // NPC
 			return;
@@ -103,6 +108,30 @@ void Killaura::findWeapon() {
 	supplies->selectedHotbarSlot = slot;
 }
 
+struct Distance {
+	bool operator()(C_Entity* target, C_Entity* target2) {
+		C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
+		return (*target->getPos()).dist(*localPlayer->getPos()) < (*target2->getPos()).dist(*localPlayer->getPos());
+	}
+};
+
+struct Angle {
+	bool operator()(C_Entity* target, C_Entity* target2) {
+		C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
+		vec2_t angle = localPlayer->getPos()->CalcAngle(*target->getPos()).normAngles();
+		vec2_t angle2 = localPlayer->getPos()->CalcAngle(*target2->getPos()).normAngles();
+		vec2_t appl = localPlayer->viewAngles.normAngles();
+
+		return (angle.y - appl.y) < (angle2.y - appl.y);
+	}
+};
+
+struct Health {
+	bool operator()(C_Entity* target, C_Entity* target2) {
+		return target->getAttribute(&HealthAttribute())->currentValue < target2->getAttribute(&HealthAttribute())->currentValue;
+	}
+};
+
 void Killaura::onGetPickRange() {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	if (localPlayer == nullptr || !localPlayer->isAlive())
@@ -112,18 +141,24 @@ void Killaura::onGetPickRange() {
 
 	targetList.clear();
 
-	if (isMobAura) {
-		g_Data.forEachEntity(findEntity);
-	}
-	else {
-		g_Data.forEachValidEntity(findEntity);
-	}
+	g_Data.forEachValidEntity(findEntity);
 
 	targetListEmpty = targetList.empty();
 
 	if (!targetList.empty()) {
 		if (autoweapon)
 			findWeapon();
+
+		switch (priority.selected) {
+		case 0:
+			sort(targetList.begin(), targetList.end(), Distance());
+			break;
+		case 1:
+			sort(targetList.begin(), targetList.end(), Angle());
+			break;
+		case 2:
+			sort(targetList.begin(), targetList.end(), Health());
+		}
 
 		if (mode.selected != 2 || switchTarget >= targetList.size()) {
 			switchTarget = 0;
@@ -199,6 +234,9 @@ void Killaura::onPlayerTick(C_Player* player) {
 void Killaura::onEnable() {
 	if (g_Data.getLocalPlayer() == nullptr)
 		setEnabled(false);
+
+	if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
+		clientMessageF(u8"检测到您位于EaseCation，已为您自动开启绕过CPS检测");
 }
 
 void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
@@ -215,6 +253,14 @@ void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				authInputPacket->pitch = angle.x;
 				authInputPacket->yawUnused = angle.y;
 				authInputPacket->yaw = angle.y;
+			}
+			if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
+				if (packet->isInstanceOf<LevelSoundEventPacket>()) {
+					LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
+					if (soundEventPacket->sound == 43) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包
+						//soundEventPacket->sound = 0;
+						cancelSend = true;
+				} //绕过EaseCation服务器CPS检测
 			}
 		}
 	}
