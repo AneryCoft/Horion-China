@@ -2,7 +2,7 @@
 
 #include "../../Memory/GameData.h"
 #include "Commands/BindCommand.h"
-#include "Commands/BruhCommand.h"
+//#include "Commands/BruhCommand.h"
 #include "Commands/CoordsCommand.h"
 #include "Commands/DamageCommand.h"
 #include "Commands/DupeCommand.h"
