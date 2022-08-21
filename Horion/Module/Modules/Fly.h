@@ -24,5 +24,4 @@ public:
 	virtual void onDisable() override;
 	virtual void onMove(C_MoveInputHandler* input) override;
 	virtual void onSendPacket(C_Packet* packet, bool& cancelSend) override;
-	virtual void onEnable() override;
 };

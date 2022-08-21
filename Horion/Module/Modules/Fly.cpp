@@ -28,6 +28,12 @@ void Fly::onEnable() {
 		g_Data.getLocalPlayer()->setPos((*g_Data.getLocalPlayer()->getPos()).add(vec3_t(0, 1, 0)));
 		break;
 	}
+	if (elytraSpoof && g_Data.getLocalPlayer() != nullptr) {
+		C_PlayerActionPacket actionPacket;
+		actionPacket.action = 15;  //¿ªÆôÇÊ³á
+		actionPacket.entityRuntimeId = g_Data.getLocalPlayer()->entityRuntimeId;
+		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&actionPacket);
+	}
 }
 
 void Fly::onTick(C_GameMode *gm) {
@@ -178,15 +184,6 @@ void Fly::onMove(C_MoveInputHandler *input) {
 			localPlayer->lerpMotion(moveVec);
 		}
 	} break;
-	}
-}
-
-void Fly::onEnable() {
-	if (elytraSpoof && g_Data.getLocalPlayer() != nullptr) {
-		C_PlayerActionPacket actionPacket;
-		actionPacket.action = 15;  //¿ªÆôÇÊ³á
-		actionPacket.entityRuntimeId = g_Data.getLocalPlayer()->entityRuntimeId;
-		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&actionPacket);
 	}
 }
 
