@@ -69,7 +69,7 @@ bool Scaffold::tryScaffold(vec3_t blockBelow) {
 	return false;
 }
 
-void Scaffold::findBlock() {
+bool Scaffold::findBlock() {
 	/*__int64 id = *g_Data.getLocalPlayer()->getUniqueId();
 	C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
 	C_Inventory* inv = supplies->inventory;
@@ -96,7 +96,7 @@ void Scaffold::findBlock() {
 			if (stack->item != nullptr) {
 				if (stack->getItem()->isBlock()) {
 					supplies->selectedHotbarSlot = i;
-					return;
+					return true;
 				}
 			}
 			else {
@@ -107,10 +107,11 @@ void Scaffold::findBlock() {
 			if (stack->item != nullptr && stack->getItem()->isBlock()) {
 				inv->moveItem(i, emptySlot);
 				supplies->selectedHotbarSlot = emptySlot;
-				return;
+				return true;
 			}
 		}
 	}
+	return false;
 }
 
 void Scaffold::calcCount() {
@@ -157,7 +158,7 @@ void Scaffold::onGetPickRange() {
 		vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block below the player
 		blockBelow.y -= g_Data.getLocalPlayer()->height;
 		blockBelow.y -= 0.5f;
-
+		rotpos = blockBelow;
 		if (!tryScaffold(blockBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
 				blockBelow.z -= vel.z * 0.4f;
@@ -166,7 +167,10 @@ void Scaffold::onGetPickRange() {
 					if (!tryScaffold(blockBelow) && g_Data.getLocalPlayer()->isSprinting()) {
 						blockBelow.z += vel.z;
 						blockBelow.x += vel.x;
-						tryScaffold(blockBelow);
+						if (!tryScaffold(blockBelow)) {
+							canrot = false;
+							return;
+						}
 					}
 				}
 			}
@@ -189,7 +193,7 @@ void Scaffold::onGetPickRange() {
 			blockBelow.x = blockBelow.x += cos(cal) * i;  // Block 1 ahead the player X
 			blockBelow.z = blockBelow.z += sin(cal) * i;  // Block 1 ahead the player Z
 		}
-
+		rotpos = blockBelow;
 		if (!tryScaffold(blockBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
 				blockBelow.z -= vel.z * 0.4f;
@@ -199,7 +203,10 @@ void Scaffold::onGetPickRange() {
 					if (!tryScaffold(blockBelow) && g_Data.getLocalPlayer()->isSprinting()) {
 						blockBelow.z += vel.z;
 						blockBelow.x += vel.x;
-						tryScaffold(blockBelow);
+						if (!tryScaffold(blockBelow)) {
+							canrot = false;
+							return;
+						}
 					}
 				}
 			}
@@ -217,6 +224,8 @@ void Scaffold::onGetPickRange() {
 		blockBelowBelow.y -= g_Data.getLocalPlayer()->height;
 		blockBelowBelow.y -= 2.0f;
 
+		rotpos = blockBelow;
+
 		if (!tryScaffold(blockBelow) && !tryScaffold(blockBelowBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
 				blockBelow.z -= vel.z * 0.4f;
@@ -229,8 +238,11 @@ void Scaffold::onGetPickRange() {
 						blockBelow.x += vel.x;
 						blockBelowBelow.z += vel.z;
 						blockBelowBelow.x += vel.x;
-						tryScaffold(blockBelow);
 						tryScaffold(blockBelowBelow);
+						if (!tryScaffold(blockBelow)) {
+							canrot = false;
+							return;
+						}
 					}
 				}
 			}
@@ -241,7 +253,7 @@ void Scaffold::onGetPickRange() {
 	{
 		vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block below the player
 		blockBelow.y = horizontalHigh;
-
+		rotpos = blockBelow;
 		if (!tryScaffold(blockBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
 				blockBelow.z -= vel.z * 0.4f;
@@ -250,12 +262,26 @@ void Scaffold::onGetPickRange() {
 					if (!tryScaffold(blockBelow) && g_Data.getLocalPlayer()->isSprinting()) {
 						blockBelow.z += vel.z;
 						blockBelow.x += vel.x;
-						tryScaffold(blockBelow);
+						if (!tryScaffold(blockBelow)) {
+							canrot = false;
+							return;
+						}
 					}
 				}
 			}
 		}
 	}
+	}
+	canrot = true;
+}
+
+void Scaffold::onTick(C_GameMode* gm) {
+	if (rotations) {
+		static uintptr_t HiveBypass1 = Utils::getBase() + 0x8F3895;  // Second one of 89 41 ? 0F B6 42 ? 88 41 ? F2 0F 10 42 ? F2 0F 11 41 ? 8B 42 ? 89 41 ? 8B 42 ? 89 41 ? 8B 42 ? 89 41 ? 8B 42 ? 48 83 C2 ? 89 41 ? 48 83 C1 ? E8 ? ? ? ? 0F B6 43
+		static uintptr_t HiveBypass2 = Utils::getBase() + 0x8F87C7;  // C7 40 ? ? ? ? ? 48 8B 8D ? ? ? ? 48 33 CC E8 ? ? ? ? 4C 8D 9C 24
+		g_Data.getLocalPlayer()->level->rayHitType = 0;
+		Utils::nopBytes((uint8_t*)HiveBypass1, 3);
+		Utils::patchBytes((uint8_t*)HiveBypass2, (uint8_t*)"\xC7\x40\x18\x00\x00\x00\x00", 7);
 	}
 }
 
@@ -273,34 +299,35 @@ void Scaffold::onEnable() {
 	horizontalHigh = g_Data.getLocalPlayer()->eyePos0.y;
 	horizontalHigh -= g_Data.getLocalPlayer()->height;
 	horizontalHigh -= 0.5f;
-	//水平搭路计算脚下高度
+	//姘村钩鎼矾璁＄畻鑴氫笅楂樺害
 
 	prevSlot = g_Data.getLocalPlayer()->getSupplies()->selectedHotbarSlot;
 }
 
 void Scaffold::onPlayerTick(C_Player* player) {
-	/*
-	player->pitch = angle.x;
-	player->bodyYaw = angle.y;
-	player->yawUnused1 = angle.y;
-	*/
+	if (rotations) {
+		vec2_t joe = player->getPos()->CalcAngle(rotpos).normAngles();
+		if (canrot && findBlock() && g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f) {
+			player->bodyYaw = joe.y;
+			player->yawUnused1 = joe.y;
+			player->pitch = 75.f;
+		}
+	}
 }
 
 void Scaffold::onSendPacket(C_Packet* packet, bool& cancelSend) {
-	/*
-	if (packet->isInstanceOf<C_MovePlayerPacket>()) {
-		C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
-		movePacket->pitch = angle.x;
-		movePacket->headYaw = angle.y;
-		movePacket->yaw = angle.y;
+	if (packet->isInstanceOf<C_MovePlayerPacket>() || packet->isInstanceOf<PlayerAuthInputPacket>()) {
+		if (g_Data.getLocalPlayer() != nullptr && g_Data.canUseMoveKeys() && rotations && canrot) {
+			auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
+			C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
+			if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || GameData::isKeyDown(*input->spaceBarKey)) {
+				vec2_t angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(rotpos);
+				movePacket->pitch = angle.x;
+				movePacket->headYaw = angle.y;
+				movePacket->yaw = angle.y;
+			}
+		}
 	}
-	if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
-		PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-		authInputPacket->pitch = angle.x;
-		authInputPacket->yawUnused = angle.y;
-		authInputPacket->yaw = angle.y;
-	}
-	*/
 }
 
 void Scaffold::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
