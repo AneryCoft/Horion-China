@@ -11,14 +11,17 @@ const char* InventoryMove::getModuleName() {
 }
 
 void InventoryMove::onTick(C_GameMode* gm) {
-	if (g_Data.getLocalPlayer()->canOpenContainerScreen())
+	/*if (g_Data.getLocalPlayer()->canOpenContainerScreen())
+		return;*/
+	if (g_Data.canUseMoveKeys() || g_Data.getLocalPlayer() == nullptr)
 		return;
+
 	C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
 
 	if (input == nullptr)
 		return;
 
-	float speed = 0.325f;
+	float speed = 0.284f;
 	float yaw = gm->player->yaw;
 
 	if (GameData::isKeyDown(*input->spaceBarKey) && gm->player->onGround)
