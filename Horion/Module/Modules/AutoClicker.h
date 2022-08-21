@@ -5,7 +5,8 @@
 
 class AutoClicker : public IModule {
 private:
-	int cps = 20;
+	int maxcps = 20;
+	int mincps = 20;
 	//bool cpspertick = false;
 	bool weapons = false;
 	bool breakBlocks = false;
