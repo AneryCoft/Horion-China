@@ -2,10 +2,10 @@
 #include "Module.h"
 class FastEat : public IModule {
 private:
-	int duration = 5;
 	std::vector<C_Item*> items;
 	//C_Item* food[];
 public:
+	int duration = 5;
 	FastEat();
 	~FastEat();
 
