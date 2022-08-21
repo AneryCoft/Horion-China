@@ -10,6 +10,7 @@ private:
 	std::vector<int> findUselessItems();
 	bool isLastItem(C_Item* item);
 
+	bool keepWeapons = true;
 	bool keepTools = true;
 	bool keepArmor = true;
 	bool keepBlocks = true;

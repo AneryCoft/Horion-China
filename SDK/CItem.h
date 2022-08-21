@@ -195,7 +195,8 @@ public:
 
 public:
 	bool isTool(void) {
-		if (getAttackDamage() > 0) return true;  // Does Attack Damage
+		//if (getAttackDamage() > 0) return true;  // Does Attack Damage
+
 		if (((std::string)name.getText()).find("flint_and_steel") != std::string::npos) return true;
 		if (((std::string)name.getText()).find("compass") != std::string::npos) return true;
 		if (((std::string)name.getText()).find("pearl") != std::string::npos) return true;
@@ -209,13 +210,24 @@ public:
 		if (((std::string)name.getText()).find("name_tag") != std::string::npos) return true;
 		if (((std::string)name.getText()).find("enchanted_book") != std::string::npos) return true;
 		if (((std::string)name.getText()).find("nautilus_shell") != std::string::npos) return true;
+		if (itemId == 309 || itemId == 313 || itemId == 323 || itemId == 296 || itemId == 317 || itemId == 605) //ÇÂ
+			return true;
+		if (itemId == 310 || itemId == 324 || itemId == 314 || itemId == 297 || itemId == 318 || itemId == 606) //¸ä
+			return true;
+		if (itemId == 311 || itemId == 315 || itemId == 325 || itemId == 298 || itemId == 319 || itemId == 607) //¸«
+			return true;
+		if (itemId == 421) //¼ôµ¶
+			return true;
 		return false;
 	}
+	/*
 	bool isWeapon(void) {
+		if (getAttackDamage() > 0) return true; // Does Attack Damage
 		if (((std::string)name.getText()).find("sword") != std::string::npos) return true;
 		if (((std::string)name.getText()).find("axe") != std::string::npos) return true;
 		return false;
 	}
+	*/
 	bool isShooter(void) {
 		if (((std::string)name.getText()).find("bow") != std::string::npos) return true;
 		if (((std::string)name.getText()).find("arrow") != std::string::npos) return true;
@@ -347,6 +359,10 @@ public:
 		return 0;
 	}
 
+	bool isWeapon(void) {
+		if (getAttackingDamageWithEnchants() > 1.f) return true;
+		return false;
+	}
 private:
 	inline void setVtable(void);
 };

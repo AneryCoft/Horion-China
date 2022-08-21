@@ -64,7 +64,7 @@ void Aimbot::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		if ((appl.x < verticalrange && appl.x > -verticalrange) && (appl.y < horizontalrange && appl.y > -horizontalrange) && GameData::canUseMoveKeys()) {
 			C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
 			C_ItemStack* item = supplies->inventory->getItemStack(supplies->selectedHotbarSlot);
-			if (sword && !(item->getItem()->isWeapon()))
+			if (sword && !item->isWeapon())
 				return;
 
 			if (click && !g_Data.isLeftClickDown())

@@ -3,12 +3,13 @@
 #include "../ModuleManager.h"
 
 InventoryCleaner::InventoryCleaner() : IModule(0, Category::PLAYER, "Automatically throws not needed stuff out of your inventory.") {
+	registerBoolSetting("Weapons", &keepWeapons, keepWeapons);
 	registerBoolSetting("Tools", &keepTools, keepTools);
 	registerBoolSetting("Armor", &keepArmor, keepArmor);
 	registerBoolSetting("Food", &keepFood, keepFood);
 	registerBoolSetting("Blocks", &keepBlocks, keepBlocks);
 	registerBoolSetting("OpenInv", &openInv, openInv);
-	//registerBoolSetting("AutoSort", &autoSort, autoSort);
+	registerBoolSetting("AutoSort", &autoSort, autoSort);
 }
 
 InventoryCleaner::~InventoryCleaner() {
@@ -32,14 +33,19 @@ void InventoryCleaner::onTick(C_GameMode* gm) {
 
 	if (autoSort) {
 		// Put sword in first slot
-		{
-			C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
-			C_Inventory* inv = supplies->inventory;
-			float damage = 0;
-			int item = 0;
-			for (int n = 0; n < 36; n++) {
-				C_ItemStack* stack = inv->getItemStack(n);
-				if (stack->item != NULL) {
+		C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
+		C_Inventory* inv = supplies->inventory;
+		float damage = 0;
+		int item = 0;
+		int item2 = 1;
+
+		for (int n = 0; n < 36; n++) {
+			C_ItemStack* stack = inv->getItemStack(n);
+			if (stack->item != NULL) {
+				if ((*stack->item)->itemId == 258) { //金苹果
+					item2 = n;
+				}
+				else {
 					float currentDamage = stack->getAttackingDamageWithEnchants();
 					if (currentDamage > damage) {
 						damage = currentDamage;
@@ -47,8 +53,9 @@ void InventoryCleaner::onTick(C_GameMode* gm) {
 					}
 				}
 			}
-			if (item != 0) inv->moveItem(item, 0);
 		}
+		if (item != 0) inv->moveItem(item, 0);
+		if (item2 != 1) inv->moveItem(item2, 1);//把金苹果放到第二个格子
 	}
 }
 
@@ -123,7 +130,9 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 			C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
 			if (itemStack->item != nullptr && itemStack->getAttackingDamageWithEnchants() > 1) {
 				if (itemStack->getAttackingDamageWithEnchants() < bestItem->getAttackingDamageWithEnchants()) {
-					uselessItems.push_back(i);
+					if (!keepTools || !(*itemStack->item)->isTool()) {
+						uselessItems.push_back(i);
+					}
 				} else {
 					// Damage same as bestItem
 					if (hadTheBestItem)
@@ -231,6 +240,7 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 
 bool InventoryCleaner::stackIsUseful(C_ItemStack* itemStack) {
 	if (itemStack->item == nullptr) return true;
+	if (keepWeapons && itemStack->isWeapon()) return true;    // Weapon
 	if (keepArmor && (*itemStack->item)->isArmor()) return true;      // Armor
 	if (keepTools && (*itemStack->item)->isTool()) return true;       // Tools
 	if (keepFood && (*itemStack->item)->isFood()) return true;        // Food
