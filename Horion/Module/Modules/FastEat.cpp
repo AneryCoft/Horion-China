@@ -1,4 +1,5 @@
 #include "FastEat.h"
+#include <excpt.h>
 
 FastEat::FastEat() : IModule(0, Category::PLAYER, "Eat food almost instant") {
 	registerIntSetting("Duration", &this->duration, this->duration, 1, 31);
@@ -17,7 +18,7 @@ void FastEat::onTick(C_GameMode* gm) {
 	if (g_Data.getLocalPlayer() != nullptr && g_Data.isInGame()) {
 		for (int i = 0; i < 36; i++) {
 			C_ItemStack* stack = inv->getItemStack(i);
-			if (stack->item != nulllptr && (*stack->item)->itemId != 261 && (*stack->item)->getMaxUseDuration(stack) > 0/*防止某些服务器的资源包修改食物的MaxUseDuration*/) {
+			if (stack->item != nullptr && (*stack->item)->itemId != 261 && (*stack->item)->getMaxUseDuration(stack) > 0/*防止某些服务器的资源包修改食物的MaxUseDuration*/) {
 				if (items.find(*stack->item) == items.end()) {
 					items[*stack->item] = (*stack->item)->getMaxUseDuration(stack);
 				}
