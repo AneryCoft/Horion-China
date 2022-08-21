@@ -141,7 +141,8 @@ void Killaura::onGetPickRange() {
 
 		CPS = RandomNumber(minCPS, maxCPS);
 		//CPS = rand() % (maxCPS - minCPS + 1) + minCPS;
-		if (TimerUtil::hasTimedElapsed(1000.f / CPS, true)) {
+		TimerUtil* attackTime = new TimerUtil();
+		if (attackTime->hasTimedElapsed(1000.f / CPS, true)) {
 			if (rotations.selected == 1) {
 				if (localPlayer->velocity.squaredxzlen() < 0.01) {
 					C_MovePlayerPacket packet(localPlayer, *localPlayer->getPos());
@@ -176,7 +177,9 @@ void Killaura::onGetPickRange() {
 		}
 
 		if (mode.selected == 2) {
-			if (TimerUtil::hasTimedElapsed(switchDelay, true)) {
+			TimerUtil* switchTime = new TimerUtil();
+			if (switchTime->hasTimedElapsed(switchDelay, true)) {
+				clientMessageF("switch");
 				++switchTarget;
 			}
 		}
