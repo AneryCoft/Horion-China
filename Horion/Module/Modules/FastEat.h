@@ -1,8 +1,10 @@
 #pragma once
 #include "Module.h"
+#include <unordered_map>
+
 class FastEat : public IModule {
 private:
-	std::vector<C_Item*> items;
+	std::unordered_map<C_Item*, int> items;
 	//C_Item* food[];
 public:
 	int duration = 5;
