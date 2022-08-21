@@ -276,13 +276,9 @@ void Scaffold::onGetPickRange() {
 }
 
 void Scaffold::onTick(C_GameMode* gm) {
-	if (rotations) {
-		static uintptr_t HiveBypass1 = Utils::getBase() + 0x8F3895;  // Second one of 89 41 ? 0F B6 42 ? 88 41 ? F2 0F 10 42 ? F2 0F 11 41 ? 8B 42 ? 89 41 ? 8B 42 ? 89 41 ? 8B 42 ? 89 41 ? 8B 42 ? 48 83 C2 ? 89 41 ? 48 83 C1 ? E8 ? ? ? ? 0F B6 43
-		static uintptr_t HiveBypass2 = Utils::getBase() + 0x8F87C7;  // C7 40 ? ? ? ? ? 48 8B 8D ? ? ? ? 48 33 CC E8 ? ? ? ? 4C 8D 9C 24
+	if (rotations) 
 		g_Data.getLocalPlayer()->level->rayHitType = 0;
-		Utils::nopBytes((uint8_t*)HiveBypass1, 3);
-		Utils::patchBytes((uint8_t*)HiveBypass2, (uint8_t*)"\xC7\x40\x18\x00\x00\x00\x00", 7);
-	}
+	
 }
 
 void Scaffold::onDisable() {
@@ -305,6 +301,11 @@ void Scaffold::onEnable() {
 }
 
 void Scaffold::onPlayerTick(C_Player* player) {
+	if (player->isJumping())
+	{
+		rotpos = player->eyePos0.sub(vec3_t(0, 2, 0));
+		player->pitch = 75.f;
+	}
 	if (rotations) {
 		vec2_t joe = player->getPos()->CalcAngle(rotpos).normAngles();
 		if (canrot && findBlock() && g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f) {
@@ -317,14 +318,23 @@ void Scaffold::onPlayerTick(C_Player* player) {
 
 void Scaffold::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (packet->isInstanceOf<C_MovePlayerPacket>() || packet->isInstanceOf<PlayerAuthInputPacket>()) {
-		if (g_Data.getLocalPlayer() != nullptr && g_Data.canUseMoveKeys() && rotations && canrot) {
+
+		if (g_Data.getLocalPlayer() != nullptr && g_Data.canUseMoveKeys() ) {
 			auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
 			C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
-			if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || GameData::isKeyDown(*input->spaceBarKey)) {
-				vec2_t angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(rotpos);
-				movePacket->pitch = angle.x;
-				movePacket->headYaw = angle.y;
-				movePacket->yaw = angle.y;
+			bool changepitch = true;
+			if (g_Data.getLocalPlayer()->isJumping()) {
+				movePacket->pitch = 75.f;
+				changepitch = false;
+			}
+			if (rotations && canrot) {
+				if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || GameData::isKeyDown(*input->spaceBarKey)) {
+					vec2_t angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(rotpos);
+					if (changepitch)
+						movePacket->pitch = angle.x;
+					movePacket->headYaw = angle.y;
+					movePacket->yaw = angle.y;
+				}
 			}
 		}
 	}
