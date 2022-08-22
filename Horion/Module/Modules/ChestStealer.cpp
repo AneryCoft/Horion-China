@@ -3,7 +3,7 @@
 
 ChestStealer::ChestStealer() : IModule(0, Category::PLAYER, "Automatically takes all items out of a chest.") {
 	registerIntSetting("Closing Delay", &setDelay, setDelay, 0, 20);
-	registerBoolSetting("Enhanced", &enhanced, enhanced);
+	registerBoolSetting("Only Useful", &enhanced, enhanced);
 }
 
 ChestStealer::~ChestStealer() {
