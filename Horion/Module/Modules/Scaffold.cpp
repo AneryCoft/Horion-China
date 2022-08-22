@@ -26,6 +26,7 @@ const char* Scaffold::getModuleName() {
 bool Scaffold::tryScaffold(vec3_t blockBelow) {
 	blockBelow = blockBelow.floor();
 
+	needRender = true;
 	C_Block* block = g_Data.getLocalPlayer()->region->getBlock(vec3_ti(blockBelow));
 	C_BlockLegacy* blockLegacy = (block->blockLegacy);
 	if (blockLegacy->material->isReplaceable) {
@@ -48,7 +49,7 @@ bool Scaffold::tryScaffold(vec3_t blockBelow) {
 		int i = 0;
 		for (auto current : checklist) {
 			vec3_ti calc = blok.sub(*current);
-			bool Y = ((g_Data.getLocalPlayer()->region->getBlock(calc)->blockLegacy))->material->isReplaceable;
+			//bool Y = ((g_Data.getLocalPlayer()->region->getBlock(calc)->blockLegacy))->material->isReplaceable;
 			if (!((g_Data.getLocalPlayer()->region->getBlock(calc)->blockLegacy))->material->isReplaceable) {
 				// Found a solid block to click
 				foundCandidate = true;
@@ -59,7 +60,8 @@ bool Scaffold::tryScaffold(vec3_t blockBelow) {
 		}
 		if (foundCandidate) {
 			//if (spoof) findBlock();
-			renderPos = blok.toVec3t();
+			renderPos = blockBelow;
+			needRender = true;
 			bool idk = true;
 			g_Data.getCGameMode()->buildBlock(&blok, i, idk);
 
