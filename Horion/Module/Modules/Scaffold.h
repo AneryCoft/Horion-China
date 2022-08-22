@@ -2,17 +2,15 @@
 
 #include "Module.h"
 #include "../../DrawUtils.h"
+#include "../ModuleManager.h"
 
 class Scaffold : public IModule {
 private:
 	//bool spoof = false;
 	bool tryScaffold(vec3_t blockBelow);
-	bool findBlock();
 	int length = 5;
 	vec2_t angle;
 	bool showBlockCount = false;
-	void calcCount();
-	int blockCount = 0;
 	bool autoBlock = false;
 	int prevSlot = 0;
 	float horizontalHigh;
@@ -24,7 +22,8 @@ private:
 	vec3_t rotpos;
 public:
 	SettingEnum mode;
-
+	bool findBlock();
+	int calcCount();
 	Scaffold();
 	~Scaffold();
 

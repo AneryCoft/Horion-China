@@ -25,7 +25,6 @@ const char* Scaffold::getModuleName() {
 
 bool Scaffold::tryScaffold(vec3_t blockBelow) {
 	blockBelow = blockBelow.floor();
-	renderPos = blockBelow;
 
 	C_Block* block = g_Data.getLocalPlayer()->region->getBlock(vec3_ti(blockBelow));
 	C_BlockLegacy* blockLegacy = (block->blockLegacy);
@@ -60,6 +59,7 @@ bool Scaffold::tryScaffold(vec3_t blockBelow) {
 		}
 		if (foundCandidate) {
 			//if (spoof) findBlock();
+			renderPos = blok.toVec3t();
 			bool idk = true;
 			g_Data.getCGameMode()->buildBlock(&blok, i, idk);
 
@@ -114,17 +114,18 @@ bool Scaffold::findBlock() {
 	return false;
 }
 
-void Scaffold::calcCount() {
+int Scaffold::calcCount() {
 	C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
 	C_Inventory* inv = supplies->inventory;
 
-	blockCount = 0;
+	int blockCount = 0;
 	for (int i = 0; i < 36; i++) {
 		C_ItemStack* stack = inv->getItemStack(i);
 		if (stack->item != nullptr && stack->getItem()->isBlock()) {
 			blockCount += stack->count;
 		}
 	}
+	return blockCount;
 }
 
 void Scaffold::onGetPickRange() {
@@ -133,7 +134,7 @@ void Scaffold::onGetPickRange() {
 	/*if (!g_Data.canUseMoveKeys())
 		return;*/
 
-	if (showBlockCount && blockCount == 0)
+	if (calcCount() == 0)
 		return;
 
 	auto selectedItem = g_Data.getLocalPlayer()->getSelectedItem();
@@ -184,6 +185,7 @@ void Scaffold::onGetPickRange() {
 		float cal = (g_Data.getLocalPlayer()->yaw + 90) * (PI / 180);
 		vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block 1 block below the player
 		blockBelow.y -= g_Data.getLocalPlayer()->height;
+		blockBelow.y -= 0.5f;
 
 		if (i > length) {
 			i = 0;
@@ -276,9 +278,8 @@ void Scaffold::onGetPickRange() {
 }
 
 void Scaffold::onTick(C_GameMode* gm) {
-	if (rotations) 
+	if (rotations)
 		g_Data.getLocalPlayer()->level->rayHitType = 0;
-	
 }
 
 void Scaffold::onDisable() {
@@ -318,23 +319,20 @@ void Scaffold::onPlayerTick(C_Player* player) {
 
 void Scaffold::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (packet->isInstanceOf<C_MovePlayerPacket>() || packet->isInstanceOf<PlayerAuthInputPacket>()) {
-
-		if (g_Data.getLocalPlayer() != nullptr && g_Data.canUseMoveKeys() ) {
-			auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
-			C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
-			bool changepitch = true;
-			if (g_Data.getLocalPlayer()->isJumping()) {
-				movePacket->pitch = 75.f;
-				changepitch = false;
-			}
-			if (rotations && canrot) {
-				if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || GameData::isKeyDown(*input->spaceBarKey)) {
-					vec2_t angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(rotpos);
-					if (changepitch)
-						movePacket->pitch = angle.x;
-					movePacket->headYaw = angle.y;
-					movePacket->yaw = angle.y;
-				}
+		auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
+		C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
+		bool changepitch = true;
+		if (g_Data.getLocalPlayer()->isJumping()) {
+			movePacket->pitch = 75.f;
+			changepitch = false;
+		}
+		if (rotations && canrot) {
+			if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || GameData::isKeyDown(*input->spaceBarKey)) {
+				vec2_t angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(rotpos);
+				if (changepitch)
+					movePacket->pitch = angle.x;
+				movePacket->headYaw = angle.y;
+				movePacket->yaw = angle.y;
 			}
 		}
 	}
@@ -343,9 +341,8 @@ void Scaffold::onSendPacket(C_Packet* packet, bool& cancelSend) {
 void Scaffold::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	if (g_Data.canUseMoveKeys()) {
 		if (showBlockCount) {
-			calcCount();
 			vec2_t windowSize = g_Data.getClientInstance()->getGuiData()->windowSize;
-			std::string countText = "Blocks:" + std::to_string(blockCount);
+			std::string countText = "Blocks:" + std::to_string(calcCount());
 			DrawUtils::drawText(vec2_t{ windowSize.x / 2.f, windowSize.y / 2.f + 20.f }, &countText, MC_Color(255, 255, 255), 1.3f);
 			//vec4_t renderPos = {};
 			//DrawUtils::fillRectangle(renderPos, MC_Color(13, 29, 48), 1.f);
