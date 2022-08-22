@@ -32,6 +32,7 @@ void InventoryCleaner::onTick(C_GameMode* gm) {
 	}
 
 	if (autoSort) {
+		std::vector<int> emptySlots;
 		// Put sword in first slot
 		C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
 		C_Inventory* inv = supplies->inventory;
@@ -53,9 +54,20 @@ void InventoryCleaner::onTick(C_GameMode* gm) {
 					}
 				}
 			}
+			else {
+				emptySlots.push_back(n);
+			}
 		}
+
+		if (inv->getItemStack(1) != nullptr) {
+			inv->moveItem(1, emptySlots[0]);
+		}
+		if (inv->getItemStack(2) != nullptr) {
+			inv->moveItem(2, emptySlots[1]);
+		} //将需要格子的物品放到空格子
+
 		if (item != 0) inv->moveItem(item, 0);
-		if (item2 != 1) inv->moveItem(item2, 1);//把金苹果放到第二个格子
+		if (item2 != 1) inv->moveItem(item2, 1); //把金苹果放到第二个格子
 	}
 }
 
