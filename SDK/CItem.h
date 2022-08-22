@@ -243,6 +243,9 @@ public:
 	}
 
 	bool isBlock(void) {
+		if (itemId == 247)
+			return false; //下界反应核
+
 		auto val = *reinterpret_cast<__int64 ***>(reinterpret_cast<__int64>(this) + 0x1A0);
 		return val != nullptr && *val != nullptr;
 	}
