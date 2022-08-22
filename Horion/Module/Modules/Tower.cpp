@@ -3,7 +3,14 @@
 #include "../../DrawUtils.h"
 
 Tower::Tower() : IModule(0, Category::WORLD, "Like scaffold, but vertically and a lot faster.") {
+	mode = (*new SettingEnum(this))
+		.addEntry(EnumEntry("Motion", 0))
+		.addEntry(EnumEntry("Timer", 1));
+	registerEnumSetting("Mode", &mode, 0);
 	registerFloatSetting("Motion", &motion, motion, 0.3f, 1.f);
+	registerIntSetting("Timer", &timer, timer, 20, 100);
+	registerBoolSetting("AutoBlock", &autoBlock, autoBlock);
+	registerBoolSetting("Rotations", &rotations, rotations);
 }
 
 Tower::~Tower() {
@@ -52,17 +59,29 @@ bool Tower::tryTower(vec3_t blockBelow) {
 			}
 			i++;
 		}
-		if (foundCandidate && GameData::isKeyDown(*input->spaceBarKey)) {
-			vec3_t moveVec;
-			moveVec.x = g_Data.getLocalPlayer()->velocity.x;
-			moveVec.y = motion;
-			moveVec.z = g_Data.getLocalPlayer()->velocity.z;
-			g_Data.getLocalPlayer()->lerpMotion(moveVec);
-			bool idk = true;
-			g_Data.getCGameMode()->buildBlock(&blok, i, idk);
+		if (foundCandidate) {
+			if (GameData::isKeyDown(*input->spaceBarKey)) {
+				needRotations = true;
+				if (mode.selected == 0) {
+					vec3_t moveVec;
+					moveVec.x = g_Data.getLocalPlayer()->velocity.x;
+					moveVec.y = motion;
+					moveVec.z = g_Data.getLocalPlayer()->velocity.z;
+					g_Data.getLocalPlayer()->lerpMotion(moveVec);
+					bool idk = true;
+					g_Data.getCGameMode()->buildBlock(&blok, i, idk);
 
-			return true;
+					return true;
+				}
+				else if (mode.selected == 1) {
+					g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
+					bool idk = true;
+					g_Data.getCGameMode()->buildBlock(&blok, i, idk);
+				}
+			}
 		}
+		else
+			needRotations = false;
 	}
 	return false;
 }
@@ -70,11 +89,21 @@ bool Tower::tryTower(vec3_t blockBelow) {
 void Tower::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	if (g_Data.getLocalPlayer() == nullptr)
 		return;
-	if (!g_Data.canUseMoveKeys())
-		return;
+	/*if (!g_Data.canUseMoveKeys())
+		return;*/
+	static auto scaffoldMod = moduleMgr->getModule<Scaffold>();
 	auto selectedItem = g_Data.getLocalPlayer()->getSelectedItem();
-	if (!selectedItem->isValid() || !(*selectedItem->item)->isBlock())  // Block in hand?
-		return;
+	if (!selectedItem->isValid() || !(*selectedItem->item)->isBlock()) {
+		if (scaffoldMod->calcCount() == 0)
+			return;
+
+		if (autoBlock) {
+			scaffoldMod->findBlock();
+		}
+		else {
+			return;
+		}
+	} // Block in hand?
 
 	vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block below the player
 	blockBelow.y -= g_Data.getLocalPlayer()->height;
@@ -98,4 +127,27 @@ void Tower::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			}
 		}
 	}
+}
+
+void Tower::onPlayerTick(C_Player* player) {
+	if (rotations && needRotations) {
+		player->pitch = 89.f;
+	}
+}
+
+void Tower::onSendPacket(C_Packet* packet, bool& cancelSend) {
+	if (rotations && needRotations) {
+		if (packet->isInstanceOf<C_MovePlayerPacket>()) {
+			C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
+			movePacket->pitch = 89.f;
+		}
+		if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+			PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
+			authInputPacket->pitch = 89.f;
+		}
+	}
+}
+
+void Tower::onDisable() {
+	g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
 }
