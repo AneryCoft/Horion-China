@@ -35,6 +35,7 @@ bool AutoGapple::targetItem(int16_t itemId, uint16_t extraData) {
 }
 
 void AutoGapple::onTick(C_GameMode* gm) {
+	rotation = false;
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	if (localPlayer == nullptr)
 		return;
@@ -84,6 +85,9 @@ void AutoGapple::onTick(C_GameMode* gm) {
 		}
 
 		C_ItemStack* selectedItemStack = localPlayer->getSelectedItem();
+		if (selectedItemStack->item == nullptr)
+			return;
+
 		int16_t selectedItemId = (*selectedItemStack->item)->itemId;
 		uint16_t selectedItemData = selectedItemStack->extraData;
 
@@ -109,7 +113,7 @@ void AutoGapple::onTick(C_GameMode* gm) {
 				}
 				if (tick == duration) {
 					tick = 0;
-					delay = true;
+					candelay = true;
 				}
 			}
 
@@ -123,8 +127,6 @@ void AutoGapple::onTick(C_GameMode* gm) {
 			}
 
 			gm->useItem(*stack);
-
-			rotation = false;
 		}
 	}
 }
