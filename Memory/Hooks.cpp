@@ -1584,6 +1584,7 @@ GamerTextHolder* Hooks::toStyledString(__int64 strIn, GamerTextHolder* strOut) {
 	return func(strIn, strOut);
 }
 
+/*
 void prepCoolBean() {
 	if (g_Data.getClientInstance() && g_Data.getClientInstance()->minecraftGame->getServerEntries() && *reinterpret_cast<__int64*>(g_Data.getClientInstance()->minecraftGame->getServerEntries() + 0x50)) {
 		auto serverEntries = g_Data.getClientInstance()->minecraftGame->getServerEntries() + 0x48;
@@ -1692,7 +1693,7 @@ __int64 Hooks::prepFeaturedServersFirstTime(__int64 a1, __int64 a2) {
 
 	return ret;
 }
-
+*/
 
 __int64 Hooks::Cube__compile(__int64 a1, __int64 a2) {
 	auto func = g_Hooks.cube__compileHook->GetFastcall<__int64, __int64, __int64>();
