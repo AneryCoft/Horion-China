@@ -54,6 +54,9 @@ bool Scaffold::tryScaffold(vec3_t blockBelow) {
 				// Found a solid block to click
 				foundCandidate = true;
 				blok = calc;
+				rotpos.x = blok.x + 0.5f;
+				rotpos.y = blok.y + 1.25f;
+				rotpos.z = blok.z + 0.5f;
 				break;
 			}
 			i++;
@@ -161,7 +164,7 @@ void Scaffold::onGetPickRange() {
 		vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block below the player
 		blockBelow.y -= g_Data.getLocalPlayer()->height;
 		blockBelow.y -= 0.5f;
-		rotpos = blockBelow;
+
 		if (!tryScaffold(blockBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
 				blockBelow.z -= vel.z * 0.4f;
@@ -197,7 +200,7 @@ void Scaffold::onGetPickRange() {
 			blockBelow.x = blockBelow.x += cos(cal) * i;  // Block 1 ahead the player X
 			blockBelow.z = blockBelow.z += sin(cal) * i;  // Block 1 ahead the player Z
 		}
-		rotpos = blockBelow;
+
 		if (!tryScaffold(blockBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
 				blockBelow.z -= vel.z * 0.4f;
@@ -228,7 +231,7 @@ void Scaffold::onGetPickRange() {
 		blockBelowBelow.y -= g_Data.getLocalPlayer()->height;
 		blockBelowBelow.y -= 2.0f;
 
-		rotpos = blockBelow;
+	
 
 		if (!tryScaffold(blockBelow) && !tryScaffold(blockBelowBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
@@ -257,7 +260,7 @@ void Scaffold::onGetPickRange() {
 	{
 		vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block below the player
 		blockBelow.y = horizontalHigh;
-		rotpos = blockBelow;
+
 		if (!tryScaffold(blockBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
 				blockBelow.z -= vel.z * 0.4f;
