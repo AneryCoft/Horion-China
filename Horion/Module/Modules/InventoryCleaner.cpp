@@ -59,10 +59,10 @@ void InventoryCleaner::onTick(C_GameMode* gm) {
 			}
 		}
 
-		if (inv->getItemStack(1) != nullptr) {
+		if (inv->getItemStack(1)->item != nullptr) {
 			inv->moveItem(1, emptySlots[0]);
 		}
-		if (inv->getItemStack(2) != nullptr) {
+		if (inv->getItemStack(2)->item != nullptr) {
 			inv->moveItem(2, emptySlots[1]);
 		} //将需要格子的物品放到空格子
 
