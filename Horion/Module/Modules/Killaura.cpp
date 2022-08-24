@@ -176,12 +176,11 @@ void Killaura::onGetPickRange() {
 
 		CPS = RandomNumber(minCPS, maxCPS);
 		//CPS = rand() % (maxCPS - minCPS + 1) + minCPS;
-		TimerUtil* attackTime = new TimerUtil();
-		if (attackTime->hasTimedElapsed(1000.f / CPS, true)) {
+		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
 			if (rotations.selected == 1) {
 				if (localPlayer->velocity.squaredxzlen() < 0.01) {
 					C_MovePlayerPacket packet(localPlayer, *localPlayer->getPos());
-					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);  //²»¶¯µÄÊ±ºòPacket×ªÍ·Ò²ÄÜ¹¤×÷
+					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);  //ä¸åŠ¨çš„æ—¶å€™Packetè½¬å¤´ä¹Ÿèƒ½å·¥ä½œ
 				}
 			}
 
@@ -212,9 +211,7 @@ void Killaura::onGetPickRange() {
 		}
 
 		if (mode.selected == 2) {
-			TimerUtil* switchTime = new TimerUtil();
-			if (switchTime->hasTimedElapsed(switchDelay, true)) {
-				clientMessageF("switch");
+			if (switchTime.hasTimedElapsed(switchDelay, true)) {
 				++switchTarget;
 			}
 		}
@@ -236,7 +233,7 @@ void Killaura::onEnable() {
 		setEnabled(false);
 
 	if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
-		clientMessageF(u8"¼ì²âµ½ÄúÎ»ÓÚEaseCation£¬ÒÑÎªÄú×Ô¶¯¿ªÆôÈÆ¹ıCPS¼ì²â");
+		clientMessageF(u8"æ£€æµ‹åˆ°æ‚¨ä½äºEaseCationï¼Œå·²ä¸ºæ‚¨è‡ªåŠ¨å¼€å¯ç»•è¿‡CPSæ£€æµ‹");
 }
 
 void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
@@ -257,10 +254,10 @@ void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 			if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
 				if (packet->isInstanceOf<LevelSoundEventPacket>()) {
 					LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
-					if (soundEventPacket->sound == 43) //sound 42ÊÇ¿Õ»ÓÊÖÊ±µÄÊıÖµ Ò²»á±»¼ÆËã½øCPS µ«ÊÇ¹¥»÷µÄÊ±ºò²»·¢ÄÇ¸ö°ü
+					if (soundEventPacket->sound == 43) //sound 42æ˜¯ç©ºæŒ¥æ‰‹æ—¶çš„æ•°å€¼ ä¹Ÿä¼šè¢«è®¡ç®—è¿›CPS ä½†æ˜¯æ”»å‡»çš„æ—¶å€™ä¸å‘é‚£ä¸ªåŒ…
 						//soundEventPacket->sound = 0;
 						cancelSend = true;
-				} //ÈÆ¹ıEaseCation·şÎñÆ÷CPS¼ì²â
+				} //ç»•è¿‡EaseCationæœåŠ¡å™¨CPSæ£€æµ‹
 			}
 		}
 	}
