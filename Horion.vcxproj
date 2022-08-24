@@ -60,7 +60,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <SpectreMitigation>false</SpectreMitigation>
@@ -295,6 +295,7 @@
     <ClCompile Include="Horion\Module\Modules\ChestAura.cpp" />
     <ClCompile Include="Horion\Module\Modules\Criticals.cpp" />
     <ClCompile Include="Horion\Module\Modules\Disabler.cpp" />
+    <ClCompile Include="Horion\Module\Modules\FastDig.cpp" />
     <ClCompile Include="Horion\Module\Modules\FastEat.cpp" />
     <ClCompile Include="Horion\Module\Modules\FastStop.cpp" />
     <ClCompile Include="Horion\Module\Modules\InfiniteAura.cpp" />
@@ -499,6 +500,7 @@
     <ClInclude Include="Horion\Module\Modules\Disabler.h" />
     <ClInclude Include="Horion\Module\Modules\EditionFaker.h" />
     <ClInclude Include="Horion\Module\Modules\ESP.h" />
+    <ClInclude Include="Horion\Module\Modules\FastDig.h" />
     <ClInclude Include="Horion\Module\Modules\FastEat.h" />
     <!--    <ClInclude Include="Horion\Module\Modules\FastEat.h" /> -->
     <ClInclude Include="Horion\Module\Modules\FastLadder.h" />
