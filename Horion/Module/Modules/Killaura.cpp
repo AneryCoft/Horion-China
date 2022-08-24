@@ -233,7 +233,7 @@ void Killaura::onEnable() {
 		setEnabled(false);
 
 	if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
-		clientMessageF(u8"检测到您位于EaseCation，已为您自动开启绕过CPS检测");
+		clientMessageF(u8"检测到您位于EaseCation，已为您自动开启绕过CPS检测 ");
 }
 
 void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
@@ -245,19 +245,19 @@ void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				movePacket->headYaw = angle.y;
 				movePacket->yaw = angle.y;
 			}
-			if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+			/*if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 				auto* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
 				authInputPacket->pitch = angle.x;
 				authInputPacket->yawUnused = angle.y;
 				authInputPacket->yaw = angle.y;
-			}
+			}*/
 			if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
 				if (packet->isInstanceOf<LevelSoundEventPacket>()) {
 					LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
-					if (soundEventPacket->sound == 43) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包
-						//soundEventPacket->sound = 0;
+					if (soundEventPacket->sound == 43) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包 
+						//soundEventPacket->sound = 0; 
 						cancelSend = true;
-				} //绕过EaseCation服务器CPS检测
+				} //绕过EaseCation服务器CPS检测 
 			}
 		}
 	}
