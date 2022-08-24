@@ -103,6 +103,7 @@
 #include "Modules/FastStop.h"
 #include "Modules/InventoryView.h"
 #include "Modules/AutoGapple.h"
+#include "Modules/FastDig.h"
 
 #ifdef _DEBUG
 #include "Modules/PacketLogger.h"

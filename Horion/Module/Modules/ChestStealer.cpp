@@ -2,6 +2,7 @@
 #include "../ModuleManager.h"
 
 ChestStealer::ChestStealer() : IModule(0, Category::PLAYER, "Automatically takes all items out of a chest.") {
+	registerIntSetting("Delay", &takeOfDelay, takeOfDelay, 0, 20);
 	registerIntSetting("Closing Delay", &setDelay, setDelay, 0, 20);
 	registerBoolSetting("Only Useful", &enhanced, enhanced);
 }
@@ -24,9 +25,17 @@ void ChestStealer::chestScreenController_tick(C_ChestScreenController* c) {
 					items.push_back(i);
 		}
 		if (!items.empty()) {
-			for (int i : items) {
-				c->handleAutoPlace(0x7FFFFFFF, "container_items", i);
+			delay2++;
+			if (delay2 > takeOfDelay) {
+				c->handleAutoPlace(0x7FFFFFFF, "container_items", items[0]);
+				delay2 = 0;
 			}
+			
+			/*
+			for (int i : items) {
+				_sleep(takeOfDelay);
+				c->handleAutoPlace(0x7FFFFFFF, "container_items", i);
+			}*/
 		} else  {
 			delay++;
 			if (delay > setDelay) {

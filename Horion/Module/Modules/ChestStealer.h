@@ -6,7 +6,9 @@ class ChestStealer : public IModule {
 private:
 	int delay = 0;
 	int setDelay = 7;
+	int takeOfDelay = 0;
 	bool enhanced = true;
+	int delay2 = 0;
 
 public:
 	ChestStealer();

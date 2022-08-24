@@ -111,6 +111,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new FastStop()));
 		moduleList.push_back(std::shared_ptr<IModule>(new InventoryView()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoGapple()));
+		moduleList.push_back(std::shared_ptr<IModule>(new FastDig()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));
