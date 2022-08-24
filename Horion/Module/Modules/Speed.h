@@ -1,11 +1,18 @@
 #pragma once
 
 #include "Module.h"
+#include "../ModuleManager.h"
 
 class Speed : public IModule {
 private:
 	float origSpeed = 0;
-	float speed = 1.6f;
+	float maxSpeed = 0.45f;
+	float minSpeed = 0.38f;
+	float speed;
+	float vanillaSpeed = 1.0f;
+	float lowhopMotion = 0.3f;
+	float timer = 20.f;
+
 	SettingEnum mode;
 	
 public:

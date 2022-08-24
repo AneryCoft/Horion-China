@@ -2,10 +2,15 @@
 
 Speed::Speed() : IModule(VK_NUMPAD2, Category::MOVEMENT, "Speed up!") {
 	mode = (*new SettingEnum(this))
-		.addEntry(EnumEntry("Speed", 0))
-		.addEntry(EnumEntry("Bhop", 1));
-	registerEnumSetting("Mode", &mode, 0);
-	registerFloatSetting("Speed", &speed, 1, 0.1f, 3.f);
+		.addEntry(EnumEntry("Vanilla", 0))
+		.addEntry(EnumEntry("Bhop", 1))
+		.addEntry(EnumEntry("Lowhop", 2));
+	registerEnumSetting("Mode", &mode, 1);
+	registerFloatSetting("VanillaSpeed", &vanillaSpeed, vanillaSpeed, 0.1f, 3.f);
+	registerFloatSetting("MaxSpeed", &maxSpeed, maxSpeed, 0.1f, 1.f);
+	registerFloatSetting("MinSpeed", &minSpeed, minSpeed, 0.1f, 1.f);
+	registerFloatSetting("LowhopMotion", &lowhopMotion, lowhopMotion, 0.1f, 5.f);
+	registerFloatSetting("Timer", &timer, timer, 20.f, 50.f);
 }
 
 Speed::~Speed() {
@@ -18,15 +23,15 @@ const char* Speed::getModuleName() {
 static int oldselected = 0;
 void Speed::onTick(C_GameMode* gm) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
-	if (oldselected == 0 && mode.selected == 1) 
+	if (oldselected == 0 && mode.selected == 1)
 		if (g_Data.getLocalPlayer() != nullptr)
 			*reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84) = origSpeed;
-	
+
 	oldselected = mode.selected;
-	
+
 	if (mode.selected == 0) {
 		float* speedAdr = reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84);
-		*speedAdr = speed;
+		*speedAdr = vanillaSpeed;
 	}
 }
 
@@ -35,19 +40,21 @@ void Speed::onEnable() {
 	if (g_Data.getLocalPlayer() == nullptr) {
 		setEnabled(false);
 		return;
-	} else if (mode.selected == 0) {
+	}
+	else if (mode.selected == 0) {
 		origSpeed = *reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84);
 	}
 }
 
 void Speed::onDisable() {
+	g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
 	if (mode.selected == 0)
 		if (g_Data.getLocalPlayer() != nullptr)
 			*reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84) = origSpeed;
 }
 
 void Speed::onMove(C_MoveInputHandler* input) {
-	if (mode.selected == 1) {
+	if (mode.selected == 1 || mode.selected == 2) {
 		auto player = g_Data.getLocalPlayer();
 		if (player == nullptr) return;
 
@@ -60,9 +67,17 @@ void Speed::onMove(C_MoveInputHandler* input) {
 		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
 		bool pressed = moveVec2d.magnitude() > 0.01f;
 
-		if (player->onGround && pressed)
-			player->jumpFromGround();
+		if (player->onGround && pressed) {
+			g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
+			speed = randomFloat(maxSpeed, minSpeed);
+			if (mode.selected == 1)
+				player->jumpFromGround();
+			else if (mode.selected == 2)
+				player->velocity.y = lowhopMotion;
+		}
+
 		if (!moduleMgr->getModule<Fly>()->isEnabled()) {
+			g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
 			float calcYaw = (player->yaw + 90) * (PI / 180);
 			vec3_t moveVec;
 			float c = cos(calcYaw);
@@ -74,5 +89,4 @@ void Speed::onMove(C_MoveInputHandler* input) {
 			if (pressed) player->lerpMotion(moveVec);
 		}
 	}
-
 }
