@@ -5,10 +5,8 @@
 #include <Windows.h>
 #include "../Utils/Logger.h"
 
-__int64 lastMS = TimerUtil::getCurrentMs();
-__int64 ms;
-__int64 prevMS = 0;
-__int64 timeMS = -1;
+TimerUtil::TimerUtil() noexcept :lastMS(TimerUtil::getCurrentMs()), ms(0), prevMS(0), timeMS(-1) {
+}
 
 __int64 TimerUtil::getCurrentMs() {
 	FILETIME f;
