@@ -19,8 +19,8 @@ private:
 	int switchTarget = 0;
 	float yawOffset = 0.f;
 	float pitchOffset = 0.f;
-	TimerUtil cpscheck;
-	TimerUtil switchcheck;
+	TimerUtil attackTime;
+	TimerUtil switchTime;
 public:
 	//bool rotations = false;
 	bool targetListEmpty = false;
