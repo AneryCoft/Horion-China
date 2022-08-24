@@ -68,7 +68,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoClicker()));
 		moduleList.push_back(std::shared_ptr<IModule>(new NameTags()));
 		//moduleList.push_back(std::shared_ptr<IModule>(new Criticals()));
-		moduleList.push_back(std::shared_ptr<IModule>(new Bhop()));
+		//moduleList.push_back(std::shared_ptr<IModule>(new Bhop()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Tower()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AntiVoid()));
 		moduleList.push_back(std::shared_ptr<IModule>(new MidClick()));

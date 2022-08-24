@@ -20,7 +20,7 @@
 #include "Modules/AutoSprint.h"
 #include "Modules/AutoTotem.h"
 #include "Modules/Breaker.h"
-#include "Modules/Bhop.h"
+//#include "Modules/Bhop.h"
 #include "Modules/Blink.h"
 #include "Modules/BowAimbot.h"
 #include "Modules/AntiVoid.h"
