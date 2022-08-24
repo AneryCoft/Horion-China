@@ -9,17 +9,14 @@ private:
 	//bool spoof = false;
 	bool tryScaffold(vec3_t blockBelow);
 	int length = 5;
-	vec2_t angle;
 	bool showBlockCount = false;
 	bool autoBlock = false;
 	int prevSlot = 0;
 	float horizontalHigh;
 	bool rotations = false;
 	bool render = false;
-	vec3_t renderPos;
-	
-	bool canrot = false;
-	vec3_t rotpos;
+	vec3_t blockPos;
+	bool needRender = false;
 public:
 	SettingEnum mode;
 	bool findBlock();
@@ -36,5 +33,5 @@ public:
 	virtual void onEnable() override;
 	virtual void onPostRender(C_MinecraftUIRenderContext* renderCtx) override;
 	virtual void onGetPickRange() override;
-	virtual void onTick(C_GameMode*) override;
+	//virtual void onTick(C_GameMode*) override;
 };

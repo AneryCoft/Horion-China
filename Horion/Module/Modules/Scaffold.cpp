@@ -156,6 +156,8 @@ void Scaffold::onGetPickRange() {
 	vec3_t vel = g_Data.getLocalPlayer()->velocity;
 	vel = vel.normalize();  // Only use values from 0 - 1
 
+	g_Data.getLocalPlayer()->level->rayHitType = 0;
+
 	switch (mode.selected) {
 	case 0:
 	{
@@ -288,10 +290,7 @@ void Scaffold::onPlayerTick(C_Player* player) {
 		if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || player->isJumping()) {
 			player->bodyYaw = angle.y;
 			player->yawUnused1 = angle.y;
-			if (player->isJumping())
-				player->pitch = 80.f;
-			else
-				player->pitch = angle.x;
+			player->pitch = angle.x;
 		}
 	}
 }
@@ -302,21 +301,13 @@ void Scaffold::onSendPacket(C_Packet* packet, bool& cancelSend) {
 			vec2_t angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockPos);
 			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
 				C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
-				if (g_Data.getLocalPlayer()->isJumping())
-					movePacket->pitch = 80.f;
-				else
-					movePacket->pitch = angle.x;
-
+				movePacket->pitch = angle.x;
 				movePacket->headYaw = angle.y;
 				movePacket->yaw = angle.y;
 			}
 			if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 				PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-				if (g_Data.getLocalPlayer()->isJumping())
-					authInputPacket->pitch = 80.f;
-				else
-					authInputPacket->pitch = angle.x;
-
+				authInputPacket->pitch = angle.x;
 				authInputPacket->yawUnused = angle.y;
 				authInputPacket->yaw = angle.y;
 			}
