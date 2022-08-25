@@ -59,7 +59,10 @@ bool Scaffold::tryScaffold(vec3_t blockBelow) {
 		}
 		if (foundCandidate) {
 			//if (spoof) findBlock();
-			blockPos = blockBelow;
+			if (mode.selected == 1 || mode.selected == 2) {
+				blockPos = blockBelow;
+				needRotations = true;
+			}
 			needRender = true;
 			bool idk = true;
 			g_Data.getCGameMode()->buildBlock(&blok, i, idk);
@@ -130,6 +133,8 @@ int Scaffold::calcCount() {
 }
 
 void Scaffold::onGetPickRange() {
+	needRotations = false;
+
 	if (g_Data.getLocalPlayer() == nullptr)
 		return;
 	/*if (!g_Data.canUseMoveKeys())
@@ -164,6 +169,9 @@ void Scaffold::onGetPickRange() {
 		vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block below the player
 		blockBelow.y -= g_Data.getLocalPlayer()->height;
 		blockBelow.y -= 0.5f;
+
+		blockPos = blockBelow;
+		needRotations = true;
 
 		if (!tryScaffold(blockBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
@@ -247,6 +255,9 @@ void Scaffold::onGetPickRange() {
 		vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block below the player
 		blockBelow.y = horizontalHigh;
 
+		blockPos = blockBelow;
+		needRotations = true;
+
 		if (!tryScaffold(blockBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
 				blockBelow.z -= vel.z * 0.4f;
@@ -282,12 +293,13 @@ void Scaffold::onEnable() {
 	prevSlot = g_Data.getLocalPlayer()->getSupplies()->selectedHotbarSlot;
 
 	needRender = false;
+	needRotations = false;
 }
 
 void Scaffold::onPlayerTick(C_Player* player) {
-	if (rotations && needRender) {
-		vec2_t angle = player->getPos()->CalcAngle(blockPos);
+	if (rotations && needRotations) {
 		if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || player->isJumping()) {
+			vec2_t angle = player->getPos()->CalcAngle(blockPos);
 			player->bodyYaw = angle.y;
 			player->yawUnused1 = angle.y;
 			player->pitch = angle.x;
@@ -296,7 +308,7 @@ void Scaffold::onPlayerTick(C_Player* player) {
 }
 
 void Scaffold::onSendPacket(C_Packet* packet, bool& cancelSend) {
-	if (rotations && needRender) {
+	if (rotations && needRotations) {
 		if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || g_Data.getLocalPlayer()->isJumping()) {
 			vec2_t angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockPos);
 			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
