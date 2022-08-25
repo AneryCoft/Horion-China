@@ -17,6 +17,7 @@ private:
 	bool render = false;
 	vec3_t blockPos;
 	bool needRender = false;
+	bool needRotations = false;
 public:
 	SettingEnum mode;
 	bool findBlock();
