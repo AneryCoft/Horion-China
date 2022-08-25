@@ -20,6 +20,7 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 		.addEntry(EnumEntry("Health", 2));
 	registerEnumSetting("Priority", &priority, 0);
 	registerFloatSetting("Range", &range, range, 3.f, 10.f);
+	registerIntSetting("Yaw Range", &rangeYaw, rangeYaw, 15, 360);
 	registerIntSetting("MaxCPS", &maxCPS, maxCPS, 1, 20);
 	registerIntSetting("MinCPS", &minCPS, minCPS, 1, 20);
 	registerFloatSetting("Switch Delay", &switchDelay, switchDelay, 1.f, 1000.f);
@@ -38,7 +39,7 @@ const char* Killaura::getModuleName() {
 }
 
 static std::vector<C_Entity*> targetList;
-void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
+static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 	if (std::time(nullptr) < g_Hooks.connecttime + 1)
 		return;
 
@@ -82,7 +83,43 @@ void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 		if (!Target::isValidTarget(currentEntity))
 			return;
 	}
+	
+	vec2_t czxPos(currentEntity->getPos()->x, currentEntity->getPos()->z);
+	vec2_t lxzPos(g_Data.getLocalPlayer()->getPos()->x, g_Data.getLocalPlayer()->getPos()->z);
+	constexpr float r = 180.f / PI;
 
+	if (killauraMod->rangeYaw < 360) {
+		float zxdist = sqrt((lxzPos.x - czxPos.x) * (lxzPos.x - czxPos.x) + (lxzPos.y - czxPos.y) * (lxzPos.y - czxPos.y));
+		float asinyew = asin((czxPos.x - lxzPos.x) / zxdist) * r;
+		float acosyew = acos((czxPos.y - lxzPos.y) / zxdist) * r;
+		float powce;
+		if (asinyew > 0.f) {
+			if (acosyew > 90.f)  //1
+				powce = -180.f + asinyew;
+			else  //2
+				powce = -asinyew;
+		}
+		else {
+			if (acosyew > 90.f)  //4
+				powce = 180.f + asinyew;
+			else  //3
+				powce = -asinyew;
+		}
+		float powceH = powce + float(killauraMod->rangeYaw) / 2.f;
+		float powceL = powce - float(killauraMod->rangeYaw) / 2.f;
+
+		if (powceH > 180.f) {
+			if (!(g_Data.getCGameMode()->player->yaw >= powceL || g_Data.getCGameMode()->player->yaw <= powceH - 360.f))
+				return;
+		}
+		else if (powceL < -180.f) {
+			if (!(g_Data.getCGameMode()->player->yaw >= powceL + 360.f || g_Data.getCGameMode()->player->yaw <= powceH))
+				return;
+		}
+		else if (!(g_Data.getCGameMode()->player->yaw >= powceL && g_Data.getCGameMode()->player->yaw <= powceH))
+			return;
+	}
+	
 	float dist = (*currentEntity->getPos()).dist(*g_Data.getLocalPlayer()->getPos());
 
 	if (dist < killauraMod->range) {
