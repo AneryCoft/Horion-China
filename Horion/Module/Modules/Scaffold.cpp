@@ -63,6 +63,7 @@ bool Scaffold::tryScaffold(vec3_t blockBelow) {
 				blockPos = blockBelow;
 				needRotations = true;
 			}
+			renderPos = blockBelow;
 			needRender = true;
 			bool idk = true;
 			g_Data.getCGameMode()->buildBlock(&blok, i, idk);
@@ -339,7 +340,7 @@ void Scaffold::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 
 		if (render && needRender) {
 			DrawUtils::setColor(0, 0.3705, 1, 1);
-			DrawUtils::drawBox(blockPos, blockPos.add(1), (float)0.5 / (float)1.f, false);
+			DrawUtils::drawBox(renderPos, renderPos.add(1), (float)0.5 / (float)1.f, false);
 		}
 	}
 }

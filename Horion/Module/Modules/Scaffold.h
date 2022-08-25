@@ -16,6 +16,7 @@ private:
 	bool rotations = false;
 	bool render = false;
 	vec3_t blockPos;
+	vec3_t renderPos;
 	bool needRender = false;
 	bool needRotations = false;
 public:
