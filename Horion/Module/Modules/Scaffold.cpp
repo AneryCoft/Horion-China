@@ -305,12 +305,12 @@ void Scaffold::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				movePacket->headYaw = angle.y;
 				movePacket->yaw = angle.y;
 			}
-			if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+			/*if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 				PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
 				authInputPacket->pitch = angle.x;
 				authInputPacket->yawUnused = angle.y;
 				authInputPacket->yaw = angle.y;
-			}
+			}*/
 		}
 	}
 }
