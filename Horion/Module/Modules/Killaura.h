@@ -21,6 +21,9 @@ private:
 	float pitchOffset = 0.f;
 	TimerUtil attackTime;
 	TimerUtil switchTime;
+	
+	int rangeYaw = 90;
+	friend void findEntity(C_Entity* currentEntity, bool isRegularEntity);
 public:
 	//bool rotations = false;
 	bool targetListEmpty = false;
