@@ -4,6 +4,7 @@
 
 class PacketLogger : public IModule {
 public:
+	bool showAuth = false;
 	PacketLogger();
 	~PacketLogger();
 
