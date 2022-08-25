@@ -232,8 +232,11 @@ void Killaura::onEnable() {
 	if (g_Data.getLocalPlayer() == nullptr)
 		setEnabled(false);
 
-	if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
-		clientMessageF(u8"检测到您位于EaseCation，已为您自动开启绕过CPS检测 ");
+	if (g_Data.getRakNetInstance() != nullptr) {
+		if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
+			clientMessageF(u8"检测到您位于EaseCation测试服，已为您自动开启绕过CPS检测 ");
+		}	
+	}
 }
 
 void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {

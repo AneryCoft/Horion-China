@@ -141,10 +141,10 @@ void Tower::onSendPacket(C_Packet* packet, bool& cancelSend) {
 			C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
 			movePacket->pitch = 89.f;
 		}
-		if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+		/*if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 			PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
 			authInputPacket->pitch = 89.f;
-		}
+		}*/
 	}
 }
 
