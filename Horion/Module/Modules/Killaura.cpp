@@ -159,7 +159,14 @@ struct Angle {
 		vec2_t angle2 = localPlayer->getPos()->CalcAngle(*target2->getPos()).normAngles();
 		vec2_t appl = localPlayer->viewAngles.normAngles();
 
-		return (angle.y - appl.y) < (angle2.y - appl.y);
+		auto normAngles = [](float num) noexcept -> float {
+			while (num > 180.0f)
+				num -= 360.0f;
+			while (num < -180.0f)
+				num += 360.0f;
+			return num;
+		};
+		return abs(normAngles(angle.y - appl.y)) < abs(normAngles(angle2.y - appl.y));
 	}
 };
 
