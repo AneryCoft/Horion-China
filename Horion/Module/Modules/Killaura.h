@@ -22,7 +22,7 @@ private:
 	TimerUtil attackTime;
 	TimerUtil switchTime;
 	
-	int rangeYaw = 90;
+	float FOV = 360.f;
 	friend void findEntity(C_Entity* currentEntity, bool isRegularEntity);
 public:
 	//bool rotations = false;

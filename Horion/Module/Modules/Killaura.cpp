@@ -20,7 +20,7 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 		.addEntry(EnumEntry("Health", 2));
 	registerEnumSetting("Priority", &priority, 0);
 	registerFloatSetting("Range", &range, range, 3.f, 10.f);
-	registerIntSetting("Yaw Range", &rangeYaw, rangeYaw, 15, 360);
+	registerFloatSetting("FOV", &FOV, FOV, 15.f, 360.f);
 	registerIntSetting("MaxCPS", &maxCPS, maxCPS, 1, 20);
 	registerIntSetting("MinCPS", &minCPS, minCPS, 1, 20);
 	registerFloatSetting("Switch Delay", &switchDelay, switchDelay, 1.f, 1000.f);
@@ -88,7 +88,7 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 	vec2_t lxzPos(g_Data.getLocalPlayer()->getPos()->x, g_Data.getLocalPlayer()->getPos()->z);
 	constexpr float r = 180.f / PI;
 
-	if (killauraMod->rangeYaw < 360) {
+	if (killauraMod->FOV < 360.f) {
 		float zxdist = sqrt((lxzPos.x - czxPos.x) * (lxzPos.x - czxPos.x) + (lxzPos.y - czxPos.y) * (lxzPos.y - czxPos.y));
 		float asinyew = asin((czxPos.x - lxzPos.x) / zxdist) * r;
 		float acosyew = acos((czxPos.y - lxzPos.y) / zxdist) * r;
@@ -105,8 +105,8 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 			else  //3
 				powce = -asinyew;
 		}
-		float powceH = powce + float(killauraMod->rangeYaw) / 2.f;
-		float powceL = powce - float(killauraMod->rangeYaw) / 2.f;
+		float powceH = powce + killauraMod->FOV / 2.f;
+		float powceL = powce - killauraMod->FOV / 2.f;
 
 		if (powceH > 180.f) {
 			if (!(g_Data.getCGameMode()->player->yaw >= powceL || g_Data.getCGameMode()->player->yaw <= powceH - 360.f))
