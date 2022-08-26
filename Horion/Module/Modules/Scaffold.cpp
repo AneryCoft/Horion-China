@@ -3,7 +3,7 @@
 //#include "../../../Utils/Logger.h"
 
 Scaffold::Scaffold() : IModule(VK_NUMPAD1, Category::WORLD, "Automatically build blocks beneath you.") {
-	mode = (*new SettingEnum(this))
+	mode = SettingEnum(this)
 			   .addEntry(EnumEntry("Normal", 0))
 			   .addEntry(EnumEntry("Extend", 1))
 			   .addEntry(EnumEntry("Staircase", 2))
@@ -299,7 +299,7 @@ void Scaffold::onEnable() {
 	horizontalHigh = g_Data.getLocalPlayer()->eyePos0.y;
 	horizontalHigh -= g_Data.getLocalPlayer()->height;
 	horizontalHigh -= 0.5f;
-	//水平搭路计算脚下高度
+	//脣庐脝陆麓卯脗路录脝脣茫陆脜脧脗赂脽露脠
 
 	prevSlot = g_Data.getLocalPlayer()->getSupplies()->selectedHotbarSlot;
 
