@@ -221,13 +221,14 @@ void Killaura::onGetPickRange() {
 		CPS = RandomNumber(minCPS, maxCPS);
 		//CPS = rand() % (maxCPS - minCPS + 1) + minCPS;
 		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
+			/*
 			if (rotations.selected == 1) {
 				if (localPlayer->velocity.squaredxzlen() < 0.01) {
 					C_MovePlayerPacket packet(localPlayer, *localPlayer->getPos());
 					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);  //不动的时候Packet转头也能工作
 				}
 			}
-
+			*/
 			switch (mode.selected) {
 			case 0:
 				if (!(targetList[0]->damageTime > 1 && hurttime)) {
