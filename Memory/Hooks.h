@@ -100,6 +100,7 @@ private:
 	static float LevelRendererPlayer_getFov(__int64 _this, float a2, bool a3);
 	static void MultiLevelPlayer_tick(C_EntityList* entityList);
 	static void GameMode_startDestroyBlock(C_GameMode* _this, vec3_ti* a2, uint8_t face, void* a4, void* a5);
+	static void GameMode_stopDestroyBlock(C_GameMode* _this, vec3_ti* pos);
 	static void HIDController_keyMouse(C_HIDController* _this, void* a2, void* a3);
 	static int BlockLegacy_getRenderLayer(C_BlockLegacy* a1);
 	static __int8* BlockLegacy_getLightEmission(C_BlockLegacy* _this, __int8* a2);
@@ -156,6 +157,7 @@ private:
 	std::unique_ptr<FuncHook> LevelRendererPlayer_getFovHook;
 	std::unique_ptr<FuncHook> MultiLevelPlayer_tickHook;
 	std::unique_ptr<FuncHook> GameMode_startDestroyBlockHook;
+	std::unique_ptr<FuncHook> GameMode_stopDestroyBlockHook;
 	std::unique_ptr<FuncHook> HIDController_keyMouseHook;
 	std::unique_ptr<FuncHook> BlockLegacy_getRenderLayerHook;
 	std::unique_ptr<FuncHook> BlockLegacy_getLightEmissionHook;
