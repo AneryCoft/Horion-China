@@ -2,12 +2,13 @@
 
 Fly::Fly() : IModule('F', Category::MOVEMENT, "Fly to the sky") {
 	mode = (*new SettingEnum(this))
-			   .addEntry(EnumEntry("Creative", 0))
-			   .addEntry(EnumEntry("CubeGlide", 1))
-			   .addEntry(EnumEntry("AirStuck", 2))
-			   .addEntry(EnumEntry("Jetpack", 3))
-			   .addEntry(EnumEntry("Jetpack2", 4))
-			   .addEntry(EnumEntry("Motion", 5));
+		.addEntry(EnumEntry("Creative", 0))
+		.addEntry(EnumEntry("Lifeboat", 1))
+		.addEntry(EnumEntry("AirStuck", 2))
+		.addEntry(EnumEntry("Jetpack", 3))
+		.addEntry(EnumEntry("Jetpack2", 4))
+		.addEntry(EnumEntry("Motion", 5))
+		.addEntry(EnumEntry("NoClip", 6));
 	registerEnumSetting("Mode", &mode, 0);
 	registerFloatSetting("Horizontal Speed", &this->horizontalSpeed, this->horizontalSpeed, 0.1f, 10.f);
 	registerFloatSetting("Vertical Speed", &this->verticalSpeed, this->verticalSpeed, 0.1f, 10.f);
@@ -18,13 +19,13 @@ Fly::Fly() : IModule('F', Category::MOVEMENT, "Fly to the sky") {
 Fly::~Fly() {
 }
 
-const char *Fly::getModuleName() {
+const char* Fly::getModuleName() {
 	return ("Fly");
 }
 
 void Fly::onEnable() {
 	switch (mode.selected) {
-	case 5:
+	case 1:
 		g_Data.getLocalPlayer()->setPos((*g_Data.getLocalPlayer()->getPos()).add(vec3_t(0, 1, 0)));
 		break;
 	}
@@ -36,7 +37,7 @@ void Fly::onEnable() {
 	}
 }
 
-void Fly::onTick(C_GameMode *gm) {
+void Fly::onTick(C_GameMode* gm) {
 	++gameTick;
 
 	switch (mode.selected) {
@@ -62,7 +63,7 @@ void Fly::onTick(C_GameMode *gm) {
 
 		gm->player->lerpMotion(moveVec);
 
-		if (gameTick >= 5) {
+		/*if (gameTick >= 5) {
 			gameTick = 0;
 			float yaw = gm->player->yaw * (PI / 180);
 			float length = 4.f;
@@ -71,12 +72,8 @@ void Fly::onTick(C_GameMode *gm) {
 			float z = cos(yaw) * length;
 
 			gm->player->setPos(pos.add(vec3_t(x, 0.5f, z)));
-		}
+		}*/
 	} break;
-	case 2:
-		gm->player->velocity = vec3_t(0, 0, 0);
-		break;
-
 	case 3: {
 		float calcYaw = (gm->player->yaw + 90) * (PI / 180);
 		float calcPitch = (gm->player->pitch) * -(PI / 180);
@@ -118,8 +115,11 @@ void Fly::onTick(C_GameMode *gm) {
 			gm->player->velocity.y -= 0.15f;
 			gameTick = 0;
 		}
-	}
+	} break;
+	case 6:
+		gm->player->aabb.upper.y = gm->player->aabb.lower.y - 1.8f;
 	case 5:
+	case 2:
 		gm->player->velocity = vec3_t(0, 0, 0);
 	}
 }
@@ -135,20 +135,25 @@ void Fly::onDisable() {
 		break;
 	case 1:
 		g_Data.getLocalPlayer()->velocity = vec3_t(0, 0, 0);
+		break;
+	case 6:
+		g_Data.getLocalPlayer()->aabb.upper.y = g_Data.getLocalPlayer()->aabb.lower.y + 1.8f;
 	}
 }
 
-void Fly::onMove(C_MoveInputHandler *input) {
-	C_LocalPlayer *localPlayer = g_Data.getLocalPlayer();
+void Fly::onMove(C_MoveInputHandler* input) {
+	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	if (localPlayer == nullptr)
 		return;
 
 	switch (mode.selected) {
-	case 5: {
-		vec3_t *localPlayerPos = localPlayer->getPos();
+	case 5: 
+	case 6:
+	{
+		vec3_t* localPlayerPos = localPlayer->getPos();
 
 		float yaw = localPlayer->yaw;
-		vec2_t moveVec2d = {input->forwardMovement, -input->sideMovement};
+		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
 		bool pressed = moveVec2d.magnitude() > 0.01f;
 
 		if (input->isJumping) {
