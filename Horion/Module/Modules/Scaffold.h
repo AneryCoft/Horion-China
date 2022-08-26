@@ -35,5 +35,5 @@ public:
 	virtual void onEnable() override;
 	virtual void onPostRender(C_MinecraftUIRenderContext* renderCtx) override;
 	virtual void onGetPickRange() override;
-	//virtual void onTick(C_GameMode*) override;
+	virtual void onTick(C_GameMode*) override;
 };

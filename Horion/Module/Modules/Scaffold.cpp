@@ -164,15 +164,14 @@ void Scaffold::onGetPickRange() {
 
 	g_Data.getLocalPlayer()->level->rayHitType = 0;
 
+	needRotations = true;
+
 	switch (mode.selected) {
 	case 0:
 	{
 		vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block below the player
 		blockBelow.y -= g_Data.getLocalPlayer()->height;
 		blockBelow.y -= 0.5f;
-
-		blockPos = blockBelow;
-		needRotations = true;
 
 		if (!tryScaffold(blockBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
@@ -255,9 +254,6 @@ void Scaffold::onGetPickRange() {
 	{
 		vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block below the player
 		blockBelow.y = horizontalHigh;
-
-		blockPos = blockBelow;
-		needRotations = true;
 
 		if (!tryScaffold(blockBelow)) {
 			if (speed > 0.05f) {  // Are we actually walking?
@@ -342,5 +338,15 @@ void Scaffold::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			DrawUtils::setColor(0, 0.3705, 1, 1);
 			DrawUtils::drawBox(renderPos, renderPos.add(1), (float)0.5 / (float)1.f, false);
 		}
+	}
+}
+
+void Scaffold::onTick(C_GameMode* gm) {
+	if (g_Data.getLocalPlayer() == nullptr)
+		return;
+	if (mode.selected == 0 || mode.selected == 3) {
+		blockPos = g_Data.getLocalPlayer()->eyePos0;
+		blockPos.y -= g_Data.getLocalPlayer()->height;
+		blockPos.y -= 0.5f;
 	}
 }
