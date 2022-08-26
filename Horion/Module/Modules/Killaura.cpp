@@ -193,6 +193,7 @@ struct Angle {
 		};
 
 		//当视角绝对值大于60度时，计算目标中点与准星中点的距离偏移。其他情况仅计算yaw的偏移
+		//
 		return abs(g_Data.getLocalPlayer()->pitch) > 60.f ? abs(appl.sub(angle).magnitude()) < abs(appl.sub(angle2).magnitude()) : abs(normAngles(angle.y - appl.y)) < abs(normAngles(angle2.y - appl.y));
 
 	}
