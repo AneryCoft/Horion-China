@@ -1,7 +1,7 @@
 #include "AutoGapple.h"
 
 AutoGapple::AutoGapple() : IModule(0, Category::COMBAT, "Auto eat gapples if you're at low health.") {
-	item = (*new SettingEnum(this))
+	item = SettingEnum(this)
 		.addEntry(EnumEntry("GApple", 0))
 		.addEntry(EnumEntry("Soup", 1))
 		.addEntry(EnumEntry("Potion", 2));
@@ -20,15 +20,15 @@ const char* AutoGapple::getModuleName() {
 bool AutoGapple::targetItem(int16_t itemId, uint16_t extraData) {
 	switch (item.selected) {
 	case 0:
-		if (itemId == 258 || itemId == 259) //½ğÆ»¹ûºÍ¸½Ä§½ğÆ»¹û
+		if (itemId == 258 || itemId == 259) //é‡‘è‹¹æœå’Œé™„é­”é‡‘è‹¹æœ
 			return true;
 		break;
 	case 1:
-		if (itemId == 260) //Ä¢¹½ìÒ
+		if (itemId == 260) //è˜‘è‡ç…²
 			return true;
 		break;
 	case 2:
-		if (itemId == 561 && (extraData == 21 || extraData == 22)) //Åç½¦ÖÎÁÆÒ©Ë®
+		if (itemId == 561 && (extraData == 21 || extraData == 22)) //å–·æº…æ²»ç–—è¯æ°´
 			return true;
 	}
 	return false;
@@ -47,13 +47,13 @@ void AutoGapple::onTick(C_GameMode* gm) {
 		/*
 		switch (mode.selected) {
 		case 0:
-			itemID = 258 || 259; //½ğÆ»¹ûºÍ¸½Ä§½ğÆ»¹û
+			itemID = 258 || 259; //é‡‘è‹¹æœå’Œé™„é­”é‡‘è‹¹æœ
 			break;
 		case 1:
-			itemID = 260; //Ä¢¹½ìÒ
+			itemID = 260; //è˜‘è‡ç…²
 			break;
 		case 2:
-			itemID = 561; //Åç½¦Ò©Ë®
+			itemID = 561; //å–·æº…è¯æ°´
 		}
 		*/
 		C_PlayerInventoryProxy* supplies = localPlayer->getSupplies();
@@ -94,7 +94,7 @@ void AutoGapple::onTick(C_GameMode* gm) {
 		if (targetItem(selectedItemId, selectedItemData)) {
 			static auto fastEatMod = moduleMgr->getModule<FastEat>();
 			++tick;
-			if (item.selected == 1/*Ä¢¹½ìÒÔÚ´ó¶àÊı·şÎñÆ÷¶¼ÊÇÃë³Ô*/ || item.selected == 2 || candelay) {
+			if (item.selected == 1/*è˜‘è‡ç…²åœ¨å¤§å¤šæ•°æœåŠ¡å™¨éƒ½æ˜¯ç§’åƒ*/ || item.selected == 2 || candelay) {
 				if (tick < delay) {
 					return;
 				}
@@ -121,7 +121,7 @@ void AutoGapple::onTick(C_GameMode* gm) {
 				if (localPlayer->velocity.squaredxzlen() < 0.01) {
 					C_MovePlayerPacket packet(localPlayer, *localPlayer->getPos());
 					packet.pitch = 89.f;
-					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet); //²»¶¯µÄÊ±ºò×ªÍ·Ò²ÄÜ¹¤×÷
+					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet); //ä¸åŠ¨çš„æ—¶å€™è½¬å¤´ä¹Ÿèƒ½å·¥ä½œ
 				}
 				rotation = true;
 			}
