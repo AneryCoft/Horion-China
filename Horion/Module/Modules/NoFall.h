@@ -4,6 +4,8 @@
 #include "Module.h"
 
 class NoFall : public IModule {
+private:
+	float distanceToGround();
 public:
 	SettingEnum mode;
 
