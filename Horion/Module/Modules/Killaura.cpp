@@ -3,7 +3,7 @@
 #include <random>
 #include <unordered_map>
 
-Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around you automatically.") { //hoiron hud显示不下这么多选项。。。
+Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around you automatically.") { //hoiron hud显示不下这么多选项
 	mode = SettingEnum(this)
 		.addEntry(EnumEntry("Single", 0))
 		.addEntry(EnumEntry("Multi", 1))
@@ -31,7 +31,7 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 	registerFloatSetting("Yaw Offset", &yawOffset, yawOffset, 0.f, 10.f);
 	registerFloatSetting("Pitch Offset", &pitchOffset, pitchOffset, 0.f, 10.f);
 	registerBoolSetting("Mob Aura", &isMobAura, isMobAura);
-	registerBoolSetting("Behind Block", &attackBehindBlocks, attackBehindBlocks);
+	registerBoolSetting("AttackBehindBlock", &attackBehindBlocks, attackBehindBlocks);
 	registerBoolSetting("Disable dur mining", &DisabledDuringMining, DisabledDuringMining);
 	registerBoolSetting("Playsound", &playsound, playsound);
 	registerBoolSetting("Hurttime", &hurttime, hurttime);
