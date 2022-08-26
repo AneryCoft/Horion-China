@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around you automatically.") { //hoiron hud显示不下这么多选项
-	mode = SettingEnum(this)
+	mode = SettingEnum(this) 
 		.addEntry(EnumEntry("Single", 0))
 		.addEntry(EnumEntry("Multi", 1))
 		.addEntry(EnumEntry("Switch", 2));
@@ -96,35 +96,41 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 	constexpr float r = 180.f / PI;
 
 	if (killauraMod->FOV < 360.f) {
-		float zxdist = sqrt((lxzPos.x - czxPos.x) * (lxzPos.x - czxPos.x) + (lxzPos.y - czxPos.y) * (lxzPos.y - czxPos.y));
-		float asinyew = asin((czxPos.x - lxzPos.x) / zxdist) * r;
-		float acosyew = acos((czxPos.y - lxzPos.y) / zxdist) * r;
-		float powce;
-		if (asinyew > 0.f) {
-			if (acosyew > 90.f)  //1
-				powce = -180.f + asinyew;
-			else  //2
-				powce = -asinyew;
-		}
-		else {
-			if (acosyew > 90.f)  //4
-				powce = 180.f + asinyew;
-			else  //3
-				powce = -asinyew;
-		}
-		float powceH = powce + killauraMod->FOV / 2.f;
-		float powceL = powce - killauraMod->FOV / 2.f;
+		if (abs(g_Data.getLocalPlayer()->pitch) > 60.f) { //当视角绝对值大于60度时，计算目标中点与准星中点的距离偏移。其他情况仅计算yaw的偏移
+			if (abs(g_Data.getLocalPlayer()->viewAngles.normAngles().sub(g_Data.getLocalPlayer()->getPos()->CalcAngle(*currentEntity->getPos()).normAngles()).magnitude()) > killauraMod->FOV)
+				return;
+		} else {
 
-		if (powceH > 180.f) {
-			if (!(g_Data.getCGameMode()->player->yaw >= powceL || g_Data.getCGameMode()->player->yaw <= powceH - 360.f))
+			float zxdist = sqrt((lxzPos.x - czxPos.x) * (lxzPos.x - czxPos.x) + (lxzPos.y - czxPos.y) * (lxzPos.y - czxPos.y));
+			float asinyew = asin((czxPos.x - lxzPos.x) / zxdist) * r;
+			float acosyew = acos((czxPos.y - lxzPos.y) / zxdist) * r;
+			float powce;
+			if (asinyew > 0.f) {
+				if (acosyew > 90.f)  //1
+					powce = -180.f + asinyew;
+				else  //2
+					powce = -asinyew;
+			}
+			else {
+				if (acosyew > 90.f)  //4
+					powce = 180.f + asinyew;
+				else  //3
+					powce = -asinyew;
+			}
+			float powceH = powce + killauraMod->FOV / 2.f;
+			float powceL = powce - killauraMod->FOV / 2.f;
+
+			if (powceH > 180.f) {
+				if (!(g_Data.getCGameMode()->player->yaw >= powceL || g_Data.getCGameMode()->player->yaw <= powceH - 360.f))
+					return;
+			}
+			else if (powceL < -180.f) {
+				if (!(g_Data.getCGameMode()->player->yaw >= powceL + 360.f || g_Data.getCGameMode()->player->yaw <= powceH))
+					return;
+			}
+			else if (!(g_Data.getCGameMode()->player->yaw >= powceL && g_Data.getCGameMode()->player->yaw <= powceH))
 				return;
 		}
-		else if (powceL < -180.f) {
-			if (!(g_Data.getCGameMode()->player->yaw >= powceL + 360.f || g_Data.getCGameMode()->player->yaw <= powceH))
-				return;
-		}
-		else if (!(g_Data.getCGameMode()->player->yaw >= powceL && g_Data.getCGameMode()->player->yaw <= powceH))
-			return;
 	}
 	//墙
 
@@ -185,7 +191,10 @@ struct Angle {
 				num += 360.0f;
 			return num;
 		};
-		return abs(normAngles(angle.y - appl.y)) < abs(normAngles(angle2.y - appl.y));
+
+		//当视角绝对值大于60度时，计算目标中点与准星中点的距离偏移。其他情况仅计算yaw的偏移
+		return abs(g_Data.getLocalPlayer()->pitch) > 60.f ? abs(appl.sub(angle).magnitude()) < abs(appl.sub(angle2).magnitude()) : abs(normAngles(angle.y - appl.y)) < abs(normAngles(angle2.y - appl.y));
+
 	}
 };
 
