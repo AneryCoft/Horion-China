@@ -12,6 +12,7 @@ private:
 	bool treasures = true;
 	bool chests = false;
 	bool barrels = false;
+	bool redStone = false;
 	bool lifeboatBeds = false;
 	bool core = false;
 	bool targetEsp = false;
@@ -23,11 +24,13 @@ private:
 	bool cakesRender = false;
 	bool chestsRender = false;
 	bool barrelsRender = false;
+	bool redStoneRender = false;
 
 	bool shouldRotation = false;
-	vec3_ti blockPos;
+	vec3_ti renderPos;
 	vec2_t angle;
 	C_Entity* target;
+	void selectPickaxe();
 
 public:
 	Breaker();
