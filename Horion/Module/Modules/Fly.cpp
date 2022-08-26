@@ -1,7 +1,7 @@
 #include "Fly.h"
 
 Fly::Fly() : IModule('F', Category::MOVEMENT, "Fly to the sky") {
-	mode = (*new SettingEnum(this))
+	mode = SettingEnum(this)
 		.addEntry(EnumEntry("Creative", 0))
 		.addEntry(EnumEntry("Lifeboat", 1))
 		.addEntry(EnumEntry("AirStuck", 2))
@@ -31,7 +31,7 @@ void Fly::onEnable() {
 	}
 	if (elytraSpoof && g_Data.getLocalPlayer() != nullptr) {
 		C_PlayerActionPacket actionPacket;
-		actionPacket.action = 15;  //¿ªÆôÇÊ³á
+		actionPacket.action = 15;  //å¼€å¯é˜ç¿…
 		actionPacket.entityRuntimeId = g_Data.getLocalPlayer()->entityRuntimeId;
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&actionPacket);
 	}
@@ -196,8 +196,8 @@ void Fly::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (packet->isInstanceOf<C_PlayerActionPacket>()) {
 		C_PlayerActionPacket* packets = reinterpret_cast<C_PlayerActionPacket*>(packet);
 		if (elytraSpoof) {
-			if (packets->action == 16) { //¿Í»§¶Ë×Ô¶¯·¢ËÍµÄ¹Ø±ÕÇÊ³á°ü
-				cancelSend = true; //È¡Ïû·¢ËÍÕâ¸ö°ü
+			if (packets->action == 16) { //å®¢æˆ·ç«¯è‡ªåŠ¨å‘é€çš„å…³é—­é˜ç¿…åŒ…
+				cancelSend = true; //å–æ¶ˆå‘é€è¿™ä¸ªåŒ…
 			}
 		}
 	}
