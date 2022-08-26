@@ -97,7 +97,7 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 
 	if (killauraMod->FOV < 360.f) {
 		if (abs(g_Data.getLocalPlayer()->pitch) > 60.f) { //当视角绝对值大于60度时，计算目标中点与准星中点的距离偏移。其他情况仅计算yaw的偏移
-			if (abs(g_Data.getLocalPlayer()->viewAngles.normAngles().sub(g_Data.getLocalPlayer()->getPos()->CalcAngle(*currentEntity->getPos()).normAngles()).magnitude()) > killauraMod->FOV)
+			if (abs(g_Data.getLocalPlayer()->viewAngles.normAngles().sub(g_Data.getLocalPlayer()->getPos()->CalcAngle(*currentEntity->getPos()).normAngles()).normAngles().magnitude()) > killauraMod->FOV)
 				return;
 		} else {
 
@@ -192,9 +192,9 @@ struct Angle {
 			return num;
 		};
 
-		//当视角绝对值大于60度时，计算目标中点与准星中点的距离偏移。其他情况仅计算yaw的偏移
+		//当视角绝对值大于60度时，计算目标中点与准星中点的距离偏移，可以避免转头的pitch过大。其他情况仅计算yaw的偏移
 		//
-		return abs(g_Data.getLocalPlayer()->pitch) > 60.f ? abs(appl.sub(angle).magnitude()) < abs(appl.sub(angle2).magnitude()) : abs(normAngles(angle.y - appl.y)) < abs(normAngles(angle2.y - appl.y));
+		return abs(g_Data.getLocalPlayer()->pitch) > 60.f ? abs(appl.sub(angle).normAngles().magnitude()) < abs(appl.sub(angle2).normAngles().magnitude()) : abs(normAngles(angle.y - appl.y)) < abs(normAngles(angle2.y - appl.y));
 
 	}
 };
