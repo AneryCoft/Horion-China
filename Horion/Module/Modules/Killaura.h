@@ -19,18 +19,30 @@ private:
 	int switchTarget = 0;
 	float yawOffset = 0.f;
 	float pitchOffset = 0.f;
+	bool playsound = true;
 	TimerUtil attackTime;
 	TimerUtil switchTime;
 	
 	float FOV = 360.f;
+
+	bool canswing = false;
+
 	friend void findEntity(C_Entity* currentEntity, bool isRegularEntity);
+
+	static float randomFloat(float min, float max);
+
 public:
 	//bool rotations = false;
 	bool targetListEmpty = false;
 	vec2_t angle;
 	bool isMobAura = false;
-	
-	float range = 6.f;
+	bool attackBehindBlocks = true;
+	bool DisabledDuringMining = false;
+	bool isMining = false;
+
+	float maxRange = 6.f;
+	float minRange = 6.f;
+	float swingRange = 6.f;
 
 	SettingEnum mode;
 	SettingEnum rotations;
