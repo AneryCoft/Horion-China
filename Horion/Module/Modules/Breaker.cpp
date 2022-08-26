@@ -3,6 +3,7 @@
 
 Breaker::Breaker() : IModule(VK_NUMPAD9, Category::MISC, "Destroys certain blocks around you.") {
 	registerIntSetting("Range", &range, range, 3, 10);
+	registerIntSetting("Delay", &delay, delay, 0, 20);
 	this->registerFloatSetting("lineWidth", &this->thick, this->thick, 0.1f, 0.8f);
 	registerBoolSetting("TargetESP", &this->targetEsp, this->targetEsp);
 	registerBoolSetting("Rotations", &this->rotations, this->rotations);
@@ -65,6 +66,14 @@ void Breaker::onTick(C_GameMode* gm) {
 	if (std::time(nullptr) < g_Hooks.connecttime + 1)
 		return;
 
+	++tick;
+	if (tick < delay) {
+		return;
+	}
+	else {
+		tick = 0;
+	}
+
 	blockList.clear();
 
 	vec3_t* pos = gm->player->getPos();
@@ -74,13 +83,13 @@ void Breaker::onTick(C_GameMode* gm) {
 				vec3_ti blockPos = vec3_ti(x, y, z);
 				int id = gm->player->region->getBlock(blockPos)->toLegacy()->blockId;
 
-				if ((id == 26 && beds) || 
-					(id == 122 && eggs) || 
-					(id == 54 && chests) || 
-					(id == 458 && barrels) || 
+				if ((id == 26 && beds) ||
+					(id == 122 && eggs) ||
+					(id == 54 && chests) ||
+					(id == 458 && barrels) ||
 					((id == 73 || id == 74) && redStone)) {
 					blockList.push_back(blockPos);
-				}			
+				}
 			}
 		}
 	}
@@ -98,54 +107,54 @@ void Breaker::onTick(C_GameMode* gm) {
 
 	if (!blockList.empty()) {
 		//for (vec3_ti i : blockList) {
-			int id = gm->player->region->getBlock(blockList[0])->toLegacy()->blockId;
+		int id = gm->player->region->getBlock(blockList[0])->toLegacy()->blockId;
 
-			if (id == 26 && beds) {
-				destroy = true;
-				bedsRender = true;
-			} // Beds
-			if (id == 122 && eggs) {
-				destroy = true;
-				eggsRender = true;
-			} // Dragon Eggs
-			if (id == 92 && cakes) {
-				eat = true;
-				cakesRender = true;
-			} // Cakes
-			if (id == 54 && chests) {
-				destroy = true;
-				chestsRender = true;
-			} // Chests
-			if (id == 458 && barrels) {
-				destroy = true;
-				barrelsRender = true;
-			} // Barrels
-			if ((id == 73 || id == 74) && redStone) {
-				destroy = true;
-				redStoneRender = true;
-				selectPickaxe();
-			} // redStone
+		if (id == 26 && beds) {
+			destroy = true;
+			bedsRender = true;
+		} // Beds
+		if (id == 122 && eggs) {
+			destroy = true;
+			eggsRender = true;
+		} // Dragon Eggs
+		if (id == 92 && cakes) {
+			eat = true;
+			cakesRender = true;
+		} // Cakes
+		if (id == 54 && chests) {
+			destroy = true;
+			chestsRender = true;
+		} // Chests
+		if (id == 458 && barrels) {
+			destroy = true;
+			barrelsRender = true;
+		} // Barrels
+		if ((id == 73 || id == 74) && redStone) {
+			destroy = true;
+			redStoneRender = true;
+			selectPickaxe();
+		} // redStone
 
-			if (destroy) {
-				renderPos = blockList[0];
-				angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockList[0].toVec3t());
+		if (destroy) {
+			renderPos = blockList[0];
+			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockList[0].toVec3t());
 
-				bool isDestroyedOut = false;
-				gm->startDestroyBlock(blockList[0], 0, isDestroyedOut);
-				gm->destroyBlock(&blockList[0], 0);
-				//g_Data.getLocalPlayer()->swingArm();
-				//break;
-			}
+			bool isDestroyedOut = false;
+			gm->startDestroyBlock(blockList[0], 0, isDestroyedOut);
+			gm->destroyBlock(&blockList[0], 0);
+			//g_Data.getLocalPlayer()->swingArm();
+			//break;
+		}
 
-			if (eat) {
-				renderPos = blockList[0];
-				angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockList[0].toVec3t());
+		if (eat) {
+			renderPos = blockList[0];
+			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockList[0].toVec3t());
 
-				bool idk = true;
-				gm->buildBlock(&blockList[0], 0, idk);
-				//g_Data.getLocalPlayer()->swingArm();
-				//break;
-			}
+			bool idk = true;
+			gm->buildBlock(&blockList[0], 0, idk);
+			//g_Data.getLocalPlayer()->swingArm();
+			//break;
+		}
 		//}
 		/*
 		if (rotations) {

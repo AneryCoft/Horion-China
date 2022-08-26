@@ -32,6 +32,9 @@ private:
 	C_Entity* target;
 	void selectPickaxe();
 
+	int tick = 0;
+	int delay = 0;
+
 public:
 	Breaker();
 	~Breaker();
