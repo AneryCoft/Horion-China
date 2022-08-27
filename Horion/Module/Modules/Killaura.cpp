@@ -15,8 +15,8 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 	priority = SettingEnum(this)
 		.addEntry(EnumEntry("Distance", 0))
 		.addEntry(EnumEntry("Angle", 1))
-		.addEntry(EnumEntry("Health", 2))
-		.addEntry(EnumEntry("Threaten", 3));
+		.addEntry(EnumEntry("Health", 2));
+		//.addEntry(EnumEntry("Threaten", 3));
 	registerEnumSetting("Priority", &priority, 0);
 	/*registerFloatSetting("Max Range", &maxRange, maxRange, 1.5f, 10.f);
 	registerFloatSetting("Min Range", &minRange, minRange, 1.5f, 10.f);*/
