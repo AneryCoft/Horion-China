@@ -13,9 +13,9 @@ Breaker::Breaker() : IModule(VK_NUMPAD9, Category::MISC, "Destroys certain block
 	registerBoolSetting("Chests", &chests, chests);
 	registerBoolSetting("Barrels", &barrels, barrels);
 	registerBoolSetting("RedStone", &redStone, redStone);
-	registerBoolSetting("Treasures", &this->treasures, this->treasures);       //用于The Hive的Treasure Wars
-	registerBoolSetting("Bed Item", &this->lifeboatBeds, this->lifeboatBeds);  //Lifeboat的实体床
-	registerBoolSetting("Core", &this->core, this->core);                      //用于Galaxite的Core Wars
+	registerBoolSetting("Treasures", &this->treasures, this->treasures);       //鐢ㄤ簬The Hive鐨凾reasure Wars
+	registerBoolSetting("Bed Item", &this->lifeboatBeds, this->lifeboatBeds);  //Lifeboat鐨勫疄浣撳簥
+	registerBoolSetting("Core", &this->core, this->core);                      //鐢ㄤ簬Galaxite鐨凜ore Wars
 }
 
 Breaker::~Breaker() {
@@ -149,6 +149,7 @@ void Breaker::onTick(C_GameMode* gm) {
 				bool isDestroyedOut = false;
 				gm->startDestroyBlock(blockList[0], 0, isDestroyedOut);
 				gm->destroyBlock(&blockList[0], 0);
+				gm->stopDestroyBlock(blockList[0]);
 			}
 
 			if (eat) {
@@ -162,7 +163,7 @@ void Breaker::onTick(C_GameMode* gm) {
 		if (rotations) {
 			if (g_Data.getLocalPlayer()->velocity.squaredxzlen() < 0.01) {
 				C_MovePlayerPacket packet(g_Data.getLocalPlayer(), *g_Data.getLocalPlayer()->getPos());
-				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);  //不动的时候Packet转头也能工作
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);  //涓嶅姩鐨勬椂鍊橮acket杞ご涔熻兘宸ヤ綔
 			}
 		}
 		*/
