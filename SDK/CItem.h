@@ -246,6 +246,20 @@ public:
 		if (itemId == 247)
 			return false; //下界反应核
 
+		if (itemId == -746)
+			return false; //Forzen Boom Box
+
+		if (itemId == -747)
+			return false; //Knockback Boom Box
+
+		if (itemId == -748)
+			return false; //Poison Boom Box
+
+		if (itemId == -749)
+			return false; //Boom Box
+
+		//以上为The Hive服务器的道具
+
 		auto val = *reinterpret_cast<__int64 ***>(reinterpret_cast<__int64>(this) + 0x1A0);
 		return val != nullptr && *val != nullptr;
 	}
