@@ -361,6 +361,19 @@ void Killaura::onGetPickRange() {
 				++switchTarget;
 			}
 		}
+	} else if (swing && canswing) {
+		static LevelSoundEventPacket sounds;
+		sounds.pos = *g_Data.getLocalPlayer()->getPos();
+		sounds.sound = 42;
+
+		CPS = RandomNumber(minCPS, maxCPS);
+		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
+			if (canswing && swing && !hurttime) {  //与hurttime的swing分开处理
+				localPlayer->swing();
+				if (playsound)
+					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&sounds);
+			}
+		}
 	}
 }
 
