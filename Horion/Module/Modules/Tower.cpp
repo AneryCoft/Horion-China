@@ -98,7 +98,7 @@ void Tower::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			return;
 
 		if (autoBlock) {
-			scaffoldMod->findBlock();
+			scaffoldMod->selectedBlock();
 		}
 		else {
 			return;

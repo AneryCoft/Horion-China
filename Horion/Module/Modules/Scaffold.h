@@ -21,8 +21,11 @@ private:
 public:
 	SettingEnum mode;
 	SettingEnum rot;
-	bool findBlock();
+	SettingEnum autoBlockEnum;
+
+	void selectedBlock();
 	int calcCount();
+
 	Scaffold();
 	~Scaffold();
 

@@ -10,16 +10,19 @@ Scaffold::Scaffold() : IModule(VK_NUMPAD1, Category::WORLD, "Automatically build
 			   .addEntry(EnumEntry("Horizontal", 3))
 			   .addEntry(EnumEntry("Hive", 4));
 	registerEnumSetting("Mode", &mode, 0);
-	rot = (*new SettingEnum(this))
+	rot =  SettingEnum(this)
 			  .addEntry(EnumEntry("Normal", 0))
 			  .addEntry(EnumEntry("Forward", 1))
 			  .addEntry(EnumEntry("Back", 2));
-	registerEnumSetting("RotMode", &rot, 0);
+	registerEnumSetting("Rotations", &rot, 0);
+	autoBlockEnum = SettingEnum(this)
+		.addEntry(EnumEntry("HotbarSlot", 0))
+		.addEntry(EnumEntry("Packet", 1));
+	registerEnumSetting("AutoBlock", &autoBlockEnum, 0);
 	this->registerIntSetting("Extend Length", &this->length, this->length, 0, 10);
 	registerBoolSetting("AutoBlock", &this->autoBlock, this->autoBlock);
 	registerBoolSetting("blockCount", &this->showBlockCount, this->showBlockCount);
 	registerBoolSetting("Rotations", &this->rotations, this->rotations);
-	registerBoolSetting("SpoofBlock", &spoof, spoof); //Buggy
 	registerBoolSetting("Render", &this->render, this->render);
 }
 
@@ -77,7 +80,7 @@ bool Scaffold::tryScaffold(vec3_t blockBelow) {
 	return false;
 }
 
-bool Scaffold::findBlock() {
+void Scaffold::selectedBlock() {
 	/*__int64 id = *g_Data.getLocalPlayer()->getUniqueId();
 	C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
 	C_Inventory* inv = supplies->inventory;
@@ -98,26 +101,43 @@ bool Scaffold::findBlock() {
 	C_Inventory* inv = supplies->inventory;
 	int emptySlot = 0;
 
-	for (int i = 0; i < 36; i++) {
-		C_ItemStack* stack = inv->getItemStack(i);
-		if (i < 9) {
-			if (stack->item != nullptr) {
-				if (stack->getItem()->isBlock()) {
-					supplies->selectedHotbarSlot = i;
-					return true;
+	if (autoBlockEnum.selected == 0) {
+		for (int i = 0; i < 36; i++) {
+			C_ItemStack* stack = inv->getItemStack(i);
+			if (i < 9) {
+				if (stack->item != nullptr) {
+					if (stack->getItem()->isBlock()) {
+						supplies->selectedHotbarSlot = i;
+						return;
+					}
 				}
-			} else {
-				emptySlot = i;
+				else {
+					emptySlot = i;
+				}
 			}
-		} else {
-			if (stack->item != nullptr && stack->getItem()->isBlock()) {
-				inv->moveItem(i, emptySlot);
-				supplies->selectedHotbarSlot = emptySlot;
-				return true;
+			else {
+				if (stack->item != nullptr && stack->getItem()->isBlock()) {
+					inv->moveItem(i, emptySlot);
+					supplies->selectedHotbarSlot = emptySlot;
+					return;
+				}
 			}
 		}
 	}
-	return false;
+	else if (autoBlockEnum.selected == 1) {
+		for (int i = 0; i < 36; i++) {
+			C_ItemStack* stack = inv->getItemStack(i);
+			if (stack->item != nullptr && stack->getItem()->isBlock()) {
+				C_MobEquipmentPacket packet;
+				packet.entityRuntimeId = *g_Data.getLocalPlayer()->getUniqueId();
+				packet.item = *stack;
+				packet.inventorySlot1 = i;
+				packet.hotbarSlot1 = i;
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
+				return;
+			}
+		}
+	}
 }
 
 int Scaffold::calcCount() {
@@ -147,7 +167,7 @@ void Scaffold::onGetPickRange() {
 
 	if (selectedItem == nullptr || selectedItem->count == 0 || selectedItem->item == nullptr || !selectedItem->getItem()->isBlock()) {  // Block in hand?
 		if (autoBlock) {
-			findBlock();
+			selectedBlock();
 		} else
 			return;
 	}
