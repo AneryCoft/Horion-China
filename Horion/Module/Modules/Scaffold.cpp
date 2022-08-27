@@ -351,7 +351,7 @@ void Scaffold::onPlayerTick(C_Player* player) {
 	if (spoof) player->getSupplies()->selectedHotbarSlot = prevSlot;
 }
 
-void Scaffold::onSendPacket(C_Packet* packet) {
+void Scaffold::onSendPacket(C_Packet* packet, bool&) {
 	if (rotations && needRender) {
 		if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || g_Data.getLocalPlayer()->isJumping()) {
 			vec2_t angle;
