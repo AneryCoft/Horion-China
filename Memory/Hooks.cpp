@@ -1134,7 +1134,10 @@ void Hooks::GameMode_startDestroyBlock(C_GameMode* _this, vec3_ti* a2, uint8_t f
 
 	static auto nukerModule = moduleMgr->getModule<Nuker>();
 	static auto instaBreakModule = moduleMgr->getModule<InstaBreak>();
+	static auto killaura = moduleMgr->getModule<Killaura>();
 
+	killaura->isMining = true;
+	
 	if (nukerModule->isEnabled()) {
 		vec3_ti tempPos;
 
@@ -1171,7 +1174,17 @@ void Hooks::GameMode_startDestroyBlock(C_GameMode* _this, vec3_ti* a2, uint8_t f
 		return;
 	}
 
-	oFunc(_this, a2, face, a4, a5);
+	return oFunc(_this, a2, face, a4, a5);
+}
+
+void Hooks::GameMode_stopDestroyBlock(C_GameMode* _this, vec3_ti* pos) {
+	static auto oFunc = g_Hooks.GameMode_stopDestroyBlockHook->GetFastcall<void, C_GameMode*, vec3_ti*>();
+
+	static auto killaura = moduleMgr->getModule<Killaura>();
+
+	killaura->isMining = false;
+
+	return oFunc(_this, pos);
 }
 
 void Hooks::HIDController_keyMouse(C_HIDController* _this, void* a2, void* a3) {

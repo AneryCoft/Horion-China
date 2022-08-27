@@ -1,7 +1,7 @@
 #include "Disabler.h"
 
 Disabler::Disabler() : IModule(0, Category::MISC, "Makes some Anti-Cheats unworkable") {
-	mode = (*new SettingEnum(this))
+	mode = SettingEnum(this)
 		.addEntry(EnumEntry("Velocity Spoof", 0));
 	registerEnumSetting("Mode", &mode, 0);
 }

@@ -1,7 +1,7 @@
 #include "Speed.h"
 
 Speed::Speed() : IModule(VK_NUMPAD2, Category::MOVEMENT, "Speed up!") {
-	mode = (*new SettingEnum(this))
+	mode = SettingEnum(this)
 		.addEntry(EnumEntry("Vanilla", 0))
 		.addEntry(EnumEntry("Bhop", 1))
 		.addEntry(EnumEntry("Lowhop", 2));

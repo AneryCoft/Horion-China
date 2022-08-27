@@ -1,32 +1,39 @@
 #include "Killaura.h"
 #include "../../../Memory/Hooks.h"
 #include <random>
+#include <unordered_map>
 
-Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around you automatically.") {
-	mode = (*new SettingEnum(this))
+Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around you automatically.") { //hoiron hud显示不下这么多选项
+	mode = SettingEnum(this) 
 		.addEntry(EnumEntry("Single", 0))
 		.addEntry(EnumEntry("Multi", 1))
 		.addEntry(EnumEntry("Switch", 2));
 	registerEnumSetting("Mode", &mode, 0);
-	rotations = (*new SettingEnum(this))
+	rotations = SettingEnum(this)
 		.addEntry(EnumEntry("None", 0))
 		.addEntry(EnumEntry("Packet", 1))
 		.addEntry(EnumEntry("Vanilla", 2))
 		.addEntry(EnumEntry("Actual", 3));
 	registerEnumSetting("Rotations", &rotations, 0);
-	priority = (*new SettingEnum(this))
+	priority = SettingEnum(this)
 		.addEntry(EnumEntry("Distance", 0))
 		.addEntry(EnumEntry("Angle", 1))
-		.addEntry(EnumEntry("Health", 2));
+		.addEntry(EnumEntry("Health", 2))
+		.addEntry(EnumEntry("Threaten", 3));
 	registerEnumSetting("Priority", &priority, 0);
-	registerFloatSetting("Range", &range, range, 3.f, 10.f);
+	registerFloatSetting("Max Range", &maxRange, maxRange, 1.5f, 10.f);
+	registerFloatSetting("Min Range", &minRange, minRange, 1.5f, 10.f);
+	registerFloatSetting("Swing Range", &swingRange, swingRange, 1.5f, 15.f);
 	registerFloatSetting("FOV", &FOV, FOV, 15.f, 360.f);
-	registerIntSetting("MaxCPS", &maxCPS, maxCPS, 1, 20);
-	registerIntSetting("MinCPS", &minCPS, minCPS, 1, 20);
+	registerIntSetting("Max CPS", &maxCPS, maxCPS, 1, 20);
+	registerIntSetting("Min CPS", &minCPS, minCPS, 1, 20);
 	registerFloatSetting("Switch Delay", &switchDelay, switchDelay, 1.f, 1000.f);
 	registerFloatSetting("Yaw Offset", &yawOffset, yawOffset, 0.f, 10.f);
 	registerFloatSetting("Pitch Offset", &pitchOffset, pitchOffset, 0.f, 10.f);
-	registerBoolSetting("MobAura", &isMobAura, isMobAura);
+	registerBoolSetting("Mob Aura", &isMobAura, isMobAura);
+	registerBoolSetting("AttackBehindBlock", &attackBehindBlocks, attackBehindBlocks);
+	registerBoolSetting("Disable dur mining", &DisabledDuringMining, DisabledDuringMining);
+	registerBoolSetting("Playsound", &playsound, playsound);
 	registerBoolSetting("Hurttime", &hurttime, hurttime);
 	registerBoolSetting("AutoWeapon", &autoweapon, autoweapon);
 }
@@ -89,42 +96,55 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 	constexpr float r = 180.f / PI;
 
 	if (killauraMod->FOV < 360.f) {
-		float zxdist = sqrt((lxzPos.x - czxPos.x) * (lxzPos.x - czxPos.x) + (lxzPos.y - czxPos.y) * (lxzPos.y - czxPos.y));
-		float asinyew = asin((czxPos.x - lxzPos.x) / zxdist) * r;
-		float acosyew = acos((czxPos.y - lxzPos.y) / zxdist) * r;
-		float powce;
-		if (asinyew > 0.f) {
-			if (acosyew > 90.f)  //1
-				powce = -180.f + asinyew;
-			else  //2
-				powce = -asinyew;
-		}
-		else {
-			if (acosyew > 90.f)  //4
-				powce = 180.f + asinyew;
-			else  //3
-				powce = -asinyew;
-		}
-		float powceH = powce + killauraMod->FOV / 2.f;
-		float powceL = powce - killauraMod->FOV / 2.f;
+		if (abs(g_Data.getLocalPlayer()->pitch) > 60.f) { //当视角绝对值大于60度时，计算目标中点与准星中点的距离偏移。其他情况仅计算yaw的偏移
+			if (abs(g_Data.getLocalPlayer()->viewAngles.normAngles().sub(g_Data.getLocalPlayer()->getPos()->CalcAngle(*currentEntity->getPos()).normAngles()).normAngles().magnitude()) > killauraMod->FOV)
+				return;
+		} else {
 
-		if (powceH > 180.f) {
-			if (!(g_Data.getCGameMode()->player->yaw >= powceL || g_Data.getCGameMode()->player->yaw <= powceH - 360.f))
+			float zxdist = sqrt((lxzPos.x - czxPos.x) * (lxzPos.x - czxPos.x) + (lxzPos.y - czxPos.y) * (lxzPos.y - czxPos.y));
+			float asinyew = asin((czxPos.x - lxzPos.x) / zxdist) * r;
+			float acosyew = acos((czxPos.y - lxzPos.y) / zxdist) * r;
+			float powce;
+			if (asinyew > 0.f) {
+				if (acosyew > 90.f)  //1
+					powce = -180.f + asinyew;
+				else  //2
+					powce = -asinyew;
+			}
+			else {
+				if (acosyew > 90.f)  //4
+					powce = 180.f + asinyew;
+				else  //3
+					powce = -asinyew;
+			}
+			float powceH = powce + killauraMod->FOV / 2.f;
+			float powceL = powce - killauraMod->FOV / 2.f;
+
+			if (powceH > 180.f) {
+				if (!(g_Data.getCGameMode()->player->yaw >= powceL || g_Data.getCGameMode()->player->yaw <= powceH - 360.f))
+					return;
+			}
+			else if (powceL < -180.f) {
+				if (!(g_Data.getCGameMode()->player->yaw >= powceL + 360.f || g_Data.getCGameMode()->player->yaw <= powceH))
+					return;
+			}
+			else if (!(g_Data.getCGameMode()->player->yaw >= powceL && g_Data.getCGameMode()->player->yaw <= powceH))
 				return;
 		}
-		else if (powceL < -180.f) {
-			if (!(g_Data.getCGameMode()->player->yaw >= powceL + 360.f || g_Data.getCGameMode()->player->yaw <= powceH))
-				return;
-		}
-		else if (!(g_Data.getCGameMode()->player->yaw >= powceL && g_Data.getCGameMode()->player->yaw <= powceH))
-			return;
 	}
-	
+	//墙
+
+	if (!killauraMod->attackBehindBlocks && !g_Data.getLocalPlayer()->canSee(currentEntity))
+		return;
+
 	float dist = (*currentEntity->getPos()).dist(*g_Data.getLocalPlayer()->getPos());
 
-	if (dist < killauraMod->range) {
+	if (!killauraMod->canswing && dist < killauraMod->swingRange)
+		killauraMod->canswing = true;
+
+	if (dist < Killaura::randomFloat(killauraMod->minRange, killauraMod->maxRange)) 
 		targetList.push_back(currentEntity);
-	}
+
 }
 
 void Killaura::findWeapon() {
@@ -143,6 +163,11 @@ void Killaura::findWeapon() {
 		}
 	}
 	supplies->selectedHotbarSlot = slot;
+}
+
+float Killaura::randomFloat(float min, float max) {
+	static std::default_random_engine random(time(nullptr));//注入时的时间作为初始种子
+	return std::uniform_real_distribution<float>(min, max)(random);
 }
 
 struct Distance {
@@ -166,7 +191,11 @@ struct Angle {
 				num += 360.0f;
 			return num;
 		};
-		return abs(normAngles(angle.y - appl.y)) < abs(normAngles(angle2.y - appl.y));
+
+		//当视角绝对值大于60度时，计算目标中点与准星中点的距离偏移，可以避免转头的pitch过大。其他情况仅计算yaw的偏移
+		//
+		return abs(g_Data.getLocalPlayer()->pitch) > 60.f ? abs(appl.sub(angle).normAngles().magnitude()) < abs(appl.sub(angle2).normAngles().magnitude()) : abs(normAngles(angle.y - appl.y)) < abs(normAngles(angle2.y - appl.y));
+
 	}
 };
 
@@ -176,15 +205,73 @@ struct Health {
 	}
 };
 
+struct Threaten {
+	bool operator()(C_Entity* target, C_Entity* target2) {
+		const float health1 = target->getAttribute(&HealthAttribute())->currentValue;
+		const float health2 = target2->getAttribute(&HealthAttribute())->currentValue;
+
+		C_LocalPlayer* const localPlayer = g_Data.getLocalPlayer();
+		const float dis1 = (*target->getPos()).dist(*localPlayer->getPos());
+		const float dis2 = (*target2->getPos()).dist(*localPlayer->getPos());
+
+		const float attackdamage1 = target->getAttribute(&AttackDamageAttribute())->currentValue;
+		const float attackdamage2 = target2->getAttribute(&AttackDamageAttribute())->currentValue;
+
+		//vec3_t velocity1 = target->getPos()->sub(*target->getPosOld());
+		//vec3_t velocity2 = target2->getPos()->sub(*target2->getPosOld());
+
+		uint16_t degree1 = 0;
+		uint16_t degree2 = 0;
+
+
+		degree1 += dis1 <= 3.f ? 100 : 80.f - 80.f * float(degree1) / 10.f; //距离
+		degree2 += dis2 <= 3.f ? 100 : 80.f - 80.f * float(degree2) / 10.f;
+
+		auto normAngles = [](float num) noexcept -> float {
+			while (num > 180.0f)
+				num -= 360.0f;
+			while (num < -180.0f)
+				num += 360.0f;
+			return num;
+		};
+
+		const float targetyaw1 = abs(normAngles(target->getPos()->CalcAngle(*localPlayer->getPos()).normAngles().y - target->yaw)); //准星
+		const float targetyaw2 = abs(normAngles(target2->getPos()->CalcAngle(*localPlayer->getPos()).normAngles().y - target2->yaw));
+
+		degree1 += targetyaw1 <= 45.f ? 100 : 80.f - 80.f * targetyaw1 / 180.f;
+		degree2 += targetyaw2 <= 45.f ? 100 : 80.f - 80.f * targetyaw2 / 180.f;
+
+		float maxaattackdamage = attackdamage1 > attackdamage2 ? attackdamage1 : attackdamage2;
+		
+		if (maxaattackdamage > 0.f) { 
+			degree1 += 60.f * attackdamage1 / maxaattackdamage;
+			degree2 += 60.f * attackdamage2 / maxaattackdamage;
+		}
+
+		return degree1 < degree2;
+	}
+
+};
+
 void Killaura::onGetPickRange() {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
-	if (localPlayer == nullptr || !localPlayer->isAlive())
+	if (localPlayer == nullptr || !localPlayer->isAlive() || DisabledDuringMining && isMining)
 		return;
+
+	if (minCPS > maxCPS)
+		minCPS = maxCPS;
+
+	if (minRange > maxRange)
+		minRange = maxRange;
+
+	if (swingRange < maxRange)
+		swingRange = maxRange;
 
 	static bool swing = !moduleMgr->getModule<NoSwing>()->isEnabled();
 
 	targetList.clear();
 
+	canswing = false;
 	g_Data.forEachValidEntity(findEntity);
 
 	targetListEmpty = targetList.empty();
@@ -202,6 +289,12 @@ void Killaura::onGetPickRange() {
 			break;
 		case 2:
 			sort(targetList.begin(), targetList.end(), Health());
+			break;
+		case 3:
+			sort(targetList.begin(), targetList.end(), Threaten());
+			break;
+		default:
+			break;
 		}
 
 		if (mode.selected != 2 || switchTarget >= targetList.size()) {
@@ -210,10 +303,10 @@ void Killaura::onGetPickRange() {
 
 		if (rotations.selected != 0) {
 			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*targetList[switchTarget]->getPos());
-			static std::default_random_engine engine;
-			angle.x += std::uniform_real_distribution<float>(0.f, pitchOffset)(engine);
-			angle.y += std::uniform_real_distribution<float>(0.f, yawOffset)(engine);
+			angle.x += Killaura::randomFloat(0.f, pitchOffset);
+			angle.y += Killaura::randomFloat(0.f, yawOffset);
 		}
+
 		if (rotations.selected == 2) {
 			localPlayer->setRot(angle);
 		}
@@ -229,27 +322,47 @@ void Killaura::onGetPickRange() {
 				}
 			}
 			*/
+			static LevelSoundEventPacket sounds;
+			sounds.pos = *g_Data.getLocalPlayer()->getPos();
+			sounds.sound = 42;
+
+			if (canswing && swing && !hurttime) { //与hurttime的swing分开处理
+				localPlayer->swing();
+				if (playsound && strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
+					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&sounds);
+
+			}
+
 			switch (mode.selected) {
 			case 0:
 				if (!(targetList[0]->damageTime > 1 && hurttime)) {
-					if (swing)
+					if (hurttime && swing) {
 						localPlayer->swing();
+						if (playsound && strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
+							g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&sounds);
+					}
 					g_Data.getCGameMode()->attack(targetList[0]);
 				}
 				break;
 			case 1:
 				for (auto& i : targetList) {
 					if (!(i->damageTime > 1 && hurttime)) {
-						if (swing)
-							localPlayer->swing();
+						if (hurttime && swing) {
+							localPlayer->swing();	
+							if (playsound && strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
+								g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&sounds);
+						}
 						g_Data.getCGameMode()->attack(i);
 					}
 				}
 				break;
 			case 2:
 				if (!(targetList[switchTarget]->damageTime > 1 && hurttime)) {
-					if (swing)
-						localPlayer->swing();
+					if (hurttime && swing) {
+						localPlayer->swing();	
+						if (playsound && strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
+							g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&sounds);
+					}
 					g_Data.getCGameMode()->attack(targetList[switchTarget]);
 				}
 			}
@@ -299,14 +412,16 @@ void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				authInputPacket->yawUnused = angle.y;
 				authInputPacket->yaw = angle.y;
 			}*/
-			if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
-				if (packet->isInstanceOf<LevelSoundEventPacket>()) {
-					LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
-					if (soundEventPacket->sound == 43) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包 
-						//soundEventPacket->sound = 0; 
-						cancelSend = true;
-				} //绕过EaseCation服务器CPS检测 
-			}
+
 		}
+	}		
+
+	if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
+		if (packet->isInstanceOf<LevelSoundEventPacket>()) {
+			LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
+			if (soundEventPacket->sound == 43 || soundEventPacket->sound == 42) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包 
+				//soundEventPacket->sound = 0; 
+				cancelSend = true;
+		} //绕过EaseCation服务器CPS检测 
 	}
 }

@@ -3,7 +3,7 @@
 #include "../../DrawUtils.h"
 
 Tower::Tower() : IModule(0, Category::WORLD, "Like scaffold, but vertically and a lot faster.") {
-	mode = (*new SettingEnum(this))
+	mode = SettingEnum(this)
 		.addEntry(EnumEntry("Motion", 0))
 		.addEntry(EnumEntry("Timer", 1));
 	registerEnumSetting("Mode", &mode, 0);
