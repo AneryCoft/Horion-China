@@ -56,7 +56,12 @@ void Breaker::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		}
 		if (shouldRotation) {
 			if (targetEsp)
+				__try {
 				DrawUtils::drawEntityBox(target, (float)fmax(thick, 1 / (float)fmax(1, g_Data.getLocalPlayer()->getPos()->dist(*target->getPos()))));
+			}
+			__except (EXCEPTION_EXECUTE_HANDLER) {
+				return;
+			}
 		}
 	}
 }

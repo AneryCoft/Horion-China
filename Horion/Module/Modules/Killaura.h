@@ -5,11 +5,14 @@
 #include "../../../Utils/Target.h"
 #include "../../../Utils/TimerUtil.h"
 #include "../../../SDK/CAttribute.h"
+#include "../../../Memory/Hooks.h"
+#include <random>
+#include <unordered_map>
 
 class Killaura : public IModule
 {
 private:
-	bool hurttime = true;
+	bool hurttime = false;
 	bool autoweapon = false;
 	void findWeapon();
 	int maxCPS = 20;
@@ -19,13 +22,14 @@ private:
 	int switchTarget = 0;
 	float yawOffset = 0.f;
 	float pitchOffset = 0.f;
-	bool playsound = true;
 	TimerUtil attackTime;
 	TimerUtil switchTime;
 	
 	float FOV = 360.f;
 
 	bool canswing = false;
+
+	float swingRange = 6.5f;
 
 	friend void findEntity(C_Entity* currentEntity, bool isRegularEntity);
 
@@ -36,13 +40,11 @@ public:
 	bool targetListEmpty = false;
 	vec2_t angle;
 	bool isMobAura = false;
-	bool attackBehindBlocks = true;
-	bool DisabledDuringMining = false;
+	bool throughBlock = true;
+	bool autoDisable = false;
 	bool isMining = false;
 
-	float maxRange = 6.f;
-	float minRange = 6.f;
-	float swingRange = 6.f;
+	float range = 6.f;
 
 	SettingEnum mode;
 	SettingEnum rotations;

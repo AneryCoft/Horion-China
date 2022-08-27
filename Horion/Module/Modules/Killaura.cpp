@@ -1,10 +1,7 @@
 #include "Killaura.h"
-#include "../../../Memory/Hooks.h"
-#include <random>
-#include <unordered_map>
 
 Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around you automatically.") { //hoiron hud显示不下这么多选项
-	mode = SettingEnum(this) 
+	mode = SettingEnum(this)
 		.addEntry(EnumEntry("Single", 0))
 		.addEntry(EnumEntry("Multi", 1))
 		.addEntry(EnumEntry("Switch", 2));
@@ -21,9 +18,10 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 		.addEntry(EnumEntry("Health", 2))
 		.addEntry(EnumEntry("Threaten", 3));
 	registerEnumSetting("Priority", &priority, 0);
-	registerFloatSetting("Max Range", &maxRange, maxRange, 1.5f, 10.f);
-	registerFloatSetting("Min Range", &minRange, minRange, 1.5f, 10.f);
-	registerFloatSetting("Swing Range", &swingRange, swingRange, 1.5f, 15.f);
+	/*registerFloatSetting("Max Range", &maxRange, maxRange, 1.5f, 10.f);
+	registerFloatSetting("Min Range", &minRange, minRange, 1.5f, 10.f);*/
+	registerFloatSetting("Range", &range, range, 3.f, 10.f);
+	registerFloatSetting("Swing Range", &swingRange, swingRange, 3.f, 15.f);
 	registerFloatSetting("FOV", &FOV, FOV, 15.f, 360.f);
 	registerIntSetting("Max CPS", &maxCPS, maxCPS, 1, 20);
 	registerIntSetting("Min CPS", &minCPS, minCPS, 1, 20);
@@ -31,9 +29,8 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 	registerFloatSetting("Yaw Offset", &yawOffset, yawOffset, 0.f, 10.f);
 	registerFloatSetting("Pitch Offset", &pitchOffset, pitchOffset, 0.f, 10.f);
 	registerBoolSetting("Mob Aura", &isMobAura, isMobAura);
-	registerBoolSetting("AttackBehindBlock", &attackBehindBlocks, attackBehindBlocks);
-	registerBoolSetting("Disable dur mining", &DisabledDuringMining, DisabledDuringMining);
-	registerBoolSetting("Playsound", &playsound, playsound);
+	registerBoolSetting("ThroughBlock", &throughBlock, throughBlock);
+	registerBoolSetting("AutoDisable", &autoDisable, autoDisable);
 	registerBoolSetting("Hurttime", &hurttime, hurttime);
 	registerBoolSetting("AutoWeapon", &autoweapon, autoweapon);
 }
@@ -90,7 +87,7 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 		if (!Target::isValidTarget(currentEntity))
 			return;
 	}
-	
+
 	vec2_t czxPos(currentEntity->getPos()->x, currentEntity->getPos()->z);
 	vec2_t lxzPos(g_Data.getLocalPlayer()->getPos()->x, g_Data.getLocalPlayer()->getPos()->z);
 	constexpr float r = 180.f / PI;
@@ -99,7 +96,8 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 		if (abs(g_Data.getLocalPlayer()->pitch) > 60.f) { //当视角绝对值大于60度时，计算目标中点与准星中点的距离偏移。其他情况仅计算yaw的偏移
 			if (abs(g_Data.getLocalPlayer()->viewAngles.normAngles().sub(g_Data.getLocalPlayer()->getPos()->CalcAngle(*currentEntity->getPos()).normAngles()).normAngles().magnitude()) > killauraMod->FOV)
 				return;
-		} else {
+		}
+		else {
 
 			float zxdist = sqrt((lxzPos.x - czxPos.x) * (lxzPos.x - czxPos.x) + (lxzPos.y - czxPos.y) * (lxzPos.y - czxPos.y));
 			float asinyew = asin((czxPos.x - lxzPos.x) / zxdist) * r;
@@ -132,17 +130,19 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 				return;
 		}
 	}
-	//墙
 
-	if (!killauraMod->attackBehindBlocks && !g_Data.getLocalPlayer()->canSee(currentEntity))
-		return;
+	if (!killauraMod->throughBlock && !g_Data.getLocalPlayer()->canSee(currentEntity))
+		return; //穿墙检测
 
 	float dist = (*currentEntity->getPos()).dist(*g_Data.getLocalPlayer()->getPos());
+
+	if (killauraMod->swingRange < killauraMod->range)
+		killauraMod->swingRange = killauraMod->range;
 
 	if (!killauraMod->canswing && dist < killauraMod->swingRange)
 		killauraMod->canswing = true;
 
-	if (dist < Killaura::randomFloat(killauraMod->minRange, killauraMod->maxRange)) 
+	if (dist < killauraMod->range)
 		targetList.push_back(currentEntity);
 
 }
@@ -195,7 +195,6 @@ struct Angle {
 		//当视角绝对值大于60度时，计算目标中点与准星中点的距离偏移，可以避免转头的pitch过大。其他情况仅计算yaw的偏移
 		//
 		return abs(g_Data.getLocalPlayer()->pitch) > 60.f ? abs(appl.sub(angle).normAngles().magnitude()) < abs(appl.sub(angle2).normAngles().magnitude()) : abs(normAngles(angle.y - appl.y)) < abs(normAngles(angle2.y - appl.y));
-
 	}
 };
 
@@ -242,8 +241,8 @@ struct Threaten {
 		degree2 += targetyaw2 <= 45.f ? 100 : 80.f - 80.f * targetyaw2 / 180.f;
 
 		float maxaattackdamage = attackdamage1 > attackdamage2 ? attackdamage1 : attackdamage2;
-		
-		if (maxaattackdamage > 0.f) { 
+
+		if (maxaattackdamage > 0.f) {
 			degree1 += 60.f * attackdamage1 / maxaattackdamage;
 			degree2 += 60.f * attackdamage2 / maxaattackdamage;
 		}
@@ -255,23 +254,21 @@ struct Threaten {
 
 void Killaura::onGetPickRange() {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
-	if (localPlayer == nullptr || !localPlayer->isAlive() || DisabledDuringMining && isMining)
+
+	static auto scaffoldMod = moduleMgr->getModule<Scaffold>();
+	static auto towerMod = moduleMgr->getModule<Tower>();
+	static auto breakerMod = moduleMgr->getModule<Breaker>();
+
+	if (localPlayer == nullptr || !localPlayer->isAlive())
 		return;
 
-	if (minCPS > maxCPS)
-		minCPS = maxCPS;
-
-	if (minRange > maxRange)
-		minRange = maxRange;
-
-	if (swingRange < maxRange)
-		swingRange = maxRange;
+	if (autoDisable && (isMining || scaffoldMod->isEnabled() || towerMod->isEnabled() || breakerMod->isEnabled()))
+		return;
 
 	static bool swing = !moduleMgr->getModule<NoSwing>()->isEnabled();
 
 	targetList.clear();
 
-	canswing = false;
 	g_Data.forEachValidEntity(findEntity);
 
 	targetListEmpty = targetList.empty();
@@ -311,6 +308,9 @@ void Killaura::onGetPickRange() {
 			localPlayer->setRot(angle);
 		}
 
+		if (minCPS > maxCPS)
+			minCPS = maxCPS;
+
 		CPS = RandomNumber(minCPS, maxCPS);
 		//CPS = rand() % (maxCPS - minCPS + 1) + minCPS;
 		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
@@ -322,15 +322,9 @@ void Killaura::onGetPickRange() {
 				}
 			}
 			*/
-			static LevelSoundEventPacket sounds;
-			sounds.pos = *g_Data.getLocalPlayer()->getPos();
-			sounds.sound = 42;
 
 			if (canswing && swing && !hurttime) { //与hurttime的swing分开处理
 				localPlayer->swing();
-				if (playsound && strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
-					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&sounds);
-
 			}
 
 			switch (mode.selected) {
@@ -338,8 +332,6 @@ void Killaura::onGetPickRange() {
 				if (!(targetList[0]->damageTime > 1 && hurttime)) {
 					if (hurttime && swing) {
 						localPlayer->swing();
-						if (playsound && strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
-							g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&sounds);
 					}
 					g_Data.getCGameMode()->attack(targetList[0]);
 				}
@@ -348,9 +340,7 @@ void Killaura::onGetPickRange() {
 				for (auto& i : targetList) {
 					if (!(i->damageTime > 1 && hurttime)) {
 						if (hurttime && swing) {
-							localPlayer->swing();	
-							if (playsound && strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
-								g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&sounds);
+							localPlayer->swing();
 						}
 						g_Data.getCGameMode()->attack(i);
 					}
@@ -359,9 +349,7 @@ void Killaura::onGetPickRange() {
 			case 2:
 				if (!(targetList[switchTarget]->damageTime > 1 && hurttime)) {
 					if (hurttime && swing) {
-						localPlayer->swing();	
-						if (playsound && strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0)
-							g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&sounds);
+						localPlayer->swing();
 					}
 					g_Data.getCGameMode()->attack(targetList[switchTarget]);
 				}
@@ -393,7 +381,7 @@ void Killaura::onEnable() {
 	if (g_Data.getRakNetInstance() != nullptr) {
 		if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
 			clientMessageF(u8"检测到您位于EaseCation测试服，已为您自动开启绕过CPS检测 ");
-		}	
+		}
 	}
 }
 
@@ -414,7 +402,7 @@ void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 			}*/
 
 		}
-	}		
+	}
 
 	if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
 		if (packet->isInstanceOf<LevelSoundEventPacket>()) {
