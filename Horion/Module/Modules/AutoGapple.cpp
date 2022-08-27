@@ -20,15 +20,15 @@ const char* AutoGapple::getModuleName() {
 bool AutoGapple::targetItem(int16_t itemId, uint16_t extraData) {
 	switch (item.selected) {
 	case 0:
-		if (itemId == 258 || itemId == 259) //金苹果和附魔金苹果
+		if (itemId == 258 || itemId == 259) //金苹果和附魔金苹果 
 			return true;
 		break;
 	case 1:
-		if (itemId == 260) //蘑菇煲
+		if (itemId == 260) //蘑菇煲 
 			return true;
 		break;
 	case 2:
-		if (itemId == 561 && (extraData == 21 || extraData == 22)) //喷溅治疗药水
+		if (itemId == 561 && (extraData == 21 || extraData == 22)) //喷溅治疗药水 
 			return true;
 	}
 	return false;
@@ -47,13 +47,13 @@ void AutoGapple::onTick(C_GameMode* gm) {
 		/*
 		switch (mode.selected) {
 		case 0:
-			itemID = 258 || 259; //金苹果和附魔金苹果
+			itemID = 258 || 259; //金苹果和附魔金苹果 
 			break;
 		case 1:
-			itemID = 260; //蘑菇煲
+			itemID = 260; //蘑菇煲 
 			break;
 		case 2:
-			itemID = 561; //喷溅药水
+			itemID = 561; //喷溅药水 
 		}
 		*/
 		C_PlayerInventoryProxy* supplies = localPlayer->getSupplies();
@@ -94,7 +94,7 @@ void AutoGapple::onTick(C_GameMode* gm) {
 		if (targetItem(selectedItemId, selectedItemData)) {
 			static auto fastEatMod = moduleMgr->getModule<FastEat>();
 			++tick;
-			if (item.selected == 1/*蘑菇煲在大多数服务器都是秒吃*/ || item.selected == 2 || candelay) {
+			if (item.selected == 1/*蘑菇煲在大多数服务器都是秒吃 */ || item.selected == 2 || candelay) {
 				if (tick < delay) {
 					return;
 				}
@@ -121,7 +121,7 @@ void AutoGapple::onTick(C_GameMode* gm) {
 				if (localPlayer->velocity.squaredxzlen() < 0.01) {
 					C_MovePlayerPacket packet(localPlayer, *localPlayer->getPos());
 					packet.pitch = 89.f;
-					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet); //不动的时候转头也能工作
+					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet); //不动的时候转头也能工作 
 				}
 				rotation = true;
 			}
