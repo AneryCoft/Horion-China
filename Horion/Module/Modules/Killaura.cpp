@@ -311,7 +311,7 @@ void Killaura::onGetPickRange() {
 		if (minCPS > maxCPS)
 			minCPS = maxCPS;
 
-		CPS = RandomNumber(minCPS, maxCPS);
+		CPS = (maxCPS != minCPS ? rand() % (maxCPS - minCPS + 1) + minCPS : maxCPS);
 		//CPS = rand() % (maxCPS - minCPS + 1) + minCPS;
 		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
 			/*
@@ -366,7 +366,7 @@ void Killaura::onGetPickRange() {
 		sounds.pos = *g_Data.getLocalPlayer()->getPos();
 		sounds.sound = 42;
 
-		CPS = RandomNumber(minCPS, maxCPS);
+		CPS = (maxCPS != minCPS ? rand() % (maxCPS - minCPS + 1) + minCPS : maxCPS);
 		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
 			if (canswing && swing && !hurttime) {  //与hurttime的swing分开处理
 				localPlayer->swing();
