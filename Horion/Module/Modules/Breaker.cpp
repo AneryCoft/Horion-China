@@ -66,13 +66,16 @@ void Breaker::onTick(C_GameMode* gm) {
 	if (std::time(nullptr) < g_Hooks.connecttime + 1)
 		return;
 
-	++tick;
-	if (tick < delay) {
-		return;
-	}
-	else {
-		tick = 0;
-	}
+	bool destroy = false;
+	bool eat = false;
+
+	bedsRender = false;
+	eggsRender = false;
+	cakesRender = false;
+	chestsRender = false;
+	barrelsRender = false;
+	redStoneRender = false;
+	shouldRotation = false;
 
 	blockList.clear();
 
@@ -94,17 +97,6 @@ void Breaker::onTick(C_GameMode* gm) {
 		}
 	}
 
-	bool destroy = false;
-	bool eat = false;
-
-	bedsRender = false;
-	eggsRender = false;
-	cakesRender = false;
-	chestsRender = false;
-	barrelsRender = false;
-	redStoneRender = false;
-	shouldRotation = false;
-
 	if (!blockList.empty()) {
 		//for (vec3_ti i : blockList) {
 		int id = gm->player->region->getBlock(blockList[0])->toLegacy()->blockId;
@@ -112,6 +104,7 @@ void Breaker::onTick(C_GameMode* gm) {
 		if (id == 26 && beds) {
 			destroy = true;
 			bedsRender = true;
+			shouldRotation = true;
 		} // Beds
 		if (id == 122 && eggs) {
 			destroy = true;
@@ -120,6 +113,7 @@ void Breaker::onTick(C_GameMode* gm) {
 		if (id == 92 && cakes) {
 			eat = true;
 			cakesRender = true;
+			shouldRotation = true;
 		} // Cakes
 		if (id == 54 && chests) {
 			destroy = true;
@@ -128,33 +122,36 @@ void Breaker::onTick(C_GameMode* gm) {
 		if (id == 458 && barrels) {
 			destroy = true;
 			barrelsRender = true;
+			shouldRotation = true;
 		} // Barrels
 		if ((id == 73 || id == 74) && redStone) {
 			destroy = true;
 			redStoneRender = true;
 			selectPickaxe();
+			shouldRotation = true;
 		} // redStone
 
-		if (destroy) {
-			renderPos = blockList[0];
+		if (rotations && shouldRotation) {
 			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockList[0].toVec3t());
-
-			bool isDestroyedOut = false;
-			gm->startDestroyBlock(blockList[0], 0, isDestroyedOut);
-			gm->destroyBlock(&blockList[0], 0);
-			//g_Data.getLocalPlayer()->swingArm();
-			//break;
+		}
+		if (bedsRender || eggsRender || cakesRender || chestsRender || barrelsRender || redStoneRender) {
+			renderPos = blockList[0];
 		}
 
-		if (eat) {
-			renderPos = blockList[0];
-			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockList[0].toVec3t());
+		++tick;
+		if (tick >= delay) {
+			if (destroy) {
+				bool isDestroyedOut = false;
+				gm->startDestroyBlock(blockList[0], 0, isDestroyedOut);
+				gm->destroyBlock(&blockList[0], 0);
+			}
 
-			bool idk = true;
-			gm->buildBlock(&blockList[0], 0, idk);
-			//g_Data.getLocalPlayer()->swingArm();
-			//break;
+			if (eat) {
+				bool idk = true;
+				gm->buildBlock(&blockList[0], 0, idk);
+			}
 		}
+		
 		//}
 		/*
 		if (rotations) {
@@ -176,15 +173,21 @@ void Breaker::onTick(C_GameMode* gm) {
 
 				if (rotations) {
 					angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*ent->getPos());
+					shouldRotation = true;
 				}
 				target = ent;
-				shouldRotation = true;
-				g_Data.getCGameMode()->attack(ent);
-				if (!moduleMgr->getModule<NoSwing>()->isEnabled())
-					g_Data.getLocalPlayer()->swingArm();
+				if (tick >= delay) {
+					g_Data.getCGameMode()->attack(ent);
+					if (!moduleMgr->getModule<NoSwing>()->isEnabled())
+						g_Data.getLocalPlayer()->swingArm();
+				}
 			}
 		}
 		});
+
+	if (tick >= delay) {
+		tick = 0;
+	}
 }
 
 void Breaker::onPlayerTick(C_Player* player) {
