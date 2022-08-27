@@ -6,7 +6,7 @@ Speed::Speed() : IModule(VK_NUMPAD2, Category::MOVEMENT, "Speed up!") {
 		.addEntry(EnumEntry("Bhop", 1))
 		.addEntry(EnumEntry("Lowhop", 2));
 	registerEnumSetting("Mode", &mode, 1);
-	registerFloatSetting("VanillaSpeed", &vanillaSpeed, vanillaSpeed, 0.1f, 3.f);
+	registerFloatSetting("VanillaSpeed", &vanillaSpeed, vanillaSpeed, 0.1f, 5.f);
 	registerFloatSetting("MaxSpeed", &maxSpeed, maxSpeed, 0.1f, 1.f);
 	registerFloatSetting("MinSpeed", &minSpeed, minSpeed, 0.1f, 1.f);
 	registerFloatSetting("LowhopMotion", &lowhopMotion, lowhopMotion, 0.1f, 5.f);
@@ -20,37 +20,40 @@ const char* Speed::getModuleName() {
 	return ("Speed");  // 48 8D 15 ?? ?? ?? ?? 48 8B CB FF 90 ?? ?? ?? ?? 48 8B D8
 }
 
-static int oldselected = 0;
 void Speed::onTick(C_GameMode* gm) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
-	if (oldselected == 0 && mode.selected == 1)
-		if (g_Data.getLocalPlayer() != nullptr)
-			*reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84) = origSpeed;
-
-	oldselected = mode.selected;
 
 	if (mode.selected == 0) {
 		float* speedAdr = reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84);
 		*speedAdr = vanillaSpeed;
 	}
+	else if (mode.selected == 1 || mode.selected == 2) {
+		speed = randomFloat(maxSpeed, minSpeed);
+	}
+
 }
 
 void Speed::onEnable() {
-	oldselected = mode.selected;
-	if (g_Data.getLocalPlayer() == nullptr) {
-		setEnabled(false);
-		return;
-	}
-	else if (mode.selected == 0) {
-		origSpeed = *reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84);
+	if (mode.selected == 0) {
+		if (g_Data.getLocalPlayer() == nullptr) {
+			setEnabled(false);
+			return;
+		}
+		else {
+			origSpeed = *reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84);
+		}
 	}
 }
 
 void Speed::onDisable() {
+	if (g_Data.getLocalPlayer() == nullptr)
+		return;
+
 	g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
-	if (mode.selected == 0)
-		if (g_Data.getLocalPlayer() != nullptr)
-			*reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84) = origSpeed;
+
+	if (mode.selected == 0) {
+		*reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84) = origSpeed;
+	}
 }
 
 void Speed::onMove(C_MoveInputHandler* input) {
@@ -69,7 +72,7 @@ void Speed::onMove(C_MoveInputHandler* input) {
 
 		if (player->onGround && pressed) {
 			g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
-			speed = randomFloat(maxSpeed, minSpeed);
+			
 			if (mode.selected == 1)
 				player->jumpFromGround();
 			else if (mode.selected == 2)
