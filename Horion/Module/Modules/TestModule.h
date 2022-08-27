@@ -5,7 +5,8 @@
 class TestModule : public IModule {
 private:
 	int delay = 0;
-
+	bool itemInfo = false;
+	bool entityInfo = false;
 public:
 	float float1 = 0;
 	int int1 = 0;
@@ -25,4 +26,5 @@ public:
 	virtual void onMove(C_MoveInputHandler* hand) override;
 	virtual void onDisable() override;
 	void onLevelRender() override;
+	virtual void onAttack(C_Entity* attackedEnt) override;
 };

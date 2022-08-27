@@ -29,6 +29,8 @@ TestModule::TestModule() : IModule(0, Category::MISC, "For testing purposes only
 		.addEntry(EnumEntry("2", 2))
 		.addEntry(EnumEntry("3", 3));
 	
+	registerBoolSetting("ItemInfo", &itemInfo, itemInfo);
+	registerBoolSetting("EntityInfo", &entityInfo, entityInfo);
 	registerFloatSetting("float1", &float1, 0, -10, 10);
 	registerIntSetting("int1", &int1, 0, -10, 10);
 	registerEnumSetting("Enum1", &enum1, 0);
@@ -50,6 +52,13 @@ void TestModule::onEnable() {
 }
 
 void TestModule::onTick(C_GameMode* gm) {
+	if (g_Data.getLocalPlayer() == nullptr) {
+		return;
+	}
+
+	if (g_Data.getLocalPlayer()->getSelectedItem()->item != nullptr) {
+		clientMessageF("ItemID=%i", (*g_Data.getLocalPlayer()->getSelectedItem()->item)->itemId);
+	}
 }
 
 void TestModule::onMove(C_MoveInputHandler* hand){
@@ -65,4 +74,10 @@ void TestModule::onDisable() {
 }
 
 void TestModule::onLevelRender() {
+}
+
+void TestModule::onAttack(C_Entity* attackedEnt) {
+	if (entityInfo) {
+		clientMessageF("EntityTypeId=%i,NameTag=%s,Hight=%f,Width=%f", attackedEnt->getEntityTypeId(), attackedEnt->getNameTag()->getText(), attackedEnt->height, attackedEnt->width);
+	}
 }
