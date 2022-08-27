@@ -104,6 +104,7 @@
 #include "Modules/InventoryView.h"
 #include "Modules/AutoGapple.h"
 #include "Modules/FastDig.h"
+#include "Modules/BowSpam.h"
 
 #ifdef _DEBUG
 #include "Modules/PacketLogger.h"

@@ -291,6 +291,7 @@
     <ClCompile Include="Horion\Module\Modules\AutoTotem.cpp" />
     <ClCompile Include="Horion\Module\Modules\Blink.cpp" />
     <ClCompile Include="Horion\Module\Modules\BowAimbot.cpp" />
+    <ClCompile Include="Horion\Module\Modules\BowSpam.cpp" />
     <ClCompile Include="Horion\Module\Modules\ChestAura.cpp" />
     <ClCompile Include="Horion\Module\Modules\Criticals.cpp" />
     <ClCompile Include="Horion\Module\Modules\Disabler.cpp" />
@@ -483,6 +484,7 @@
     <ClInclude Include="Horion\Module\Modules\AutoTotem.h" />
     <ClInclude Include="Horion\Module\Modules\Blink.h" />
     <ClInclude Include="Horion\Module\Modules\BowAimbot.h" />
+    <ClInclude Include="Horion\Module\Modules\BowSpam.h" />
     <ClInclude Include="Horion\Module\Modules\ChestAura.h" />
     <ClInclude Include="Horion\Module\Modules\ChestESP.h" />
     <ClInclude Include="Horion\Module\Modules\ChestStealer.h" />
