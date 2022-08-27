@@ -203,7 +203,7 @@ struct Health {
 		return target->getAttribute(&HealthAttribute())->currentValue < target2->getAttribute(&HealthAttribute())->currentValue;
 	}
 };
-
+/*
 struct Threaten {
 	bool operator()(C_Entity* target, C_Entity* target2) {
 		const float health1 = target->getAttribute(&HealthAttribute())->currentValue;
@@ -246,12 +246,10 @@ struct Threaten {
 			degree1 += 60.f * attackdamage1 / maxaattackdamage;
 			degree2 += 60.f * attackdamage2 / maxaattackdamage;
 		}
-
 		return degree1 < degree2;
 	}
-
 };
-
+*/
 void Killaura::onGetPickRange() {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 
@@ -287,11 +285,11 @@ void Killaura::onGetPickRange() {
 		case 2:
 			sort(targetList.begin(), targetList.end(), Health());
 			break;
-		case 3:
+		/*case 3:
 			sort(targetList.begin(), targetList.end(), Threaten());
 			break;
 		default:
-			break;
+			break;*/
 		}
 
 		if (mode.selected != 2 || switchTarget >= targetList.size()) {
@@ -311,7 +309,8 @@ void Killaura::onGetPickRange() {
 		if (minCPS > maxCPS)
 			minCPS = maxCPS;
 
-		CPS = RandomNumber(minCPS, maxCPS);
+		CPS = random(maxCPS, minCPS);
+
 		//CPS = rand() % (maxCPS - minCPS + 1) + minCPS;
 		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
 			/*
