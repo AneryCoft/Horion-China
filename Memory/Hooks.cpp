@@ -755,7 +755,7 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 								xOffset - 1,
 								yOffset + textPadding * 2 + textHeight);
 							vec4_t downRect = vec4_t(
-								xOffset - 2,
+								xOffset - 1,
 								yOffset + textPadding * 2 + textHeight - 1,
 								xOffset + textPadding * 2 + textWidth,
 								yOffset + textPadding * 2 + textHeight);
@@ -771,16 +771,13 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 							Utils::ColorConvertHSVtoRGB(currColor[0], currColor[1], currColor[2], currColor[0], currColor[1], currColor[2]);
 
 							if (ClientThemes->Theme.selected == 1) {
-								DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.2f);
+								DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.28f);
 							}
 							else if (ClientThemes->Theme.selected == 0) {
-								DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.2f);
+								DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.28f);
 							}
-							else if (ClientThemes->Theme.selected == 2) {
-								DrawUtils::fillRectangle(rectPos, MC_Color(12, 100, 12), 0.1f);
-							}
-							DrawUtils::fillRectangle(leftRect, MC_Color(currColor), 0.5f);
-							DrawUtils::fillRectangle(downRect, MC_Color(currColor), 0.5f);
+							DrawUtils::fillRectangle(leftRect, MC_Color(currColor), 0.8f);
+							DrawUtils::fillRectangle(downRect, MC_Color(currColor), 0.8f);
 							if (!GameData::canUseMoveKeys() && rectPos.contains(&mousePos) && hudModule->clickToggle) {
 								vec4_t selectedRect = rectPos;
 								selectedRect.x = leftRect.z;
