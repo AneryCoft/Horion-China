@@ -32,6 +32,8 @@ void Hooks::Init() {
 			else {
 				g_Hooks.GameMode_startDestroyBlockHook = std::make_unique<FuncHook>(gameModeVtable[1], Hooks::GameMode_startDestroyBlock);
 
+				g_Hooks.GameMode_stopDestroyBlockHook = std::make_unique<FuncHook>(gameModeVtable[4], Hooks::GameMode_stopDestroyBlock);
+				
 				g_Hooks.GameMode_getPickRangeHook = std::make_unique<FuncHook>(gameModeVtable[10], Hooks::GameMode_getPickRange);
 
 				g_Hooks.GameMode_attackHook = std::make_unique<FuncHook>(gameModeVtable[14], Hooks::GameMode_attack);
