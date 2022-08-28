@@ -260,7 +260,6 @@ void Killaura::onGetPickRange() {
 	if (localPlayer == nullptr || !localPlayer->isAlive())
 		return;
 
-	clientMessageF("%i", (int)isDigging);
 	if (autoDisable && (isDigging || scaffoldMod->isEnabled() || towerMod->isEnabled() || breakerMod->isEnabled()))
 		return;
 
