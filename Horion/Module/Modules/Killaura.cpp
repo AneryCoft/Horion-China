@@ -16,7 +16,7 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 		.addEntry(EnumEntry("Distance", 0))
 		.addEntry(EnumEntry("Angle", 1))
 		.addEntry(EnumEntry("Health", 2));
-		//.addEntry(EnumEntry("Threaten", 3));
+	//.addEntry(EnumEntry("Threaten", 3));
 	registerEnumSetting("Priority", &priority, 0);
 	/*registerFloatSetting("Max Range", &maxRange, maxRange, 1.5f, 10.f);
 	registerFloatSetting("Min Range", &minRange, minRange, 1.5f, 10.f);*/
@@ -68,7 +68,7 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 		//if (currentEntity->getEntityTypeId() == 69)  // XP
 		//	return;
 
-		if (currentEntity->getNameTag()->getTextLength() <= 1 && currentEntity->getEntityTypeId() == 63)
+		if (currentEntity->getNameTag()->getTextLength() <= 1 && currentEntity->getEntityTypeId() == 319)
 			return;
 
 		if (currentEntity->width <= 0.01f || currentEntity->height <= 0.01f) // Don't hit this pesky antibot on 2b2e.org
@@ -147,7 +147,7 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 
 }
 
-void Killaura::findWeapon() {
+void Killaura::selectedWeapon() {
 	C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
 	C_Inventory* inv = supplies->inventory;
 	float damage = 0;
@@ -260,7 +260,8 @@ void Killaura::onGetPickRange() {
 	if (localPlayer == nullptr || !localPlayer->isAlive())
 		return;
 
-	if (autoDisable && (isMining || scaffoldMod->isEnabled() || towerMod->isEnabled() || breakerMod->isEnabled()))
+	clientMessageF("%i", (int)isDigging);
+	if (autoDisable && (isDigging || scaffoldMod->isEnabled() || towerMod->isEnabled() || breakerMod->isEnabled()))
 		return;
 
 	static bool swing = !moduleMgr->getModule<NoSwing>()->isEnabled();
@@ -273,7 +274,7 @@ void Killaura::onGetPickRange() {
 
 	if (!targetList.empty()) {
 		if (autoweapon)
-			findWeapon();
+			selectedWeapon();
 
 		switch (priority.selected) {
 		case 0:
@@ -285,11 +286,11 @@ void Killaura::onGetPickRange() {
 		case 2:
 			sort(targetList.begin(), targetList.end(), Health());
 			break;
-		/*case 3:
-			sort(targetList.begin(), targetList.end(), Threaten());
-			break;
-		default:
-			break;*/
+			/*case 3:
+				sort(targetList.begin(), targetList.end(), Threaten());
+				break;
+			default:
+				break;*/
 		}
 
 		if (mode.selected != 2 || switchTarget >= targetList.size()) {
@@ -361,54 +362,62 @@ void Killaura::onGetPickRange() {
 			}
 		}
 	}
-}
-
-void Killaura::onPlayerTick(C_Player* player) {
-	if (rotations.selected == 1) {
-		if (!targetList.empty()) {
-			player->pitch = angle.x;
-			player->bodyYaw = angle.y;
-			player->yawUnused1 = angle.y;
-		}
-	}
-}
-
-void Killaura::onEnable() {
-	if (g_Data.getLocalPlayer() == nullptr)
-		setEnabled(false);
-
-	if (g_Data.getRakNetInstance() != nullptr) {
-		if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
-			clientMessageF(u8"检测到您位于EaseCation测试服，已为您自动开启绕过CPS检测 ");
-		}
-	}
-}
-
-void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
-	if (rotations.selected == 1) {
-		if (!targetList.empty()) {
-			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
-				auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
-				movePacket->pitch = angle.x;
-				movePacket->headYaw = angle.y;
-				movePacket->yaw = angle.y;
+	else if (swing && canswing) {
+		CPS = random(maxCPS, minCPS);
+		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
+			if (canswing && swing && !hurttime) {  //与hurttime的swing分开处理
+				localPlayer->swing();
 			}
-			/*if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
-				auto* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-				authInputPacket->pitch = angle.x;
-				authInputPacket->yawUnused = angle.y;
-				authInputPacket->yaw = angle.y;
-			}*/
+		}
+	}
+}
 
+	void Killaura::onPlayerTick(C_Player * player) {
+		if (rotations.selected == 1) {
+			if (!targetList.empty()) {
+				player->pitch = angle.x;
+				player->bodyYaw = angle.y;
+				player->yawUnused1 = angle.y;
+			}
 		}
 	}
 
-	if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
-		if (packet->isInstanceOf<LevelSoundEventPacket>()) {
-			LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
-			if (soundEventPacket->sound == 43 || soundEventPacket->sound == 42) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包 
-				//soundEventPacket->sound = 0; 
-				cancelSend = true;
-		} //绕过EaseCation服务器CPS检测 
+	void Killaura::onEnable() {
+		if (g_Data.getLocalPlayer() == nullptr)
+			setEnabled(false);
+
+		if (g_Data.getRakNetInstance() != nullptr) {
+			if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
+				clientMessageF(u8"检测到您位于EaseCation测试服，已为您自动开启绕过CPS检测 ");
+			}
+		}
 	}
-}
+
+	void Killaura::onSendPacket(C_Packet * packet, bool& cancelSend) {
+		if (rotations.selected == 1) {
+			if (!targetList.empty()) {
+				if (packet->isInstanceOf<C_MovePlayerPacket>()) {
+					auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
+					movePacket->pitch = angle.x;
+					movePacket->headYaw = angle.y;
+					movePacket->yaw = angle.y;
+				}
+				/*if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+					auto* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
+					authInputPacket->pitch = angle.x;
+					authInputPacket->yawUnused = angle.y;
+					authInputPacket->yaw = angle.y;
+				}*/
+
+			}
+		}
+
+		if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
+			if (packet->isInstanceOf<LevelSoundEventPacket>()) {
+				LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
+				if (soundEventPacket->sound == 43 || soundEventPacket->sound == 42) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包 
+					//soundEventPacket->sound = 0; 
+					cancelSend = true;
+			} //绕过EaseCation服务器CPS检测 
+		}
+	}
