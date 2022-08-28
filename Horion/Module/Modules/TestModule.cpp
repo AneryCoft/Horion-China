@@ -57,8 +57,9 @@ void TestModule::onTick(C_GameMode* gm) {
 	}
 
 	if (g_Data.getLocalPlayer()->getSelectedItem()->item != nullptr) {
-		clientMessageF("ItemID=%i", (*g_Data.getLocalPlayer()->getSelectedItem()->item)->itemId);
+		clientMessageF("ItemID=%i extraData=%i", (*g_Data.getLocalPlayer()->getSelectedItem()->item)->itemId, g_Data.getLocalPlayer()->getSelectedItem()->extraData);
 	}
+	//clientMessageF("color=%i", g_Data.getLocalPlayer()->getArmorColorInSlot(0, 0));
 }
 
 void TestModule::onMove(C_MoveInputHandler* hand){
@@ -78,6 +79,7 @@ void TestModule::onLevelRender() {
 
 void TestModule::onAttack(C_Entity* attackedEnt) {
 	if (entityInfo) {
-		clientMessageF("EntityTypeId=%i,NameTag=%s,Hight=%f,Width=%f", attackedEnt->getEntityTypeId(), attackedEnt->getNameTag()->getText(), attackedEnt->height, attackedEnt->width);
+		logF("EntityTypeId=%i,NameTag=%s,Hight=%f,Width=%f", attackedEnt->getEntityTypeId(), attackedEnt->getNameTag()->getText(), attackedEnt->height, attackedEnt->width);
+		logF("NameTag=%s", attackedEnt->getNameTag()->getText());
 	}
 }
