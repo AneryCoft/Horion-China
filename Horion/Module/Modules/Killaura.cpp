@@ -360,6 +360,15 @@ void Killaura::onGetPickRange() {
 				++switchTarget;
 			}
 		}
+	} else if (swing && canswing) {
+		CPS = (maxCPS != minCPS ? rand() % (maxCPS - minCPS + 1) + minCPS : maxCPS);
+		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
+			if (canswing && swing && !hurttime) {  //与hurttime的swing分开处理
+				localPlayer->swing();
+				if (playsound)
+					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&sounds);
+			}
+		}
 	}
 }
 
