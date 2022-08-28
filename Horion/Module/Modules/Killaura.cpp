@@ -309,7 +309,7 @@ void Killaura::onGetPickRange() {
 		if (minCPS > maxCPS)
 			minCPS = maxCPS;
 
-		CPS = random(maxCPS, minCPS);
+		CPS = random(minCPS, maxCPS);
 
 		//CPS = rand() % (maxCPS - minCPS + 1) + minCPS;
 		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
@@ -360,9 +360,8 @@ void Killaura::onGetPickRange() {
 				++switchTarget;
 			}
 		}
-	}
-	else if (swing && canswing) {
-		CPS = random(maxCPS, minCPS);
+	} else if (swing) {
+		CPS = random(minCPS, maxCPS);
 		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
 			if (canswing && swing && !hurttime) {  //与hurttime的swing分开处理
 				localPlayer->swing();
