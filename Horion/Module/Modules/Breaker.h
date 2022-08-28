@@ -31,6 +31,7 @@ private:
 	vec2_t angle;
 	C_Entity* target;
 	void selectPickaxe();
+	bool shouldRenderEntity = false;
 
 	int tick = 0;
 	int delay = 0;

@@ -54,14 +54,9 @@ void Breaker::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			DrawUtils::setColor(255 / 255.0f, 0 / 255.0f, 0 / 255.0f, 1);
 			DrawUtils::drawBox(renderPos.toVec3t(), vec3_t(renderPos.toVec3t()).add(1), (float)thick / (float)1.f, false);
 		}
-		if (shouldRotation) {
+		if (shouldRenderEntity) {
 			if (targetEsp)
-				__try {
 				DrawUtils::drawEntityBox(target, (float)fmax(thick, 1 / (float)fmax(1, g_Data.getLocalPlayer()->getPos()->dist(*target->getPos()))));
-			}
-			__except (EXCEPTION_EXECUTE_HANDLER) {
-				return;
-			}
 		}
 	}
 }
@@ -81,6 +76,7 @@ void Breaker::onTick(C_GameMode* gm) {
 	barrelsRender = false;
 	redStoneRender = false;
 	shouldRotation = false;
+	shouldRenderEntity = false;
 
 	blockList.clear();
 
@@ -157,7 +153,7 @@ void Breaker::onTick(C_GameMode* gm) {
 				gm->buildBlock(&blockList[0], 0, idk);
 			}
 		}
-		
+
 		//}
 		/*
 		if (rotations) {
@@ -182,6 +178,7 @@ void Breaker::onTick(C_GameMode* gm) {
 					shouldRotation = true;
 				}
 				target = ent;
+				shouldRenderEntity = true;
 				if (tick >= delay) {
 					g_Data.getCGameMode()->attack(ent);
 					if (!moduleMgr->getModule<NoSwing>()->isEnabled())
