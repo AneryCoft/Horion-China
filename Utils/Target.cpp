@@ -76,12 +76,12 @@ bool Target::isValidTarget(C_Entity* ent) {
 
 	if (teamsMod) {
 		if (entityTypeId == 319) {
-			if (teamsMod->alliedCheck) {
+			if (teamsMod->method.selected == 0) {
 				if (localPlayer->isAlliedTo(ent))
 					return false;
 			}
 
-			if (teamsMod->colorCheck) {
+			if (teamsMod->method.selected == 1 || teamsMod->method.selected == 2) {
 				std::string targetName = ent->getNameTag()->getText();
 				std::string localName = localPlayer->getNameTag()->getText();
 

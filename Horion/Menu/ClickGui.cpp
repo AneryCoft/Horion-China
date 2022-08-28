@@ -38,7 +38,7 @@ static constexpr float categoryMargin = 0.5f;
 static constexpr float paddingRight = 13.5f;
 static constexpr float crossSize = textHeight / 2.f;
 static constexpr float crossWidth = 0.5f;
-static constexpr float backgroundAlpha = 1;
+static constexpr float backgroundAlpha = 0.2f;
 
 static const MC_Color whiteColor = MC_Color(255,255,255);
 static const MC_Color moduleColor = MC_Color(0x12, 0x12, 0x12); // background
