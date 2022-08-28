@@ -236,11 +236,15 @@ public:
 	bool isPickaxe(void) {
 		if (((std::string)name.getText()).find("pickaxe") != std::string::npos) return true;
 		return false;
-	}
+	} //¸ä
 	bool isShovel(void) {
 		if (((std::string)name.getText()).find("shovel") != std::string::npos) return true;
 		return false;
-	}
+	} //²ù
+	bool isAxe(void) {
+		if (((std::string)name.getText()).find("axe") != std::string::npos) return true;
+		return false;
+	} //¸«
 
 	bool isBlock(void) {
 		if (itemId == 247)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Module.h"
+#include "../ModuleManager.h"
 
 class InventoryCleaner : public IModule {
 private:
@@ -18,6 +19,9 @@ private:
 
 	bool openInv = true;
 	bool autoSort = false;
+	float delay = 1.f;
+
+	TimerUtil dropTime;
 
 public:
 	bool stackIsUseful(C_ItemStack* itemStack);
@@ -26,5 +30,6 @@ public:
 
 	// Inherited via IModule
 	virtual const char* getModuleName() override;
-	virtual void onTick(C_GameMode* gm) override;
+	//virtual void onTick(C_GameMode* gm) override;
+	virtual void onGetPickRange() override;
 };
