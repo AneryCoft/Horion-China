@@ -1136,7 +1136,7 @@ void Hooks::GameMode_startDestroyBlock(C_GameMode* _this, vec3_ti* a2, uint8_t f
 	static auto instaBreakModule = moduleMgr->getModule<InstaBreak>();
 	static auto killaura = moduleMgr->getModule<Killaura>();
 
-	killaura->isMining = true;
+	killaura->isDigging = true;
 	
 	if (nukerModule->isEnabled()) {
 		vec3_ti tempPos;
@@ -1182,7 +1182,7 @@ void Hooks::GameMode_stopDestroyBlock(C_GameMode* _this, vec3_ti* pos) {
 
 	static auto killaura = moduleMgr->getModule<Killaura>();
 
-	killaura->isMining = false;
+	killaura->isDigging = false;
 
 	return oFunc(_this, pos);
 }
@@ -1710,7 +1710,7 @@ __int64 Hooks::prepFeaturedServersFirstTime(__int64 a1, __int64 a2) {
 	return ret;
 }
 */
-
+/*
 __int64 Hooks::Cube__compile(__int64 a1, __int64 a2) {
 	auto func = g_Hooks.cube__compileHook->GetFastcall<__int64, __int64, __int64>();
 
@@ -1735,7 +1735,7 @@ __int64 Hooks::Cube__compile(__int64 a1, __int64 a2) {
 
 	return ret;
 }
-
+*/
 __int64 Hooks::InGamePlayScreen___renderLevel(__int64 playScreen, __int64 a2, __int64 a3) {
 	auto func = g_Hooks.InGamePlayScreen___renderLevelHook->GetFastcall<__int64, __int64, __int64, __int64>();
 	return func(playScreen, a2, a3);
