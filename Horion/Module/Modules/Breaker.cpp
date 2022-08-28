@@ -98,6 +98,7 @@ void Breaker::onTick(C_GameMode* gm) {
 		}
 	}
 
+	++tick;
 	if (!blockList.empty()) {
 		//for (vec3_ti i : blockList) {
 		int id = gm->player->region->getBlock(blockList[0])->toLegacy()->blockId;
@@ -139,7 +140,6 @@ void Breaker::onTick(C_GameMode* gm) {
 			renderPos = blockList[0];
 		}
 
-		++tick;
 		if (tick >= delay) {
 			if (destroy) {
 				bool isDestroyedOut = false;
