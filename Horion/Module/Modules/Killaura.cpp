@@ -266,7 +266,8 @@ void Killaura::onGetPickRange() {
 	static bool swing = !moduleMgr->getModule<NoSwing>()->isEnabled();
 
 	targetList.clear();
-
+	canswing = false;
+	
 	g_Data.forEachValidEntity(findEntity);
 
 	targetListEmpty = targetList.empty();

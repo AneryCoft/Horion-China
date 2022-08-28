@@ -14,13 +14,13 @@ Scaffold::Scaffold() : IModule(VK_NUMPAD1, Category::WORLD, "Automatically build
 			  .addEntry(EnumEntry("Normal", 0))
 			  .addEntry(EnumEntry("Forward", 1))
 			  .addEntry(EnumEntry("Back", 2));
-	registerEnumSetting("Rotations", &rot, 0);
+	registerEnumSetting("Rotation", &rot, 0);
 	autoBlockEnum = SettingEnum(this)
 		.addEntry(EnumEntry("HotbarSlot", 0))
 		.addEntry(EnumEntry("Packet", 1));
 	registerEnumSetting("AutoBlock", &autoBlockEnum, 0);
 	this->registerIntSetting("Extend Length", &this->length, this->length, 0, 10);
-	registerBoolSetting("AutoBlock", &this->autoBlock, this->autoBlock);
+	registerBoolSetting("AutoBlocks", &this->autoBlock, this->autoBlock);
 	registerBoolSetting("blockCount", &this->showBlockCount, this->showBlockCount);
 	registerBoolSetting("Rotations", &this->rotations, this->rotations);
 	registerBoolSetting("Render", &this->render, this->render);
