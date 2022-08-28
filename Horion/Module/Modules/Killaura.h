@@ -14,7 +14,7 @@ class Killaura : public IModule
 private:
 	bool hurttime = false;
 	bool autoweapon = false;
-	void findWeapon();
+	void selectedWeapon();
 	int maxCPS = 20;
 	int minCPS = 20;
 	int CPS;
@@ -24,25 +24,19 @@ private:
 	float pitchOffset = 0.f;
 	TimerUtil attackTime;
 	TimerUtil switchTime;
-	
 	float FOV = 360.f;
-
 	bool canswing = false;
-
 	float swingRange = 6.5f;
-
 	friend void findEntity(C_Entity* currentEntity, bool isRegularEntity);
-
 	static float randomFloat(float min, float max);
-
+	bool autoDisable = false;
 public:
 	//bool rotations = false;
 	bool targetListEmpty = false;
 	vec2_t angle;
 	bool isMobAura = false;
 	bool throughBlock = true;
-	bool autoDisable = false;
-	bool isMining = false;
+	bool isDigging = false;
 
 	float range = 6.f;
 
