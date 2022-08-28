@@ -8,6 +8,7 @@ private:
 	float verticalSpeed = 0.5;
 	bool groundSpoof = false;
 	bool elytraSpoof = false;
+	bool damage = false;
 
 	int gameTick = 0;
 

@@ -14,6 +14,7 @@ Fly::Fly() : IModule('F', Category::MOVEMENT, "Fly to the sky") {
 	registerFloatSetting("Vertical Speed", &this->verticalSpeed, this->verticalSpeed, 0.1f, 10.f);
 	this->registerBoolSetting("Ground Spoof", &this->groundSpoof, this->groundSpoof);
 	this->registerBoolSetting("Elytra Spoof", &this->elytraSpoof, this->elytraSpoof);
+	this->registerBoolSetting("Damage", &this->damage, this->damage);
 }
 
 Fly::~Fly() {
@@ -24,6 +25,12 @@ const char* Fly::getModuleName() {
 }
 
 void Fly::onEnable() {
+	if (damage) {
+		C_MovePlayerPacket packet;
+		packet.onGround = false;
+		packet.Position = g_Data.getLocalPlayer()->getPos()->add(0.f, 4.f, 0.f);
+		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
+	}
 	switch (mode.selected) {
 	case 1:
 		g_Data.getLocalPlayer()->setPos((*g_Data.getLocalPlayer()->getPos()).add(vec3_t(0, 1, 0)));
