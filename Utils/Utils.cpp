@@ -46,7 +46,11 @@ std::string Utils::sanitize(std::string text) {
 		if (wasValid) {
 			if (!isValid) {
 				wasValid = false;
-			} else {
+			}
+			else if (c == '\n') {
+				out += " ";
+			} //将换行改为空格
+			else {
 				out += c;
 			}
 		} else {
