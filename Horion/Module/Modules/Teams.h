@@ -7,8 +7,8 @@ public:
 	Teams();
 	~Teams();
 
-	bool alliedCheck = false;
-	bool colorCheck = true;
+	SettingEnum method;
+	bool antiRanks = false;
 
 	// Inherited via IModule
 	virtual const char* getModuleName() override;
