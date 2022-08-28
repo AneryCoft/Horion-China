@@ -36,7 +36,7 @@ bool Target::isValidTarget(C_Entity* ent) {
 
 	auto entityTypeId = ent->getEntityTypeId();
 
-	if (antibotMod) {
+	if (antibotMod->isEnabled()) {
 		if (antibotMod->hitboxCheck) {
 			if ((ent->height < 1.5f || ent->width < 0.49f || ent->height > 2.1f || ent->width > 0.9f))
 				return false;
@@ -49,11 +49,14 @@ bool Target::isValidTarget(C_Entity* ent) {
 			if (!ent->canShowNameTag())
 				return false;
 
-			if (!Target::containsOnlyASCII(ent->getNameTag()->getText()))
-				return false; // Temporarily removed from gui, tons of false negatives
+			//if (!Target::containsOnlyASCII(ent->getNameTag()->getText()))
+			//	return false; // Temporarily removed from gui, tons of false negatives
 
 			if (std::string(ent->getNameTag()->getText()).find(std::string("\n")) != std::string::npos)
-			return false;
+				return false;
+
+			if (!ent->checkNameTagFunc())
+				return false;
 		}
 
 		if (antibotMod->invisibleCheck) {
@@ -62,7 +65,7 @@ bool Target::isValidTarget(C_Entity* ent) {
 		}
 
 		if (antibotMod->entityIdCheck) {
-			if(entityTypeId != 319)
+			if (entityTypeId != 319)
 				return false;
 		}
 		if (antibotMod->moveCheck) {
@@ -74,14 +77,14 @@ bool Target::isValidTarget(C_Entity* ent) {
 		}
 	}
 
-	if (teamsMod) {
+	if (teamsMod->isEnabled()) {
 		if (entityTypeId == 319) {
-			if (teamsMod->method.selected == 0) {
+			switch (teamsMod->method.selected) {
+			case 0: {
 				if (localPlayer->isAlliedTo(ent))
 					return false;
-			}
-
-			if (teamsMod->method.selected == 1 || teamsMod->method.selected == 2) {
+			}break;
+			case 1: {
 				std::string targetName = ent->getNameTag()->getText();
 				std::string localName = localPlayer->getNameTag()->getText();
 
@@ -90,14 +93,27 @@ bool Target::isValidTarget(C_Entity* ent) {
 
 				auto colorTargetName = std::regex_replace(targetName, std::regex(u8"§r"), "");
 				auto colorLocalName = std::regex_replace(localName, std::regex(u8"§r"), "");
-				if (colorLocalName.find(u8"§") != std::string::npos &&
-					colorTargetName.find(u8"§") != std::string::npos) {
+
+				if (teamsMod->antiRanks) {
 					char colorTarget = colorTargetName.at(colorTargetName.rfind(u8"§") + 2);
 					char colorLocal = colorLocalName.at(colorLocalName.rfind(u8"§") + 2);
 
 					if (colorLocal == colorTarget)
 						return false;
 				}
+				else {
+					
+					char colorTarget = colorTargetName.at(colorTargetName.find(u8"§") + 2);
+					char colorLocal = colorLocalName.at(colorLocalName.find(u8"§") + 2);
+
+					if (colorLocal == colorTarget)
+						return false;
+				}
+			}break;
+			case 2: {
+				if (localPlayer->getArmorColorInSlot(0, 0) == ent->getArmorColorInSlot(0, 0))
+					return false;
+			}
 			}
 		}
 	}
