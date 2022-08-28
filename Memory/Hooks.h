@@ -184,12 +184,12 @@ private:
 	std::unique_ptr<FuncHook> SkinRepository___checkSignatureFileInPack;
 	std::unique_ptr<FuncHook> SkinRepository___loadSkinPackHook;
 	std::unique_ptr<FuncHook> toStyledStringHook;
-	std::unique_ptr<FuncHook> prepFeaturedServersHook;
-	std::unique_ptr<FuncHook> prepFeaturedServersFirstTimeHook;
+	//std::unique_ptr<FuncHook> prepFeaturedServersHook;
+	//std::unique_ptr<FuncHook> prepFeaturedServersFirstTimeHook;
 	std::unique_ptr<FuncHook> swapchain__presentHook;
 	std::unique_ptr<FuncHook> InGamePlayScreen___renderLevelHook;
 	std::unique_ptr<FuncHook> swapchain__resizeBuffersHook;
-	std::unique_ptr<FuncHook> cube__compileHook;
+	//std::unique_ptr<FuncHook> cube__compileHook;
 	std::unique_ptr<FuncHook> LocalPlayer__updateFromCameraHook;
 	std::unique_ptr<FuncHook> Mob__isImmobileHook;
 	std::unique_ptr<FuncHook> Actor__setRotHook;
