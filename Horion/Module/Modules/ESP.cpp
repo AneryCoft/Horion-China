@@ -4,8 +4,12 @@
 #include "../../../Memory/Hooks.h"
 
 ESP::ESP() : IModule('O', Category::VISUAL, "Makes it easier to find entities around you.") {
+	target = (*new SettingEnum(this))
+		.addEntry(EnumEntry("Player", 0))
+		.addEntry(EnumEntry("Mob", 1))
+		.addEntry(EnumEntry("Item", 2));
+	registerEnumSetting("Target", &target, 0);
 	registerBoolSetting("Rainbow", &doRainbow, doRainbow);
-	registerBoolSetting("MobEsp", &isMobEsp, isMobEsp);
 	registerBoolSetting("2D", &is2d, is2d);
 }
 
@@ -23,41 +27,51 @@ void doRenderStuff(C_Entity* ent, bool isRegularEntitie) {
 		return;
 
 	static auto espMod = moduleMgr->getModule<ESP>();
-	
+
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
-	if (ent == localPlayer)
-		return;
-	if (ent->timeSinceDeath > 0)
-		return;
-	static auto noFriendsModule = moduleMgr->getModule<NoFriends>();
 
-	if (!ent->checkNameTagFunc())
-		return;
-
-	if (!noFriendsModule->isEnabled() && FriendList::findPlayer(ent->getNameTag()->getText())) {
-		DrawUtils::setColor(0.1f, 0.9f, 0.1f, 1.f);
-	} else if (Target::isValidTarget(ent)) {
-		if (espMod->doRainbow)
-			DrawUtils::setColor(rcolors[0], rcolors[1], rcolors[2], 1.f);
-		else
-			DrawUtils::setColor(0.9f, 0.9f, 0.9f, 1.f);
-	} else if (espMod->isMobEsp) {
-		if (ent->getNameTag()->getTextLength() <= 1 && ent->getEntityTypeId() == 63)
+	switch (espMod->target.selected) {
+	case 0:
+	{
+		if (!Target::isValidTarget(ent))
+			return;
+	}
+	break;
+	case 1:
+	{
+		if (ent == localPlayer)
 			return;
 
-		if (ent->isInvisible())
+		if (ent->getNameTag()->getTextLength() <= 1 && ent->getEntityTypeId() == 319)
 			return;
 
-		if (espMod->doRainbow)
-			DrawUtils::setColor(rcolors[0], rcolors[1], rcolors[2], 1.f);
-		else
-			DrawUtils::setColor(0.9f, 0.9f, 0.9f, 1.f);
-	} else
-		return;
+		if (!ent->isAlive())
+			return;
+
+		if (ent->timeSinceDeath > 0.f)
+			return;
+
+		if (!g_Data.getLocalPlayer()->canAttack(ent, false))
+			return;
+	}
+	break;
+	case 2:
+	{
+		if (ent->getEntityTypeId() != 64)
+			return;
+	}
+	break;
+	}
+
+	if (espMod->doRainbow)
+		DrawUtils::setColor(rcolors[0], rcolors[1], rcolors[2], (float)fmax(0.1f, (float)fmin(1.f, 15 / (ent->damageTime + 1))));
+	else
+		DrawUtils::setColor(0.9f, 0.9f, 0.9f, (float)fmax(0.1f, (float)fmin(1.f, 15 / (ent->damageTime + 1))));
+
 	if (espMod->is2d)
-		DrawUtils::draw2D(ent, (float)fmax(0.4f, 1 / (float)fmax(1, localPlayer->eyePos0.dist(ent->eyePos0) * 3.f)));
-	else 
-		DrawUtils::drawEntityBox(ent, (float)fmax(0.2f, 1 / (float)fmax(1, localPlayer->eyePos0.dist(ent->eyePos0))));
+		DrawUtils::draw2D(ent, (float)fmax(0.4f, 1 / (float)fmax(1, (*localPlayer->getPos()).dist(*ent->getPos()) * 3.f)));
+	else
+		DrawUtils::drawEntityBox(ent, (float)fmax(0.2f, 1 / (float)fmax(1, (*localPlayer->getPos()).dist(*ent->getPos()))));
 }
 
 void ESP::onPreRender(C_MinecraftUIRenderContext* renderCtx) {

@@ -5,7 +5,8 @@
 
 class ESP : public IModule {
 public:
-	bool isMobEsp = false;
+	SettingEnum target;
+	
 	bool doRainbow = true;
 	bool is2d = false;
 	ESP();
