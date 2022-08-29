@@ -1,11 +1,13 @@
 #pragma once
 #include "Module.h"
+#include "../../DrawUtils.h"
 
 class InventoryView : public IModule {
 public:
-	static float rtext;
-	static float gtext;
-	static float btext;
+
+	float rtext = 1.f;
+	float gtext = 1.f;
+	float btext = 1.f;
 
 	float xVal = 28.f;
 	float invX = 0.f;
