@@ -45,7 +45,7 @@ float NoFall::distanceToGround() {
 		vec3_ti blockPos = vec3_ti(floor(localPlayerPos.x), i, floor(localPlayerPos.z));
 		int blockId = g_Data.getLocalPlayer()->region->getBlock(blockPos)->toLegacy()->blockId;
 		if (blockId != 0)
-			return localPlayerPos.dist(blockPos.toVec3t()) - 3.f;
+			return localPlayerPos.dist(blockPos.toVec3t())-1.f;
 	}
 }
 
@@ -65,7 +65,7 @@ void NoFall::onTick(C_GameMode* gm) {
 		break;
 		*/
 		case 1: {
-			if (distanceToGround() < 1.5f) {
+			if (distanceToGround() < 2.5f) {
 				localPlayer->velocity.y = 0.f;
 				localPlayer->setPos(localPlayerPos.add(0, 0.2, 0));
 			}
