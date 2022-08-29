@@ -15,7 +15,7 @@ Horion-China是基于[NRGJobro/Horion-Open-SRC](https://github.com/NRGJobro/Hori
 
 * 我们遵守Horion使用的NonCommercial 4.0许可证，这代表我们的程序是合法的。
 * 如果以后要使用其他客户端的开源代码，我们也将遵守许可证。
-* Horion-China会继承Hoiron plus的代码，使其更加强大。
+* Horion-China会继承Horion plus的代码，使其更加强大。
 
 ## 它适用于哪些版本
 Minecraft基岩版 1.18.12
