@@ -2,6 +2,7 @@
 
 #include "Module.h"
 #include "../ModuleManager.h"
+#include "../../../Utils/TimerUtil.h"
 
 class InventoryCleaner : public IModule {
 private:
