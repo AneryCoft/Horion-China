@@ -771,10 +771,10 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 							Utils::ColorConvertHSVtoRGB(currColor[0], currColor[1], currColor[2], currColor[0], currColor[1], currColor[2]);
 
 							if (ClientThemes->Theme.selected == 1) {
-								DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.28f);
+								DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
 							}
 							else if (ClientThemes->Theme.selected == 0) {
-								DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.28f);
+								DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
 							}
 							DrawUtils::fillRectangle(leftRect, MC_Color(currColor), 0.8f);
 							DrawUtils::fillRectangle(downRect, MC_Color(currColor), 0.8f);
