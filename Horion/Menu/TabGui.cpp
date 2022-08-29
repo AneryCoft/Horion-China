@@ -102,9 +102,9 @@ void TabGui::renderLevel() {
 			if (renderedLevel == level) {                                             // Are we actually in the menu we are drawing right now?
 				// We are selected in the current menu
 				if (ClientThemes->Theme.selected == 1) {
-				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 1.f);
+				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
 			} else {
-				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 1.f);
+				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
 		}
 				static bool lastVal = toggleCurrentSelection;
 
@@ -120,17 +120,17 @@ void TabGui::renderLevel() {
 				lastVal = toggleCurrentSelection;
 			} else {  // selected, but not what the user is interacting with
 				if (ClientThemes->Theme.selected == 1) {
-					DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 1.f);
+					DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
 				} else
-					DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 1.f);
+					DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
 
 			}
 			// selectedYOffset = yOffset;
 		} else {  // We are not selected
 			if (ClientThemes->Theme.selected == 1) {
-				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 1.f);
+				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
 			} else
-				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 1.f);
+				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
 		}
 
 
@@ -162,7 +162,7 @@ void TabGui::renderLevel() {
 			DrawUtils::fillRectangle(selectedPos, MC_Color(85, 85, 85), alphaVal);
 		}
 	}
-	//DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 1.f);
+	//DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
 		// Cleanup
 		DrawUtils::flush();
 		labelList.clear();
