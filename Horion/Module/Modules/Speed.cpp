@@ -5,7 +5,7 @@ Speed::Speed() : IModule(VK_NUMPAD2, Category::MOVEMENT, "Speed up!") {
 		.addEntry(EnumEntry("Vanilla", 0))
 		.addEntry(EnumEntry("Bhop", 1))
 		.addEntry(EnumEntry("Lowhop", 2))
-		.addEntry(EnumEntry("The Hive", 3));
+		.addEntry(EnumEntry("HiveFast", 3));
 	registerEnumSetting("Mode", &mode, 1);
 	registerFloatSetting("VanillaSpeed", &vanillaSpeed, vanillaSpeed, 0.1f, 5.f);
 	registerFloatSetting("MaxSpeed", &maxSpeed, maxSpeed, 0.1f, 1.f);
@@ -23,6 +23,7 @@ const char* Speed::getModuleName() {
 
 void Speed::onTick(C_GameMode* gm) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
+	C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
 
 	if (mode.selected == 0) {
 		float* speedAdr = reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84);
@@ -31,7 +32,62 @@ void Speed::onTick(C_GameMode* gm) {
 	else if (mode.selected == 1 || mode.selected == 2) {
 		speed = randomFloat(maxSpeed, minSpeed);
 	}
+	if (mode.selected == 3) {
+		std::vector<vec3_ti> sideBlocks;
+		sideBlocks.reserve(8);
 
+		float calcYaw = (gm->player->yaw + 90) * (PI / 180);
+		vec3_t moveVec;
+		float c = cos(calcYaw);
+		float s = sin(calcYaw);
+
+		for (int x = -1; x <= 1; x++) {
+			for (int z = -1; z <= 1; z++) {
+				if (x == 0 && z == 0)
+					continue;
+
+				sideBlocks.push_back(vec3_ti(x, 0, z));
+			}
+		}
+
+		auto pPos = *gm->player->getPos();
+		pPos.y = gm->player->aabb.lower.y;
+		auto pPosI = vec3_ti(pPos.floor());
+
+		auto isObstructed = [&](int yOff, AABB* obstructingBlock = nullptr, bool ignoreYcoll = false) {
+			for (const auto& current : sideBlocks) {
+				vec3_ti side = pPosI.add(0, yOff, 0).add(current);
+				if (side.y < 0 || side.y >= 256)
+					break;
+				auto block = gm->player->region->getBlock(side);
+				if (block == nullptr || block->blockLegacy == nullptr)
+					continue;
+				C_BlockLegacy* blockLegacy = block->toLegacy();
+				if (blockLegacy == nullptr)
+					continue;
+				AABB collisionVec;
+				if (!blockLegacy->getCollisionShape(&collisionVec, block, gm->player->region, &side, gm->player))
+					continue;
+			}
+			return false;
+		};
+
+		AABB lowerObsVec, upperObsVec;
+		bool upperObstructed = isObstructed(1, &upperObsVec);
+
+		bool lowerObstructed = isObstructed(0, &lowerObsVec);
+		if (lowerObstructed || upperObstructed)
+			inter = true;
+		else
+			inter = false;
+
+		auto player = g_Data.getLocalPlayer();
+		float yaw = player->yaw;
+		if (input->spaceBarKey) {
+			if (input->forwardKey && input->backKey && input->rightKey && input->leftKey) {
+			}
+		}
+	}
 }
 
 void Speed::onEnable() {
@@ -57,7 +113,7 @@ void Speed::onDisable() {
 	}
 }
 
-static float hiveSpeed[12] = {
+float hiveSpeed[12] = {
 	0.59041,
 	0.58005,
 	0.55040,
@@ -68,8 +124,8 @@ static float hiveSpeed[12] = {
 	0.37000,
 	0.34000,
 	0.30000,
-	0.26000,
-	0.24347
+	0.26041,
+	0.24647
 };
 
 void Speed::onMove(C_MoveInputHandler* input) {
@@ -127,47 +183,73 @@ void Speed::onMove(C_MoveInputHandler* input) {
 		}
 	}
 	else if (mode.selected == 3) {
-		static int index = 0;
-		float hivespeed;
-		static bool onGround;
-
-		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
-		bool pressed = moveVec2d.magnitude() > 0.f;
-
-		if (player->onGround)
-			onGround = true;
-
-		if (onGround)
-			hivespeed = hiveSpeed[index++ % 12];
+		vec2_t movement = { input->forwardMovement, -input->sideMovement };
+		bool pressed = movement.magnitude() > 0.f;
+		float calcYaw = (player->yaw + 90) * (PI / 180);
+		vec3_t moveVec;
+		float c = cos(calcYaw);
+		float s = sin(calcYaw);
+		movement = { movement.x * c - movement.y * s, movement.x * s + movement.y * c };
+		if (pressed && player->onGround) {
+			// input->isJumping = true;
+			player->jumpFromGround();
+			son = true;
+		}
+		float safeSpeedArray;
+		if (son)
+			safeSpeedArray = hiveSpeed[index++ % 12];
 		else
-			hivespeed = 0.21347;
-
-		if (player->onGround && pressed) {
-			g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
-
-				player->jumpFromGround();
-
-				float calcYaw = (player->yaw + 90) * (PI / 180);
-				vec3_t moveVec;
-				float c = cos(calcYaw);
-				float s = sin(calcYaw);
-				moveVec2d = { moveVec2d.x * c - moveVec2d.y * s, moveVec2d.x * s + moveVec2d.y * c };
-				moveVec.x = moveVec2d.x * hivespeed;
-				moveVec.y = player->velocity.y;
-				moveVec.z = moveVec2d.y * hivespeed;
-				if (pressed) player->lerpMotion(moveVec);
-				if (g_Data.getLocalPlayer()->velocity.squaredxzlen() > 0.01) {
-					C_MovePlayerPacket p = C_MovePlayerPacket(g_Data.getLocalPlayer(), player->getPos()->add(vec3_t(moveVec.x / 1.3f, 0.f, moveVec.z / 1.3f)));
-					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&p);
-					C_MovePlayerPacket p2 = C_MovePlayerPacket(g_Data.getLocalPlayer(), player->getPos()->add(vec3_t(player->velocity.x / 3.13f, 0.f, player->velocity.z / 2.3f)));
-					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&p2);
-				}
+			safeSpeedArray = 0.24247;
+		if (player->onGround) {
+			//safeSpeedArray == 0.61000;
+			son = true;
+			stick++;
+			if (stick >= 3)
+				stick = 0;
+			if (g_Data.getLocalPlayer()->velocity.squaredxzlen() >= 0.200 && stick == 0) {
 			}
-		if (onGround && !player->onGround) {
+			else if (g_Data.getLocalPlayer()->velocity.squaredxzlen() <= 0.1 && stick == 0)
+				return;
+		}
+		if (input->isJumping) {
+			moveVec.x = movement.x * safeSpeedArray;
+			moveVec.y = player->velocity.y;
+			moveVec.z = movement.y * safeSpeedArray;
+			if (!player->onGround) {
+				if (inter)
+					*g_Data.getClientInstance()->minecraft->timer = 16;
+				else
+					*g_Data.getClientInstance()->minecraft->timer = 26;
+			}
+			else {
+				*g_Data.getClientInstance()->minecraft->timer = 16;
+				if (pressed) player->lerpMotion(moveVec);
+			}
+		}
+		else {
+			moveVec.x = movement.x * safeSpeedArray;
+			moveVec.y = player->velocity.y;
+			moveVec.z = movement.y * safeSpeedArray;
+			if (pressed) player->lerpMotion(moveVec);
+		}
+		if (son && !player->onGround) {
 			if (index >= 12) {
 				index = 0;
-				onGround = false;
+				son = false;
 			}
+		}
+		if (son && player->onGround) {
+			if (index >= 5) {
+				index = 0;
+				//son = false;
+				son = true;
+			}
+		}
+		if (g_Data.getLocalPlayer()->velocity.squaredxzlen() > 0.01) {
+			C_MovePlayerPacket p = C_MovePlayerPacket(g_Data.getLocalPlayer(), player->getPos()->add(vec3_t(moveVec.x / 1.3f, 0.f, moveVec.z / 1.3f)));
+			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&p);
+			C_MovePlayerPacket p2 = C_MovePlayerPacket(g_Data.getLocalPlayer(), player->getPos()->add(vec3_t(player->velocity.x / 3.13f, 0.f, player->velocity.z / 2.3f)));
+			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&p2);
 		}
 	}
 }

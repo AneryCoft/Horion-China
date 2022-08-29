@@ -13,6 +13,12 @@ private:
 	float lowhopMotion = 0.3f;
 	float timer = 20.f;
 
+	bool inter = false;
+	bool son = false;
+
+	int index = 0;
+	int stick = 0;
+
 	SettingEnum mode;
 	
 public:
