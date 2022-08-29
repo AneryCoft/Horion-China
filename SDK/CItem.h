@@ -202,8 +202,6 @@ public:
 			return true;
 		if (itemId == 422) //末影珍珠
 			return true;
-		if (itemId == 422) //末影珍珠
-			return true;
 		if (itemId == 571) //海洋之心
 			return true;
 		if (itemId == 560) //龙息
@@ -223,6 +221,10 @@ public:
 		if (itemId == 521) //附魔书
 			return true;
 		if (itemId == 570) //鹦鹉螺壳
+			return true;
+		if (itemId == 426) //药水
+			return true;
+		if (itemId == 561) //喷溅药水
 			return true;
 
 		//用id检测物品不容易误判
@@ -294,6 +296,9 @@ public:
 			return false; //Boom Box
 
 		//以上为The Hive服务器的道具
+
+		if (itemId == 30)
+			return false; //蜘蛛网
 
 		auto val = *reinterpret_cast<__int64 ***>(reinterpret_cast<__int64>(this) + 0x1A0);
 		return val != nullptr && *val != nullptr;
