@@ -19,7 +19,7 @@ const char* InventoryCleaner::getModuleName() {
 }
 
 void InventoryCleaner::onGetPickRange() {
-	if (g_Data.getLocalPlayer()->canOpenContainerScreen() && openInv) 
+	if (g_Data.getLocalPlayer()->canOpenContainerScreen() && openInv)
 		return;
 
 	std::vector<int> dropSlots = findUselessItems();
@@ -121,12 +121,14 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 						uselessItems.push_back(i); //不保留的物品
 					else
 						items.push_back(itemStack);
-				} else if (std::find(items.begin(), items.end(), itemStack) == items.end()) {
-					if (/*(*itemStack->item)->itemId == 261 &&*/ !isLastItem(*itemStack->item))
-						uselessItems.push_back(i); //被淘汰的物品
-					else
-						items.push_back(itemStack);	
 				}
+				/*
+				else if (std::find(items.begin(), items.end(), itemStack) == items.end()) {
+					if ( !isLastItem(*itemStack->item))
+						uselessItems.push_back(i); //仅仅保留一组有用的物品
+					else
+						items.push_back(itemStack);
+				}*/
 			}
 		}
 
@@ -136,34 +138,83 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 		}
 	}
 
-	//过滤武器
-	if (items.size() > 0) {
-		std::sort(items.begin(), items.end(), [](const C_ItemStack* lhs, const C_ItemStack* rhs) {
-			C_ItemStack* current = const_cast<C_ItemStack*>(lhs);
-			C_ItemStack* other = const_cast<C_ItemStack*>(rhs);
-			return current->getAttackingDamageWithEnchants() > other->getAttackingDamageWithEnchants();
-		}); //通过武器的伤害来过滤
+	if (items.empty())
+		return uselessItems;
 
-		bool hadTheBestItem = false;
-		C_ItemStack* bestItem = items.at(0);
+	//过滤武器
+	{
+		int attackDamage = 1;
 
 		for (int i = 0; i < 36; i++) {
 			if (std::find(uselessItems.begin(), uselessItems.end(), i) != uselessItems.end())
 				continue;
+
 			C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
-			if (itemStack->item != nullptr && itemStack->getAttackingDamageWithEnchants() > 1) {
-				if (itemStack->getAttackingDamageWithEnchants() < bestItem->getAttackingDamageWithEnchants()) {
+			if (itemStack->item != nullptr) {
+				if (itemStack->isWeapon()) {
+					//clientMessageF("Damage=%f", itemStack->getAttackingDamageWithEnchants());
+					if (itemStack->getAttackingDamageWithEnchants() > attackDamage) { //比较攻击伤害
+						attackDamage = itemStack->getAttackingDamageWithEnchants();
+					}
+					else {
+						if (!keepTools || !(*itemStack->item)->isTool()) //保留工具
+							uselessItems.push_back(i);
+					}
+				}
+			}
+		}
+	}
+
+	/*
+	std::sort(items.begin(), items.end(), [](const C_ItemStack* lhs, const C_ItemStack* rhs) {
+		C_ItemStack* current = const_cast<C_ItemStack*>(lhs);
+		C_ItemStack* other = const_cast<C_ItemStack*>(rhs);
+		return current->getAttackingDamageWithEnchants() > other->getAttackingDamageWithEnchants();
+		}); //通过武器的伤害来过滤
+
+	bool hadTheBestItem = false;
+	C_ItemStack* bestItem = items.at(0);
+
+	for (int i = 0; i < 36; i++) {
+		if (std::find(uselessItems.begin(), uselessItems.end(), i) != uselessItems.end())
+			continue;
+		C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
+		if (itemStack->item != nullptr && itemStack->getAttackingDamageWithEnchants() > 1) {
+			if (itemStack->getAttackingDamageWithEnchants() < bestItem->getAttackingDamageWithEnchants()) {
+				if (!keepTools || !(*itemStack->item)->isTool()) { //保留工具
+					uselessItems.push_back(i);
+				}
+			}
+			else {
+				//伤害与最佳值相同
+				if (hadTheBestItem)
 					if (!keepTools || !(*itemStack->item)->isTool()) { //保留工具
 						uselessItems.push_back(i);
 					}
-				} else {
-					//伤害与最佳值相同
-					if (hadTheBestItem)
-						if (!keepTools || !(*itemStack->item)->isTool()) { //保留工具
-							uselessItems.push_back(i);
-						}
 					else
 						hadTheBestItem = true;
+			}
+		}
+	}
+	*/
+
+	//过滤弓
+	{
+		int enchantLevel = -1;
+
+		for (int i = 0; i < 36; i++) {
+			if (std::find(uselessItems.begin(), uselessItems.end(), i) != uselessItems.end())
+				continue;
+
+			C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
+			if (itemStack->item != nullptr) {
+				if ((*itemStack->item)->itemId == 300) {
+					if (itemStack->getEnchantValue(19) > enchantLevel) { //比较力量属性的等级
+						enchantLevel = itemStack->getEnchantValue(19);
+					}
+					else {
+						uselessItems.push_back(i);
+					}
 				}
 			}
 		}
@@ -181,7 +232,7 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 			C_ItemStack* current = const_cast<C_ItemStack*>(lhs);
 			C_ItemStack* other = const_cast<C_ItemStack*>(rhs);
 			return current->getArmorValueWithEnchants() > other->getArmorValueWithEnchants();
-		});
+			});
 
 		// Put armor items in their respective vectors
 		for (C_ItemStack* itemsteck : items) {
@@ -198,14 +249,14 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 					boots.push_back(itemsteck);
 			}
 		}
-		bool hadBest[4] = {0, 0, 0, 0};
+		bool hadBest[4] = { 0, 0, 0, 0 };
 		for (int i = 0; i < 4; i++) {
 			C_ItemStack* itemsteck = g_Data.getLocalPlayer()->getArmor(i);
 			C_Item** item = itemsteck->item;
 			if (item != nullptr) {
-				
+
 				C_ArmorItem* armor = reinterpret_cast<C_ArmorItem*>(*item);
-				
+
 				float testArmorValue = 0;
 				switch (armor->ArmorSlot) {
 				case 0:
@@ -239,19 +290,23 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 				if (armor->isHelmet()) {
 					if (hadBest[0] || itemStack->getArmorValueWithEnchants() < helmets.at(0)->getArmorValueWithEnchants()) {
 						uselessItems.push_back(i);
-					} else
+					}
+					else
 						hadBest[0] = true;
-				} else if (armor->isChestplate()) {
+				}
+				else if (armor->isChestplate()) {
 					if (hadBest[1] || itemStack->getArmorValueWithEnchants() < chestplates.at(0)->getArmorValueWithEnchants())
 						uselessItems.push_back(i);
 					else
 						hadBest[1] = true;
-				} else if (armor->isLeggings()) {
+				}
+				else if (armor->isLeggings()) {
 					if (hadBest[2] || itemStack->getArmorValueWithEnchants() < leggings.at(0)->getArmorValueWithEnchants())
 						uselessItems.push_back(i);
 					else
 						hadBest[2] = true;
-				} else if (armor->isBoots()) {
+				}
+				else if (armor->isBoots()) {
 					if (hadBest[3] || itemStack->getArmorValueWithEnchants() < boots.at(0)->getArmorValueWithEnchants())
 						uselessItems.push_back(i);
 					else
@@ -262,50 +317,48 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 	}
 
 	//过滤工具
-	if (items.size() > 0) {
-		C_ItemStack* bestItem;
-		int maxDamage = 0;
-		int maxDamage1 = 0;
-		int maxDamage2 = 0;
+	//C_ItemStack* bestTool;
+	int maxDamage = 0;
+	int maxDamage1 = 0;
+	int maxDamage2 = 0;
 
-		for (int i = 0; i < 36; i++) {
-			if (std::find(uselessItems.begin(), uselessItems.end(), i) != uselessItems.end())
-				continue;
+	for (int i = 0; i < 36; i++) {
+		if (std::find(uselessItems.begin(), uselessItems.end(), i) != uselessItems.end())
+			continue;
 
-			C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
-			if (itemStack->item != nullptr/* && (*itemStack->item)->isTool()*/) {
+		C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
+		if (itemStack->item != nullptr/* && (*itemStack->item)->isTool()*/) {
 
-				if ((*itemStack->item)->isPickaxe()) {
-					if ((*itemStack->item)->getMaxDamage() > maxDamage) {
-						maxDamage = (*itemStack->item)->getMaxDamage();
-						bestItem = itemStack;
-					}
-					else {
-						uselessItems.push_back(i);
-					}
-				} //镐
+			if ((*itemStack->item)->isPickaxe()) {
+				if ((*itemStack->item)->getMaxDamage() > maxDamage) {
+					maxDamage = (*itemStack->item)->getMaxDamage();
+					//bestTool = itemStack;
+				}
+				else {
+					uselessItems.push_back(i);
+				}
+			} //镐
 
-				else if ((*itemStack->item)->isAxe()) {
-					if ((*itemStack->item)->getMaxDamage() > maxDamage1) {
-						maxDamage1 = (*itemStack->item)->getMaxDamage();
-						bestItem = itemStack;
-					}
-					else {
-						uselessItems.push_back(i);
-					} 
-				} //斧
+			else if ((*itemStack->item)->isAxe()) {
+				if ((*itemStack->item)->getMaxDamage() > maxDamage1) {
+					maxDamage1 = (*itemStack->item)->getMaxDamage();
+					//bestTool = itemStack;
+				}
+				else {
+					uselessItems.push_back(i);
+				}
+			} //斧
 
-				else if ((*itemStack->item)->isShovel()) {
-					if ((*itemStack->item)->getMaxDamage() > maxDamage2) {
-						maxDamage2 = (*itemStack->item)->getMaxDamage();
-						bestItem = itemStack;
-					}
-					else {
-						uselessItems.push_back(i);
-					}
-				} //锹
+			else if ((*itemStack->item)->isShovel()) {
+				if ((*itemStack->item)->getMaxDamage() > maxDamage2) {
+					maxDamage2 = (*itemStack->item)->getMaxDamage();
+					//bestTool = itemStack;
+				}
+				else {
+					uselessItems.push_back(i);
+				}
+			} //锹
 
-			}
 		}
 	}
 
@@ -320,20 +373,24 @@ bool InventoryCleaner::stackIsUseful(C_ItemStack* itemStack) { //需要保留的物品
 	if (keepTools && (*itemStack->item)->isTool()) return true;       //工具
 	if (keepFood && (*itemStack->item)->isFood()) return true;        //食物
 	if (keepBlocks && (*itemStack->item)->isBlock()) return true;     //方块
-	if (keepTools && (*itemStack->item)->itemId == 368) return true;  //末影珍珠
+	//if (keepTools && (*itemStack->item)->itemId == 368) return true;  //末影珍珠
 	return false;
 }
 
-bool InventoryCleaner::isLastItem(C_Item* item) {
+bool InventoryCleaner::isLastItem(C_Item* item) { //对需要保留的物品进行处理
 	std::vector<C_Item*> items;
 	for (int i = 0; i < 36; i++) {
 		C_ItemStack* stack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
-		if (stack->item != nullptr) items.push_back((*stack->item));
+		if (stack->item != nullptr)
+			items.push_back((*stack->item));
 	}
 	int count = 0;
 	for (C_Item* a : items) {
-		if (a == item) count++;
+		if (a == item)
+			count++;
 	}
-	if (count > 1) return false;
+	if (count > 1)
+		return false; //去除重复物品
+
 	return true;
 }

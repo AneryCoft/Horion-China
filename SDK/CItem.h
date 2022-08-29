@@ -196,7 +196,37 @@ public:
 public:
 	bool isTool(void) {
 		//if (getAttackDamage() > 0) return true;  // Does Attack Damage
+		if (itemId == 299) //打火石
+			return true;
+		if (itemId == 391) //指南针
+			return true;
+		if (itemId == 422) //末影珍珠
+			return true;
+		if (itemId == 422) //末影珍珠
+			return true;
+		if (itemId == 571) //海洋之心
+			return true;
+		if (itemId == 560) //龙息
+			return true;
+		if (itemId == 386) //纸
+			return true;
+		if (itemId == 568) //不死图腾
+			return true;
+		if (itemId == 512) //绿宝石
+			return true;
+		if (itemId == 304) //钻石
+			return true;
+		if (itemId == 306) //金锭
+			return true;
+		if (itemId == 548) //命名牌
+			return true;
+		if (itemId == 521) //附魔书
+			return true;
+		if (itemId == 570) //鹦鹉螺壳
+			return true;
 
+		//用id检测物品不容易误判
+		/*
 		if (((std::string)name.getText()).find("flint_and_steel") != std::string::npos) return true;
 		if (((std::string)name.getText()).find("compass") != std::string::npos) return true;
 		if (((std::string)name.getText()).find("pearl") != std::string::npos) return true;
@@ -210,6 +240,7 @@ public:
 		if (((std::string)name.getText()).find("name_tag") != std::string::npos) return true;
 		if (((std::string)name.getText()).find("enchanted_book") != std::string::npos) return true;
 		if (((std::string)name.getText()).find("nautilus_shell") != std::string::npos) return true;
+		*/
 		if (itemId == 309 || itemId == 313 || itemId == 323 || itemId == 296 || itemId == 317 || itemId == 605) //锹
 			return true;
 		if (itemId == 310 || itemId == 324 || itemId == 314 || itemId == 297 || itemId == 318 || itemId == 606) //镐
