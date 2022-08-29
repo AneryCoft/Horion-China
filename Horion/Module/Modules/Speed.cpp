@@ -5,7 +5,8 @@ Speed::Speed() : IModule(VK_NUMPAD2, Category::MOVEMENT, "Speed up!") {
 		.addEntry(EnumEntry("Vanilla", 0))
 		.addEntry(EnumEntry("Bhop", 1))
 		.addEntry(EnumEntry("Lowhop", 2))
-		.addEntry(EnumEntry("HiveFast", 3));
+		.addEntry(EnumEntry("HiveFast", 3))
+		.addEntry(EnumEntry("HiveSafe", 4));
 	registerEnumSetting("Mode", &mode, 1);
 	registerFloatSetting("VanillaSpeed", &vanillaSpeed, vanillaSpeed, 0.1f, 5.f);
 	registerFloatSetting("MaxSpeed", &maxSpeed, maxSpeed, 0.1f, 1.f);
@@ -128,6 +129,21 @@ float hiveSpeed[12] = {
 	0.24647
 };
 
+float hiveSafe[12] = {
+	0.48041,
+	0.45005,
+	0.43040,
+	0.41000,
+	0.39050,
+	0.38000,
+	0.37000,
+	0.36000,
+	0.35000,
+	0.34000,
+	0.32041,
+	0.31647
+};
+
 void Speed::onMove(C_MoveInputHandler* input) {
 	auto player = g_Data.getLocalPlayer();
 	if (player == nullptr) return;
@@ -182,7 +198,7 @@ void Speed::onMove(C_MoveInputHandler* input) {
 			if (pressed) player->lerpMotion(moveVec);
 		}
 	}
-	else if (mode.selected == 3) {
+	else if (mode.selected == 3 || mode.selected == 4) {
 		vec2_t movement = { input->forwardMovement, -input->sideMovement };
 		bool pressed = movement.magnitude() > 0.f;
 		float calcYaw = (player->yaw + 90) * (PI / 180);
@@ -196,10 +212,18 @@ void Speed::onMove(C_MoveInputHandler* input) {
 			son = true;
 		}
 		float safeSpeedArray;
-		if (son)
-			safeSpeedArray = hiveSpeed[index++ % 12];
-		else
-			safeSpeedArray = 0.24247;
+		if (mode.selected == 3) {
+			if (son)
+				safeSpeedArray = hiveSpeed[index++ % 12];
+			else
+				safeSpeedArray = 0.24247;
+		}
+		else {
+			if (son)
+				safeSpeedArray = hiveSafe[index++ % 12];
+			else
+				safeSpeedArray = 0.24247;
+		}
 		if (player->onGround) {
 			//safeSpeedArray == 0.61000;
 			son = true;
