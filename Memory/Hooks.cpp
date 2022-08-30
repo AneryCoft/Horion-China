@@ -69,7 +69,7 @@ void Hooks::Init() {
 
 				g_Hooks.JumpPowerHook = std::make_unique<FuncHook>(localPlayerVtable[345], Hooks::JumpPower); //jump from ground with movement proxy
 
-				//g_Hooks.setPosHook = std::make_unique<FuncHook>(localPlayerVtable[19], Hooks::setPos);
+				g_Hooks.setPosHook = std::make_unique<FuncHook>(localPlayerVtable[19], Hooks::setPos);
 
 				g_Hooks.Actor_baseTickHook = std::make_unique<FuncHook>(localPlayerVtable[49], Hooks::Actor_baseTick);
 
@@ -1849,4 +1849,16 @@ float Hooks::getDestroySpeed(C_Player* _this, C_Block& block) {
 		return fastDigMod->speed;
 
 	return oFunc(_this, block);
+}
+
+void Hooks::setPos(C_Entity* ent, vec3_t& pos) {
+	auto func = g_Hooks.setPosHook->GetFastcall<void, C_Entity*, vec3_t&>();
+	static auto antiVoidmode = moduleMgr->getModule<AntiVoid>();
+
+	if (g_Data.getLocalPlayer() != nullptr && ent == g_Data.getLocalPlayer()) {
+		if (antiVoidmode->isEnabled() && antiVoidmode->mode.selected == 1 && antiVoidmode->lagBack) {
+			pos = antiVoidmode->savePos;
+		}
+	}
+	func(ent, pos);
 }

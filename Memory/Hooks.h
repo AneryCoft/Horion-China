@@ -136,6 +136,7 @@ private:
 	static void InventoryTransactionManager__addAction(C_InventoryTransactionManager*, C_InventoryAction&);
 	static void LevelRendererPlayer__renderNameTags(__int64 a1, __int64 a2, TextHolder* name, __int64 a4);
 	static float getDestroySpeed(C_Player* _this, C_Block& block);
+	static void setPos(C_Entity* ent, vec3_t& pos);
 
 	std::unique_ptr<FuncHook> Actor_rotationHook;
 	std::unique_ptr<FuncHook> setPosHook;
