@@ -4,26 +4,23 @@
 
 Scaffold::Scaffold() : IModule(VK_NUMPAD1, Category::WORLD, "Automatically build blocks beneath you.") {
 	mode = SettingEnum(this)
-			   .addEntry(EnumEntry("Normal", 0))
-			   .addEntry(EnumEntry("Extend", 1))
-			   .addEntry(EnumEntry("Staircase", 2))
-			   .addEntry(EnumEntry("Horizontal", 3))
-			   .addEntry(EnumEntry("Hive", 4));
+		.addEntry(EnumEntry("Normal", 0))
+		.addEntry(EnumEntry("Extend", 1))
+		.addEntry(EnumEntry("Staircase", 2))
+		.addEntry(EnumEntry("Horizontal", 3));
+	//.addEntry(EnumEntry("Hive", 4));
 	registerEnumSetting("Mode", &mode, 0);
-	rot =  SettingEnum(this)
-			  .addEntry(EnumEntry("Normal", 0))
-			  .addEntry(EnumEntry("Forward", 1))
-			  .addEntry(EnumEntry("Back", 2));
-	registerEnumSetting("Rotation", &rot, 0);
-	autoBlockEnum = SettingEnum(this)
-		.addEntry(EnumEntry("HotbarSlot", 0))
-		.addEntry(EnumEntry("Packet", 1));
-	registerEnumSetting("AutoBlock", &autoBlockEnum, 0);
-	this->registerIntSetting("Extend Length", &this->length, this->length, 0, 10);
-	registerBoolSetting("AutoBlocks", &this->autoBlock, this->autoBlock);
-	registerBoolSetting("blockCount", &this->showBlockCount, this->showBlockCount);
-	registerBoolSetting("Rotations", &this->rotations, this->rotations);
-	registerBoolSetting("Render", &this->render, this->render);
+	rotations = SettingEnum(this)
+		.addEntry(EnumEntry("None", 0))
+		.addEntry(EnumEntry("Extend", 1))
+		.addEntry(EnumEntry("Forward", 2))
+		.addEntry(EnumEntry("Back", 3));
+	registerEnumSetting("Rotation", &rotations, 0);
+	registerIntSetting("Extend Length", &length, length, 0, 10);
+	registerBoolSetting("AutoBlocks", &autoBlock, autoBlock);
+	registerBoolSetting("blockCount", &showBlockCount, showBlockCount);
+	//registerBoolSetting("Rotation", &this->rotation, this->rotation);
+	registerBoolSetting("Render", &render, render);
 }
 
 Scaffold::~Scaffold() {
@@ -101,39 +98,23 @@ void Scaffold::selectedBlock() {
 	C_Inventory* inv = supplies->inventory;
 	int emptySlot = 0;
 
-	if (autoBlockEnum.selected == 0) {
-		for (int i = 0; i < 36; i++) {
-			C_ItemStack* stack = inv->getItemStack(i);
-			if (i < 9) {
-				if (stack->item != nullptr) {
-					if (stack->getItem()->isBlock()) {
-						supplies->selectedHotbarSlot = i;
-						return;
-					}
-				}
-				else {
-					emptySlot = i;
-				}
-			}
-			else {
-				if (stack->item != nullptr && stack->getItem()->isBlock()) {
-					inv->moveItem(i, emptySlot);
-					supplies->selectedHotbarSlot = emptySlot;
+	for (int i = 0; i < 36; i++) {
+		C_ItemStack* stack = inv->getItemStack(i);
+		if (i < 9) {
+			if (stack->item != nullptr) {
+				if (stack->getItem()->isBlock()) {
+					supplies->selectedHotbarSlot = i;
 					return;
 				}
 			}
+			else {
+				emptySlot = i;
+			}
 		}
-	}
-	else if (autoBlockEnum.selected == 1) {
-		for (int i = 0; i < 36; i++) {
-			C_ItemStack* stack = inv->getItemStack(i);
+		else {
 			if (stack->item != nullptr && stack->getItem()->isBlock()) {
-				C_MobEquipmentPacket packet;
-				packet.entityRuntimeId = *g_Data.getLocalPlayer()->getUniqueId();
-				packet.item = *stack;
-				packet.inventorySlot1 = i;
-				packet.hotbarSlot1 = i;
-				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
+				inv->swapSlots(i, emptySlot);
+				supplies->selectedHotbarSlot = emptySlot;
 				return;
 			}
 		}
@@ -168,14 +149,15 @@ void Scaffold::onGetPickRange() {
 	if (selectedItem == nullptr || selectedItem->count == 0 || selectedItem->item == nullptr || !selectedItem->getItem()->isBlock()) {  // Block in hand?
 		if (autoBlock) {
 			selectedBlock();
-		} else
+		}
+		else
 			return;
 	}
 
 	/*if (onlyGround && !g_Data.getLocalPlayer()->onGround)
 		return;*/
 
-	// Adjustment by velocity
+		// Adjustment by velocity
 	float speed = g_Data.getLocalPlayer()->velocity.magnitudexz();
 	vec3_t vel = g_Data.getLocalPlayer()->velocity;
 	vel = vel.normalize();  // Only use values from 0 - 1
@@ -260,6 +242,7 @@ void Scaffold::onGetPickRange() {
 			}
 		}
 	} break;
+		/*
 	case 3: {
 		vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block below the player
 		blockBelow.y = horizontalHigh;
@@ -276,11 +259,30 @@ void Scaffold::onGetPickRange() {
 				}
 			}
 		}
-	}
-	case 4: {
-		static int i = 0;
+	} break;
+	*/
+	case 3: {
+		C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
+		float yaw = g_Data.getLocalPlayer()->yaw;
 
-		float cal = (g_Data.getLocalPlayer()->yaw + 90) * (PI / 180);
+		if (input->rightKey) {
+			yaw += 90.f;
+			if (input->forwardKey)
+				yaw -= 45.f;
+			else if (input->backKey)
+				yaw += 45.f;
+		}
+		if (input->leftKey) {
+			yaw -= 90.f;
+			if (input->forwardKey)
+				yaw += 45.f;
+			else if (input->backKey)
+				yaw -= 45.f;
+		}
+		if (input->backKey && !input->leftKey && !input->rightKey)
+			yaw += 180.f;
+
+		float cal = (yaw + 90) * (PI / 180);
 		vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block 1 block below the player
 		blockBelow.y = horizontalHigh;
 
@@ -300,9 +302,8 @@ void Scaffold::onGetPickRange() {
 				}
 			}
 		}
-		++i;
 	}
-		  }
+	}
 }
 
 void Scaffold::onDisable() {
@@ -327,55 +328,51 @@ void Scaffold::onEnable() {
 }
 
 void Scaffold::onPlayerTick(C_Player* player) {
-	if (rotations && needRender) {
-		vec2_t angle;
-		switch (rot.selected) {
-			case 0: {
-				angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockPos);
-			} break;
-			case 1: {
-				vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;
-				float cal = (g_Data.getLocalPlayer()->yaw + 90) * (PI / 180);
-				vec3_t vel = g_Data.getLocalPlayer()->velocity;
-				vel = vel.normalize();  // Only use values from 0 - 1
-				blockBelow.y -= g_Data.getLocalPlayer()->height;
-				blockBelow.y -= 0.8f;
-				blockBelow.x = blockBelow.x += cos(cal) * 1;
-				blockBelow.z = blockBelow.z += sin(cal) * 1;
-				blockBelow.x -= vel.x * 0.4f;
-				blockBelow.z -= vel.x * 0.4f;
-				angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockBelow);
-			} break;
-			case 2: {
-				vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;
-				float cal = (g_Data.getLocalPlayer()->yaw + 90) * (PI / 180);
-				vec3_t vel = g_Data.getLocalPlayer()->velocity;
-				vel = vel.normalize();  // Only use values from 0 - 1
-				blockBelow.y -= g_Data.getLocalPlayer()->height;
-				blockBelow.y -= 0.8f;
-				blockBelow.x = blockBelow.x -= cos(cal) * 1;
-				blockBelow.z = blockBelow.z -= sin(cal) * 1;
-				blockBelow.x -= vel.x * 0.4f;
-				blockBelow.x -= vel.z * 0.4f;
-				angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockBelow);
-			}
+	if (rotations.selected != 0 && needRender) {
+		switch (rotations.selected) {
+		case 1: {
+			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockPos);
+		} break;
+		case 2: {
+			vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;
+			float cal = (g_Data.getLocalPlayer()->yaw + 90) * (PI / 180);
+			vec3_t vel = g_Data.getLocalPlayer()->velocity;
+			vel = vel.normalize();  // Only use values from 0 - 1
+			blockBelow.y -= g_Data.getLocalPlayer()->height;
+			blockBelow.y -= 0.8f;
+			blockBelow.x = blockBelow.x += cos(cal) * 1;
+			blockBelow.z = blockBelow.z += sin(cal) * 1;
+			blockBelow.x -= vel.x * 0.4f;
+			blockBelow.z -= vel.x * 0.4f;
+			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockBelow);
+		} break;
+		case 3: {
+			vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;
+			float cal = (g_Data.getLocalPlayer()->yaw + 90) * (PI / 180);
+			vec3_t vel = g_Data.getLocalPlayer()->velocity;
+			vel = vel.normalize();  // Only use values from 0 - 1
+			blockBelow.y -= g_Data.getLocalPlayer()->height;
+			blockBelow.y -= 0.8f;
+			blockBelow.x = blockBelow.x -= cos(cal) * 1;
+			blockBelow.z = blockBelow.z -= sin(cal) * 1;
+			blockBelow.x -= vel.x * 0.4f;
+			blockBelow.x -= vel.z * 0.4f;
+			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockBelow);
+		}
 		}
 		if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || player->isJumping()) {
 			player->bodyYaw = angle.y;
 			player->yawUnused1 = angle.y;
 			player->pitch = angle.x;
-			if (rot.selected == 2)
-				player->pitch = 89;
 		}
 	}
-	if (spoof) player->getSupplies()->selectedHotbarSlot = prevSlot;
 }
 
 void Scaffold::onSendPacket(C_Packet* packet, bool&) {
-	if (rotations && needRender) {
+	if (rotations.selected != 0 && needRender) {
 		if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || g_Data.getLocalPlayer()->isJumping()) {
-			vec2_t angle;
-			switch (rot.selected) {
+			/*
+			switch (rotations.selected) {
 			case 0: {
 				angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockPos);
 			} break;
@@ -405,7 +402,7 @@ void Scaffold::onSendPacket(C_Packet* packet, bool&) {
 				blockBelow.x -= vel.z * 0.4f;
 				angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockBelow);
 			}
-			}
+			}*/
 			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
 				C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
 				movePacket->pitch = angle.x;
@@ -428,7 +425,7 @@ void Scaffold::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		if (showBlockCount) {
 			vec2_t windowSize = g_Data.getClientInstance()->getGuiData()->windowSize;
 			std::string countText = "Blocks:" + std::to_string(calcCount());
-			DrawUtils::drawText(vec2_t{windowSize.x / 2.f, windowSize.y / 2.f + 20.f}, &countText, MC_Color(255, 255, 255), 1.3f);
+			DrawUtils::drawText(vec2_t{ windowSize.x / 2.f, windowSize.y / 2.f + 20.f }, &countText, MC_Color(255, 255, 255), 1.3f);
 			// vec4_t renderPos = {};
 			// DrawUtils::fillRectangle(renderPos, MC_Color(13, 29, 48), 1.f);
 		}

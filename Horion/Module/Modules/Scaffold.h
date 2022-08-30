@@ -6,22 +6,20 @@
 
 class Scaffold : public IModule {
 private:
-	bool spoof = false;
 	bool tryScaffold(vec3_t blockBelow);
 	int length = 5;
 	bool showBlockCount = false;
 	bool autoBlock = false;
 	int prevSlot = 0;
 	float horizontalHigh;
-	bool rotations = false;
 	bool render = false;
 	vec3_t blockPos;
 	bool needRender = false;
+	vec2_t angle;
 
 public:
 	SettingEnum mode;
-	SettingEnum rot;
-	SettingEnum autoBlockEnum;
+	SettingEnum rotations;
 
 	void selectedBlock();
 	int calcCount();
