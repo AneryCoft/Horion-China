@@ -390,9 +390,9 @@ public:
 	virtual __int64 getCommandPermissionLevel(void);                                        // 204
 	virtual bool isClientSide(void);                                                        // 205
 	virtual class AttributeInstance* getMutableAttribute(class Attribute* Attribute);   //206
-	virtual class AttributeInstance* getAttribute(class Attribute* Attribute); //206
-	virtual __int64 getAttribute(int*) const;   // 207
-	//virtual __int64 getDeathTime(void);                                             // 208 这里没有测试过，先删除一个放置调用后面函数虚表位置错误 
+	virtual class AttributeInstance* getAttribute(class Attribute* Attribute); //207
+	//virtual __int64 getAttribute(int*) const;   // 207这里没有测试过，先删除一个放置调用后面函数虚表位置错误 
+	virtual __int64 getDeathTime(void);                                             // 208 
 	virtual __int64 heal(int);                                                      // 209
 	virtual bool isInvertedHealAndHarm(void);                                       // 210
 	virtual bool canBeAffected(int);                                                // 211
@@ -604,14 +604,14 @@ public:
 		return *reinterpret_cast<class Level**>(reinterpret_cast<__int64>(this) + 0x368);
 	}
 	float getHealth() {
-		static int* healthAttribute = 0x0;
+		static Attribute *healthAttribute = 0x0;
 
 		if (healthAttribute == 0x0) {
 			uintptr_t sigOffset = FindSignature("48 8D 15 ?? ?? ?? ?? FF 90 ?? ?? ?? ?? F3 ?? ?? 88 ?? ?? ?? ?? 85 C9 7E ??");
-			healthAttribute = (int*)(sigOffset + (*(int*)(sigOffset + 3)) + 7);
+			healthAttribute = (Attribute *)(sigOffset + (*(int *)(sigOffset + 3)) + 7);
 		}
 
-		return *(float*)(getAttribute(healthAttribute) + 0x84);
+		return *(float *)(reinterpret_cast<uintptr_t>(getAttribute(healthAttribute)) + 0x84);
 	}
 	vec3_t getHumanPos() {
 		vec3_t targetPos = this->eyePos0;
