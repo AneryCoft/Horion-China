@@ -389,8 +389,8 @@ public:
 	virtual __int64 buildDebugInfo(std::string&);                                          // 203
 	virtual __int64 getCommandPermissionLevel(void);                                        // 204
 	virtual bool isClientSide(void);                                                        // 205
-	virtual class AttributeInstance* getMutableAttribute(class Attribute* Attribute);
-	virtual class AttributeInstance* getAttribute(class Attribute* Attribute);
+	//virtual class AttributeInstance* getMutableAttribute(class Attribute* Attribute); 
+	virtual class AttributeInstance* getAttribute(class Attribute* Attribute); //206
 	virtual __int64 getAttribute(int*) const;   // 207
 	virtual __int64 getDeathTime(void);                                             // 208
 	virtual __int64 heal(int);                                                      // 209
