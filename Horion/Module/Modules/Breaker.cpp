@@ -89,6 +89,7 @@ void Breaker::onTick(C_GameMode* gm) {
 
 				if ((id == 26 && beds) ||
 					(id == 122 && eggs) ||
+					(id == 92 && cakes) ||
 					(id == 54 && chests) ||
 					(id == 458 && barrels) ||
 					((id == 73 || id == 74) && redStone)) {
