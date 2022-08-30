@@ -52,7 +52,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -60,7 +60,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <SpectreMitigation>false</SpectreMitigation>
@@ -230,6 +230,8 @@
     <ResourceCompile Include="Horion.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Horion-China-main\Horion-China-main\Horion\Module\Modules\CrystalBreak.cpp" />
+    <ClCompile Include="..\Horion-China-main\Horion-China-main\Horion\Module\Modules\CrystalPlace.cpp" />
     <ClCompile Include="Horion\Command\CommandMgr.cpp" />
     <ClCompile Include="Horion\Command\Commands\BindCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\CommandBlockExploitCommand.cpp" />
@@ -294,6 +296,8 @@
     <ClCompile Include="Horion\Module\Modules\BowSpam.cpp" />
     <ClCompile Include="Horion\Module\Modules\ChestAura.cpp" />
     <ClCompile Include="Horion\Module\Modules\Criticals.cpp" />
+    <ClCompile Include="Horion\Module\Modules\CrystalBreak.cpp" />
+    <ClCompile Include="Horion\Module\Modules\CrystalPlace.cpp" />
     <ClCompile Include="Horion\Module\Modules\Disabler.cpp" />
     <ClCompile Include="Horion\Module\Modules\FastDig.cpp" />
     <ClCompile Include="Horion\Module\Modules\FastEat.cpp" />
@@ -423,6 +427,7 @@
     <ClCompile Include="Utils\VoxelIntersector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Horion-China-main\Horion-China-main\Horion\Module\Modules\CrystalUtilsJTWD.h" />
     <ClInclude Include="Horion\Command\CommandMgr.h" />
     <ClInclude Include="Horion\Command\Commands\BindCommand.h" />
     <ClInclude Include="Horion\Command\Commands\CommandBlockExploitCommand.h" />
@@ -495,6 +500,7 @@
     <ClInclude Include="Horion\Module\Modules\Criticals.h" />
     <!--    <ClInclude Include="Horion\Module\Modules\Criticals.h" /> -->
     <ClInclude Include="Horion\Module\Modules\CrystalAura.h" />
+    <ClInclude Include="Horion\Module\Modules\CrystalUtilsJTWD.h" />
     <ClInclude Include="Horion\Module\Modules\Derp.h" />
     <ClInclude Include="Horion\Module\Modules\Disabler.h" />
     <ClInclude Include="Horion\Module\Modules\EditionFaker.h" />
