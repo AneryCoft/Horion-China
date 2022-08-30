@@ -38,8 +38,17 @@ bool Target::isValidTarget(C_Entity* ent) {
 
 	if (antibotMod->isEnabled()) {
 		if (antibotMod->hitboxCheck) {
-			if ((ent->height < 1.5f || ent->width < 0.49f || ent->height > 2.1f || ent->width > 0.9f))
-				return false;
+			/*if ((ent->height < 1.5f || ent->width < 0.49f || ent->height > 2.1f || ent->width > 0.9f))
+				return false;*/
+			if (hitboxMod->isEnabled()) {
+				if (ent->height > hitboxMod->height || ent->width > hitboxMod->width)
+					return false;
+
+			}
+			else {
+				if (ent->height > 1.8f || ent->width > 0.6f)
+					return false;
+			}
 		}
 
 		if (antibotMod->nameCheck) {
@@ -49,8 +58,8 @@ bool Target::isValidTarget(C_Entity* ent) {
 			if (!ent->canShowNameTag())
 				return false;
 
-			//if (!Target::containsOnlyASCII(ent->getNameTag()->getText()))
-			//	return false; // Temporarily removed from gui, tons of false negatives
+			if (!Target::containsOnlyASCII(ent->getNameTag()->getText()))
+				return false; // Temporarily removed from gui, tons of false negatives
 
 			if (std::string(ent->getNameTag()->getText()).find(std::string("\n")) != std::string::npos)
 				return false;
@@ -74,6 +83,10 @@ bool Target::isValidTarget(C_Entity* ent) {
 
 			if (ent->isImmobile())
 				return false;
+		}
+		if (antibotMod->modeCheck) {
+			if (ent->gamemode == 1)
+				return false; //不攻击创造模式的玩家
 		}
 	}
 

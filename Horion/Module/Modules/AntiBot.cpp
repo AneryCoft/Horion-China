@@ -6,6 +6,7 @@ AntiBot::AntiBot() : IModule(0, Category::PLAYER, "Enable this module to filter 
 	registerBoolSetting("Invisible Check", &invisibleCheck, invisibleCheck);
 	registerBoolSetting("EntityID Check", &entityIdCheck, entityIdCheck);
 	registerBoolSetting("Move Check", &moveCheck, moveCheck);
+	registerBoolSetting("Mode Check", &modeCheck, modeCheck);
 }
 
 AntiBot::~AntiBot() {

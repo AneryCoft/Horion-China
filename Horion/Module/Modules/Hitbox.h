@@ -6,9 +6,8 @@
 
 class Hitbox : public IModule {
 public:
-	float height = 2;
-	float width = 4;
-	float range = 8;
+	float height = 2.f;
+	float width = 4.f;
 
 	Hitbox();
 	~Hitbox();
@@ -16,4 +15,5 @@ public:
 	// Inherited via IModule
 	virtual const char* getModuleName() override;
 	virtual void onTick(C_GameMode* gm) override;
+	virtual void onDisable() override;
 };

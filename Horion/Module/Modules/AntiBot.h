@@ -14,6 +14,7 @@ public:
 	bool invisibleCheck = true;
 	bool entityIdCheck = true;
 	bool moveCheck = true;
+	bool modeCheck = true;
 
 	// Inherited via IModule
 	virtual const char* getModuleName() override;
