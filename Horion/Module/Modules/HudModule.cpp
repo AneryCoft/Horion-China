@@ -39,7 +39,8 @@ void HudModule::drawKeystroke(char key, const vec2_t& pos) {
 			rectPos.y + 10.f - DrawUtils::getFont(Fonts::SMOOTH)->getLineHeight() / 2.f);
 		if (ClientThemes->Theme.selected == 1) {
 			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), 0.5f);
-		} else {
+		}
+		else {
 			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), 0.5f);
 		}
 		DrawUtils::drawText(textPos, &keyString, MC_Color(255, 255, 255), 1.f, 1.f);
@@ -57,11 +58,13 @@ void HudModule::drawKeystroke(char key, const vec2_t& pos) {
 
 		if (ClientThemes->Theme.selected == 1) {
 			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), 0.5f);
-		} else {
+		}
+		else {
 			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), 0.5f);
 		}
 		DrawUtils::drawText(textPos, &keyString, MC_Color(255, 255, 255), 1.f, 1.f);
-	} else {
+	}
+	else {
 		vec4_t rectPos(
 			pos.x,
 			pos.y,
@@ -73,7 +76,8 @@ void HudModule::drawKeystroke(char key, const vec2_t& pos) {
 
 		if (ClientThemes->Theme.selected == 1) {
 			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), 0.5f);
-		} else {
+		}
+		else {
 			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), 0.5f);
 		}
 		DrawUtils::drawText(textPos, &keyString, MC_Color(255, 255, 255), 1.f, 1.f);
@@ -91,7 +95,8 @@ void HudModule::drawLeftMouseKeystroke(vec2_t pos) {
 		pos.y + 22.f);
 	if (ClientThemes->Theme.selected == 1) {
 		DrawUtils::fillRectangle(rectPos, GameData::GameData::isLeftClickDown() ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), 0.5f);
-	} else {
+	}
+	else {
 		DrawUtils::fillRectangle(rectPos, GameData::GameData::isLeftClickDown() ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), 0.5f);
 	}
 	vec2_t textPos(
@@ -111,7 +116,8 @@ void HudModule::drawRightMouseKeystroke(vec2_t pos) {
 		pos.y + 22.f);
 	if (ClientThemes->Theme.selected == 1) {
 		DrawUtils::fillRectangle(rectPos, GameData::GameData::isRightClickDown() ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), 0.5f);
-	} else {
+	}
+	else {
 		DrawUtils::fillRectangle(rectPos, GameData::GameData::isRightClickDown() ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), 0.5f);
 	}
 	vec2_t textPos(
@@ -128,7 +134,7 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	std::string tempStr("Movement");
 	float len = DrawUtils::getTextWidth(&tempStr, scale) + 7.f;
 	float startY = tabgui ? 6 * f : 0.f;
-	if(tabgui && scriptMgr.getNumEnabledScripts() > 0)
+	if (tabgui && scriptMgr.getNumEnabledScripts() > 0)
 		startY += f;
 	{  // FPS
 		if (!(g_Data.getLocalPlayer() == nullptr || !fps)) {
@@ -137,7 +143,8 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			vec2_t textPos = vec2_t(rectPos.x + 1.5f, rectPos.y + 1.f);
 			if (ClientThemes->Theme.selected == 1) {
 				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
-			} else {
+			}
+			else {
 				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
 			}
 			DrawUtils::drawText(textPos, &fpsText, MC_Color(200, 200, 200), scale);
@@ -152,7 +159,8 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			vec2_t textPos = vec2_t(rectPos.x + 1.5f, rectPos.y + 1.f);
 			if (ClientThemes->Theme.selected == 1) {
 				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
-			} else {
+			}
+			else {
 				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
 			}
 			DrawUtils::drawText(textPos, &cpsText, MC_Color(200, 200, 200), scale);
@@ -171,7 +179,8 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			vec2_t textPos = vec2_t(rectPos.x + 1.5f, rectPos.y + 1.f);
 			if (ClientThemes->Theme.selected == 1) {
 				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
-			} else {
+			}
+			else {
 				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
 			}
 			DrawUtils::drawText(textPos, &coordsX, MC_Color(200, 200, 200), scale);
@@ -182,7 +191,7 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		}
 	}
 	{  // ArmorHUD
-		
+
 		if (!(g_Data.getLocalPlayer() == nullptr || !displayArmor || !GameData::canUseMoveKeys())) {
 			static float constexpr scale = 1.f;
 			static float constexpr opacity = 0.25f;
@@ -190,18 +199,36 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			C_LocalPlayer* player = g_Data.getLocalPlayer();
 			float x = windowSize.x / 2.f + 5.f;
 			float y = windowSize.y - 57.5f;
+			float y1 = windowSize.y - 63.5f;
+
 			for (int i = 0; i < 4; i++) {
 				C_ItemStack* stack = player->getArmor(i);
 				if (stack->isValid()) {
 					DrawUtils::drawItem(stack, vec2_t(x, y), opacity, scale, stack->isEnchanted());
+					C_Item* item = stack->getItem();
+					if (item->getMaxDamage() > 0) {
+						//std::string damageText = std::to_string(item->getMaxDamage() - item->getDamageValue(stack->tag)) + "/" + std::to_string(item->getMaxDamage()); //精准显示 但是文字会互相遮挡
+						int damage = ((float)(item->getMaxDamage() - item->getDamageValue(stack->tag)) / (float)item->getMaxDamage()) * 100;
+						std::string damageText = std::to_string(damage) + "%";
+						DrawUtils::drawText(vec2_t(x + scale, y1), &damageText, MC_Color(255, 255, 255), 0.8f, 1.f); //盔甲耐久度
+					}
 					x += scale * spacing;
 				}
 			}
 			C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
-			C_ItemStack* item = supplies->inventory->getItemStack(supplies->selectedHotbarSlot);
+			C_ItemStack* stack = supplies->inventory->getItemStack(supplies->selectedHotbarSlot);
 			//x += scale * spacing;
-			if (item->isValid())
-				DrawUtils::drawItem(item, vec2_t(x, y), opacity, scale, item->isEnchanted());
+			if (stack->isValid()) {
+				C_Item* item = stack->getItem();
+
+				if (item->getMaxDamage() > 0) {
+					//std::string damageText2 = std::to_string(item->getItem()->getMaxDamage() - item->getItem()->getDamageValue(item->tag)) + "/" + std::to_string(item->getItem()->getMaxDamage());
+					int damage2 = ((float)(item->getMaxDamage() - item->getDamageValue(stack->tag)) / (float)item->getMaxDamage()) * 100;
+					std::string damageText2 = std::to_string(damage2) + "%";
+					DrawUtils::drawText(vec2_t(x + scale, y1), &damageText2, MC_Color(255, 255, 255), 0.8f, 1.f); //手持物品耐久度
+				}
+				DrawUtils::drawItem(stack, vec2_t(x, y), opacity, scale, stack->isEnchanted());
+			}
 		}
 	}
 	{  // Keystrokes
