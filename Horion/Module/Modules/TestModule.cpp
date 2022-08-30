@@ -57,7 +57,7 @@ void TestModule::onTick(C_GameMode* gm) {
 	}
 
 	if (g_Data.getLocalPlayer()->getSelectedItem()->item != nullptr) {
-		clientMessageF("ItemID=%i extraData=%i", (*g_Data.getLocalPlayer()->getSelectedItem()->item)->itemId, g_Data.getLocalPlayer()->getSelectedItem()->extraData);
+		clientMessageF("ItemID=%i extraData=%i Damage = %i", (*g_Data.getLocalPlayer()->getSelectedItem()->item)->itemId, g_Data.getLocalPlayer()->getSelectedItem()->extraData, (*g_Data.getLocalPlayer()->getSelectedItem()->item)->getAttackDamage());
 	}
 	//clientMessageF("color=%i", g_Data.getLocalPlayer()->getArmorColorInSlot(0, 0));
 }

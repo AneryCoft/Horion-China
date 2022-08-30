@@ -41,11 +41,11 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s action=%i unkown=%f", packet->getName()->getText(), (int)packets->action, packets->unknown);
 		return;
 	}
-	if (packet->isInstanceOf<NetworkLatencyPacket>()) {
+	/*if (packet->isInstanceOf<NetworkLatencyPacket>()) {
 		auto packets = reinterpret_cast<NetworkLatencyPacket*>(packet);
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s timeStamp=%i sendBack=%f", packet->getName()->getText(), (int)packets->timeStamp, (int)packets->sendBack);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s timeStamp=%i sendBack=%i", packet->getName()->getText(), (int)packets->timeStamp, (int)packets->sendBack);
 		return;
-	}
+	}*/ //这个包是错误的
 
 	if (strcmp(packet->getName()->getText(), "PlayerAuthInputPacket") != 0) {
 		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s", packet->getName()->getText());
