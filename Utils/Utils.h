@@ -448,8 +448,6 @@ public:
 	static std::string sanitize(std::string text);
 
 	static std::wstring stringToWstring(std::string txt);
-
-	static std::string randomUUID();
 	
 	static bool endsWith(std::wstring const& fullString, std::wstring const& ending) {
 		if (fullString.length() >= ending.length()) {
