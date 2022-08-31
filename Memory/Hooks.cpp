@@ -1479,7 +1479,7 @@ static auto oFunc = g_Hooks.ConnectionRequest_createHook->GetFastcall<__int64, _
 
 	logF("Connection Request: InputMode: %i UiProfile: %i GuiScale: %i", inputMode, uiProfile, guiScale);
 
-	logF("DeviceId: %s",deviceId->getText());
+	logF("DeviceId: %s", RandomDeviceIdMod->isEnabled() ? uuid.getText() : deviceId->getText());
 
 	if (g_Data.allowWIPFeatures()) {
 
