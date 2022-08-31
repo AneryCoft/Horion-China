@@ -618,9 +618,9 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 #ifdef _DEBUG
 						static std::string version = "dev";
 #elif defined _BETA
-						static std::string version = "China";
+						static std::string version = "beta";
 #else
-						static std::string version = "public";
+						static std::string version = "China";
 #endif
 
 						float nameLength = DrawUtils::getTextWidth(&name, nameTextSize);
