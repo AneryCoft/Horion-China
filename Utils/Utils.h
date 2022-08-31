@@ -449,6 +449,8 @@ public:
 
 	static std::wstring stringToWstring(std::string txt);
 
+	static std::string randomUUID();
+	
 	static bool endsWith(std::wstring const& fullString, std::wstring const& ending) {
 		if (fullString.length() >= ending.length()) {
 			return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
