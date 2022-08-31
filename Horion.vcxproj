@@ -302,6 +302,7 @@
     <ClCompile Include="Horion\Module\Modules\FastStop.cpp" />
     <ClCompile Include="Horion\Module\Modules\InfiniteAura.cpp" />
     <ClCompile Include="Horion\Module\Modules\InventoryView.cpp" />
+    <ClCompile Include="Horion\Module\Modules\Notifications.cpp" />
     <ClCompile Include="Horion\Module\Modules\RandomDeviceId.cpp" />
     <ClCompile Include="Horion\Module\Modules\StorageESP.cpp" />
     <ClCompile Include="Horion\Module\Modules\ChestStealer.cpp" />
@@ -539,6 +540,7 @@
     <ClInclude Include="Horion\Module\Modules\NoPacket.h" />
     <ClInclude Include="Horion\Module\Modules\NoSlowDown.h" />
     <ClInclude Include="Horion\Module\Modules\NoSwing.h" />
+    <ClInclude Include="Horion\Module\Modules\Notifications.h" />
     <ClInclude Include="Horion\Module\Modules\NoWeb.h" />
     <!--    <ClCompile Include="Horion\Module\Modules\Notifications.h" /> -->
     <ClInclude Include="Horion\Module\Modules\Nuker.h" />

@@ -6,4 +6,4 @@ public:
 	~Notifications();
 
 	virtual const char* getModuleName() override;
-}
+};
