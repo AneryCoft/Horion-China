@@ -1461,8 +1461,16 @@ __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager
 	if (EditionFakerMod->isEnabled())
 		inputMode = EditionFakerMod->getFakedInputMode();
 
-	/*if (RandomDeviceIdMod->isEnabled())
-		deviceId->setText(RandomDeviceIdMod->GetUUID());*/
+	if (RandomDeviceIdMod->isEnabled()) {
+		TextHolder* uuid;
+		std::string uuidtemp = RandomDeviceIdMod->GetUUID();
+		for (auto& i : uuidtemp)
+			i = tolower(i);
+		uuid->setText(uuidtemp);
+		//deviceId = uuid;
+	}
+		//deviceId->setText(RandomDeviceIdMod->GetUUID());
+	
 
 	auto geoOverride = g_Data.getCustomGeoOverride();
 

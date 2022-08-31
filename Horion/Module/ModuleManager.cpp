@@ -115,6 +115,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoGapple()));
 		moduleList.push_back(std::shared_ptr<IModule>(new FastDig()));
 		moduleList.push_back(std::shared_ptr<IModule>(new BowSpam()));
+		moduleList.push_back(std::shared_ptr<IModule>(new RandomDeviceId()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));
