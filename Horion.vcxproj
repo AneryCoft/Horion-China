@@ -68,7 +68,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='BetaConf|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <SpectreMitigation>false</SpectreMitigation>
@@ -368,7 +368,6 @@
     <ClCompile Include="Horion\Module\Modules\Tower.cpp" />
     <ClCompile Include="Horion\Module\Modules\Tracer.cpp" />
     <ClCompile Include="Horion\Module\Modules\TriggerBot.cpp" />
-    <ClCompile Include="Horion\Module\Modules\Twerk.cpp" />
     <ClCompile Include="Horion\Module\Modules\VanillaPlus.cpp" />
     <ClCompile Include="Horion\Module\Modules\ViewModel.cpp" />
     <ClCompile Include="Horion\Module\Modules\Velocity.cpp" />
@@ -565,7 +564,6 @@
     <ClInclude Include="Horion\Module\Modules\Tower.h" />
     <ClInclude Include="Horion\Module\Modules\Tracer.h" />
     <ClInclude Include="Horion\Module\Modules\TriggerBot.h" />
-    <ClInclude Include="Horion\Module\Modules\Twerk.h" />
     <ClInclude Include="Horion\Module\Modules\VanillaPlus.h" />
     <ClInclude Include="Horion\Module\Modules\ViewModel.h" />
     <ClInclude Include="Horion\Module\Modules\Velocity.h" />
