@@ -163,26 +163,6 @@ void Utils::setClipboardText(std::string& text) {
 	GlobalFree(hg);
 }
 
-std::string Utils::randomUUID() {
-	constexpr size_t GUID_LEN = 64;
-	char buffer[GUID_LEN];
-	std::string uuid;
-	GUID guid;
-	if (bool(CoCreateGuid(&guid))) 
-		return uuid;
-	
-	_snprintf(buffer, GUID_LEN,
-			  "%08X-%04X-%04x-%02X%02X-%02X%02X%02X%02X%02X%02X",
-			  guid.Data1, guid.Data2, guid.Data3,
-			  guid.Data4[0], guid.Data4[1], guid.Data4[2],
-			  guid.Data4[3], guid.Data4[4], guid.Data4[5],
-			  guid.Data4[6], guid.Data4[7]);
-	uuid = buffer;
-	for (auto& i : uuid)
-		i = tolower(i);
-	return buffer;
-}
-
 uintptr_t Utils::FindSignatureModule(const char* szModule, const char* szSignature) {
 	const char* pattern = szSignature;
 	uintptr_t firstMatch = 0;
