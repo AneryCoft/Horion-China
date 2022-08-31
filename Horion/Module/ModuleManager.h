@@ -96,7 +96,7 @@
 #include "Modules/Radar.h"
 #include "Modules/VanillaPlus.h"
 #include "Modules/ViewModel.h"
-#include "Modules/Twerk.h"
+//#include "Modules/Twerk.h"
 #include "Modules/FontChanger.h"
 #include "Modules/ClientTheme.h"
 #include "Modules/AutoFish.h"

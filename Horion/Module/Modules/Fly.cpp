@@ -157,9 +157,8 @@ void Fly::onDisable() {
 	}
 }
 
-float hiveSpeedArray[15] = {
-0.738311,
-0.615559,
+float hiveSpeedArray[] = {
+0.605559,
 0.583347,
 0.554032,
 0.527356,
@@ -172,7 +171,12 @@ float hiveSpeedArray[15] = {
 0.397015,
 0.384470,
 0.373055,
-0.362665
+0.362665,
+0.342665,
+0.287812,
+0.261342,
+0.240971,
+0.231011
 };
 
 void Fly::onMove(C_MoveInputHandler* input) {
@@ -241,7 +245,7 @@ void Fly::onMove(C_MoveInputHandler* input) {
 			moveVec.z = sin(calcYaw) * safeSpeedArray;
 
 			if (hiveVelocity >= 3) { 
-				hiveVelocity = 0; moveVec.y = -0.05f; 
+				hiveVelocity = 0; moveVec.y = -0.08f; 
 			}
 
 			if (enabledTick >= 5 && pressed && !localPlayer->onGround)
