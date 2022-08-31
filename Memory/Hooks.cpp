@@ -1457,15 +1457,16 @@ __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager
 	static auto oFunc = g_Hooks.ConnectionRequest_createHook->GetFastcall<__int64, __int64, __int64, void*, TextHolder*, TextHolder*, __int64, TextHolder*, SkinData*, __int64, CoolSkinData*, TextHolder*, int, int, int, TextHolder*, bool, TextHolder*, __int64, TextHolder*, TextHolder*, bool, TextHolder*, TextHolder*, TextHolder*>();
 	static auto EditionFakerMod = moduleMgr->getModule<EditionFaker>();
 
-	if (EditionFakerMod->isEnabled()) {
+	if (EditionFakerMod->isEnabled())
 		inputMode = EditionFakerMod->getFakedInputMode();
-	}
+
 	auto geoOverride = g_Data.getCustomGeoOverride();
 
 	g_Hooks.connecttime = std::time(nullptr);
 
-	/*if (g_Data.allowWIPFeatures()) {
-		logF("Connection Request: InputMode: %i UiProfile: %i GuiScale: %i", inputMode, uiProfile, guiScale);
+	logF("Connection Request: InputMode: %i UiProfile: %i GuiScale: %i", inputMode, uiProfile, guiScale);
+
+	if (g_Data.allowWIPFeatures()) {
 
 		//Logger::WriteBigLogFileF(skinGeometryData->getTextLength() + 20, "Geometry: %s", skinGeometryData->getText());
 		auto hResourceGeometry = FindResourceA((HMODULE)g_Data.getDllModule(), MAKEINTRESOURCEA(IDR_TEXT1), "TEXT");
@@ -1486,21 +1487,23 @@ __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager
 		if (std::get<0>(geoOverride)) {  // Is overriding geometry
 			auto overrideGeo = std::get<1>(geoOverride);
 			newGeometryData = new TextHolder(*overrideGeo.get());
-		} else {  // Default Skin
-				  /*char* str;  // Obj text
-			{
-				auto hResourceObj = FindResourceA(g_Data.getDllModule(), MAKEINTRESOURCEA(IDR_OBJ), "TEXT");
-				auto hMemoryObj = LoadResource(g_Data.getDllModule(), hResourceObj);
+		} else {        // Default Skin
+		 /*
+		 char* str;  // Obj text
+		 {
+			 auto hResourceObj = FindResourceA(g_Data.getDllModule(), MAKEINTRESOURCEA(IDR_OBJ), "TEXT");
+			 auto hMemoryObj = LoadResource(g_Data.getDllModule(), hResourceObj);
 
-				auto sizeObj = SizeofResource(g_Data.getDllModule(), hResourceObj);
-				auto ptrObj = LockResource(hMemoryObj);
+			 auto sizeObj = SizeofResource(g_Data.getDllModule(), hResourceObj);
+			 auto ptrObj = LockResource(hMemoryObj);
 
-				str = new char[sizeObj + 1];
-				memset(str, 0, sizeObj + 1);
-				memcpy(str, ptrObj, sizeObj);
-			}
+			 str = new char[sizeObj + 1];
+			 memset(str, 0, sizeObj + 1);
+			 memcpy(str, ptrObj, sizeObj);
+		 }
 
-			newGeometryData = new TextHolder(SkinUtil::modGeometry(reinterpret_cast<char*>(ptrGeometry), SkinUtil::objToMesh(str)));*
+		 newGeometryData = new TextHolder(SkinUtil::modGeometry(reinterpret_cast<char*>(ptrGeometry), SkinUtil::objToMesh(str)));
+		 */
 		}
 
 		SkinData* newSkinData = new SkinData();
@@ -1550,7 +1553,8 @@ __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager
 		delete newSkinData;
 		delete newSkinResourcePatch;
 		return res;
-	} else */ {
+	}
+	else {
 		TextHolder* fakeName = g_Data.getFakeName();
 		__int64 res = oFunc(_this, privateKeyManager, a3, selfSignedId, serverAddress, clientRandomId, skinId, skinData, capeData, coolSkinStuff, deviceId, inputMode, uiProfile, guiScale, languageCode, sendEduModeParams, tenantId, unused, platformUserId, fakeName != nullptr ? fakeName : thirdPartyName, fakeName != nullptr ? true : thirdPartyNameOnly, platformOnlineId, platformOfflineId, capeId);
 		return res;
