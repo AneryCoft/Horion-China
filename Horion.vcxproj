@@ -52,7 +52,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -230,8 +230,6 @@
     <ResourceCompile Include="Horion.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Horion-China-main\Horion-China-main\Horion\Module\Modules\CrystalBreak.cpp" />
-    <ClCompile Include="..\Horion-China-main\Horion-China-main\Horion\Module\Modules\CrystalPlace.cpp" />
     <ClCompile Include="Horion\Command\CommandMgr.cpp" />
     <ClCompile Include="Horion\Command\Commands\BindCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\CommandBlockExploitCommand.cpp" />
@@ -304,6 +302,7 @@
     <ClCompile Include="Horion\Module\Modules\FastStop.cpp" />
     <ClCompile Include="Horion\Module\Modules\InfiniteAura.cpp" />
     <ClCompile Include="Horion\Module\Modules\InventoryView.cpp" />
+    <ClCompile Include="Horion\Module\Modules\RandomDeviceId.cpp" />
     <ClCompile Include="Horion\Module\Modules\StorageESP.cpp" />
     <ClCompile Include="Horion\Module\Modules\ChestStealer.cpp" />
     <ClCompile Include="Horion\Module\Modules\ClickGuiMod.cpp" />
@@ -426,7 +425,6 @@
     <ClCompile Include="Utils\VoxelIntersector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Horion-China-main\Horion-China-main\Horion\Module\Modules\CrystalUtilsJTWD.h" />
     <ClInclude Include="Horion\Command\CommandMgr.h" />
     <ClInclude Include="Horion\Command\Commands\BindCommand.h" />
     <ClInclude Include="Horion\Command\Commands\CommandBlockExploitCommand.h" />
@@ -548,6 +546,7 @@
     <ClInclude Include="Horion\Module\Modules\Phase.h" />
     <ClInclude Include="Horion\Module\Modules\Radar.h" />
     <ClInclude Include="Horion\Module\Modules\RainbowSky.h" />
+    <ClInclude Include="Horion\Module\Modules\RandomDeviceId.h" />
     <ClInclude Include="Horion\Module\Modules\Reach.h" />
     <ClInclude Include="Horion\Module\Modules\Scaffold.h" />
     <ClInclude Include="Horion\Module\Modules\Spammer.h" />
