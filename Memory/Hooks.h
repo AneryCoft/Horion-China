@@ -123,11 +123,11 @@ private:
 	static bool ReturnTrue(__int64 _this);
 	static __int64 SkinRepository___loadSkinPack(__int64 _this, __int64 pack, __int64 a3);
 	static GamerTextHolder* toStyledString(__int64 strIn, GamerTextHolder* strOut);
-	static __int64 MinecraftGame_onAppSuspended(__int64 _this);
-	static __int64 prepFeaturedServers(__int64 a1);
-	static __int64 prepFeaturedServersFirstTime(__int64 a1, __int64 a2);
+	//static __int64 MinecraftGame_onAppSuspended(__int64 _this);
+	//static __int64 prepFeaturedServers(__int64 a1);
+	//static __int64 prepFeaturedServersFirstTime(__int64 a1, __int64 a2);
 	static __int64 InGamePlayScreen___renderLevel(__int64 playScreen, __int64 a2, __int64 a3);
-	static __int64 Cube__compile(__int64 a1, __int64 a2);
+	//static __int64 Cube__compile(__int64 a1, __int64 a2);
 	static void LocalPlayer__updateFromCamera(__int64 a1, C_Camera* a2);
 	static bool Mob__isImmobile(C_Entity*);
 	static void Actor__setRot(C_Entity* _this, vec2_t& angle);
