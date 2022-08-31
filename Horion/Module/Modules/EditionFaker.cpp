@@ -34,6 +34,13 @@ const char* EditionFaker::getModuleName() {
 	return ("EditionFaker");
 }
 
+void EditionFaker::onSendPacket(C_Packet* p, bool& cancelsend) {
+	if (p->isInstanceOf<PlayerAuthInputPacket>()) {
+		PlayerAuthInputPacket* ap = reinterpret_cast<PlayerAuthInputPacket*>(p);
+		ap->inputKeys = inputMode.selected;
+	}
+}
+
 int EditionFaker::getFakedDevice() {
 	// static const char* gameEditons[] = { "Unknown", "Android", "iOS", "macOS", "FireOS", "GearVR", "HoloLens", "Windows 10 (PC)", "Windows", "Dedicated", "Orbis", "NX" };
 
