@@ -8,6 +8,13 @@ private:
 	std::vector<AABB> bufferedChestList;
 	std::mutex listLock;
 
+	bool normalChest = true;
+	bool trappedChest = true;
+	bool enderChest = true;
+	bool barrel = true;
+	bool undyedShulkerBox = true;
+	bool shulkerBox = true;
+
 public:
 	StorageESP();
 	~StorageESP();
