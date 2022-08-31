@@ -175,7 +175,7 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			std::string coordsYaw = "Yaw: " + std::to_string((int)floorf(g_Data.getLocalPlayer()->yaw));
 			vec4_t rectPos = vec4_t(2.5f, startY + 5.f * scale, len, startY + 25.f * scale);
 			vec2_t textPos = vec2_t(rectPos.x + 1.5f, rectPos.y + 1.f);
-			DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 1.f);
+			DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
 			DrawUtils::drawText(textPos, &coordsPitch, MC_Color(200, 200, 200), scale);
 			textPos.y += f;
 			DrawUtils::drawText(textPos, &coordsYaw, MC_Color(200, 200, 200), scale);
