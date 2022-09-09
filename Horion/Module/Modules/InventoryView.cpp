@@ -54,7 +54,7 @@ void InventoryView::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	for (int i = 9; i < 18; i++) {
 		C_ItemStack* stack = inventory->getItemStack(i);
 		if (stack->item != nullptr) {
-			DrawUtils::drawItem(stack, vec2_t(xVal, yVal + 0.f), 1.f, 1.f - 0.30f, false);
+			DrawUtils::drawItem(stack, vec2_t(xVal, yVal + 0.f), 1.f, 1.f - 0.20f, stack->isEnchanted());
 			char itemCount = stack->count;
 			std::string stackStr = std::to_string(itemCount);
 			if (itemCount > 1)
@@ -66,7 +66,7 @@ void InventoryView::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	for (int i = 18; i < 27; i++) {
 		C_ItemStack* stack = inventory->getItemStack(i);
 		if (stack->item != nullptr) {
-			DrawUtils::drawItem(stack, vec2_t(xVal + 27.f, yVal + 20.f), 1.f, 1.f - 0.30f, false);
+			DrawUtils::drawItem(stack, vec2_t(xVal + 27.f, yVal + 20.f), 1.f, 1.f - 0.20f, stack->isEnchanted());
 			char itemCount = stack->count;
 			std::string stackStr = std::to_string(itemCount);
 			if (itemCount > 1)
@@ -78,7 +78,7 @@ void InventoryView::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	for (int i = 27; i < 36; i++) {
 		C_ItemStack* stack = inventory->getItemStack(i);
 		if (stack->item != nullptr) {
-			DrawUtils::drawItem(stack, vec2_t(xVal + 54.f, yVal + 40.f), 1.f, 1.f - 0.30f, false);
+			DrawUtils::drawItem(stack, vec2_t(xVal + 54.f, yVal + 40.f), 1.f, 1.f - 0.20f, stack->isEnchanted());
 			char itemCount = stack->count;
 			std::string stackStr = std::to_string(itemCount);
 			if (itemCount > 1)
