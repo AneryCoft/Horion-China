@@ -1,6 +1,5 @@
 #pragma once
 #include "Module.h"
-#include <unordered_map>
 
 class FastEat : public IModule {
 private:
@@ -8,6 +7,7 @@ private:
 	//C_Item* food[];
 public:
 	int duration = 5;
+
 	FastEat();
 	~FastEat();
 
