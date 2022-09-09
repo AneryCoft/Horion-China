@@ -30,6 +30,7 @@ private:
 	friend void findEntity(C_Entity* currentEntity, bool isRegularEntity);
 	static float randomFloat(float min, float max);
 	bool autoDisable = false;
+	C_Entity* lastTarget = nullptr;
 public:
 	//bool rotations = false;
 	bool targetListEmpty = false;

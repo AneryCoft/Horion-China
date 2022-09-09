@@ -193,7 +193,7 @@ struct Angle {
 		};
 
 		//当视角绝对值大于60度时，计算目标中点与准星中点的距离偏移，可以避免转头的pitch过大。其他情况仅计算yaw的偏移
-		//
+
 		return abs(g_Data.getLocalPlayer()->pitch) > 60.f ? abs(appl.sub(angle).normAngles().magnitude()) < abs(appl.sub(angle2).normAngles().magnitude()) : abs(normAngles(angle.y - appl.y)) < abs(normAngles(angle2.y - appl.y));
 	}
 };
@@ -203,6 +203,7 @@ struct Health {
 		return target->getAttribute(&HealthAttribute())->currentValue < target2->getAttribute(&HealthAttribute())->currentValue;
 	}
 };
+
 /*
 struct Threaten {
 	bool operator()(C_Entity* target, C_Entity* target2) {
@@ -267,7 +268,7 @@ void Killaura::onGetPickRange() {
 
 	targetList.clear();
 	canswing = false;
-	
+
 	g_Data.forEachValidEntity(findEntity);
 
 	targetListEmpty = targetList.empty();
@@ -286,15 +287,14 @@ void Killaura::onGetPickRange() {
 		case 2:
 			sort(targetList.begin(), targetList.end(), Health());
 			break;
-			/*case 3:
-				sort(targetList.begin(), targetList.end(), Threaten());
-				break;
-			default:
-				break;*/
 		}
 
 		if (mode.selected != 2 || switchTarget >= targetList.size()) {
 			switchTarget = 0;
+		}
+
+		if (lastTarget != nullptr && lastTarget != targetList[switchTarget]) {
+			targetList[switchTarget] = lastTarget;
 		}
 
 		if (rotations.selected != 0) {
@@ -359,9 +359,14 @@ void Killaura::onGetPickRange() {
 		if (mode.selected == 2) {
 			if (switchTime.hasTimedElapsed(switchDelay, true)) {
 				++switchTarget;
+				lastTarget = nullptr;
+			}
+			else {
+				lastTarget = targetList[switchTarget];
 			}
 		}
-	} else if (swing && canswing) {
+	}
+	else if (swing && canswing) {
 		CPS = random(minCPS, maxCPS);
 		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
 			if (!hurttime) {  //与hurttime的swing分开处理
@@ -371,52 +376,53 @@ void Killaura::onGetPickRange() {
 	}
 }
 
-	void Killaura::onPlayerTick(C_Player * player) {
-		if (rotations.selected == 1) {
-			if (!targetList.empty()) {
-				player->pitch = angle.x;
-				player->bodyYaw = angle.y;
-				player->yawUnused1 = angle.y;
-			}
+void Killaura::onPlayerTick(C_Player* player) {
+	if (rotations.selected == 1) {
+		if (!targetList.empty()) {
+			player->pitch = angle.x;
+			player->bodyYaw = angle.y;
+			player->yawUnused1 = angle.y;
 		}
 	}
+}
 
-	void Killaura::onEnable() {
-		if (g_Data.getLocalPlayer() == nullptr)
-			setEnabled(false);
+void Killaura::onEnable() {
+	if (g_Data.getLocalPlayer() == nullptr)
+		setEnabled(false);
 
-		if (g_Data.getRakNetInstance() != nullptr) {
-			if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
-				clientMessageF(u8"检测到您位于EaseCation测试服，已为您自动开启绕过CPS检测 ");
-			}
-		}
-	}
-
-	void Killaura::onSendPacket(C_Packet * packet, bool& cancelSend) {
-		if (rotations.selected == 1) {
-			if (!targetList.empty()) {
-				if (packet->isInstanceOf<C_MovePlayerPacket>()) {
-					auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
-					movePacket->pitch = angle.x;
-					movePacket->headYaw = angle.y;
-					movePacket->yaw = angle.y;
-				}
-				/*if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
-					auto* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-					authInputPacket->pitch = angle.x;
-					authInputPacket->yawUnused = angle.y;
-					authInputPacket->yaw = angle.y;
-				}*/
-
-			}
-		}
-
+	if (g_Data.getRakNetInstance() != nullptr) {
 		if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
-			if (packet->isInstanceOf<LevelSoundEventPacket>()) {
-				LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
-				if (soundEventPacket->sound == 43 || soundEventPacket->sound == 42) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包 
-					//soundEventPacket->sound = 0; 
-					cancelSend = true;
-			} //绕过EaseCation服务器CPS检测 
+			clientMessageF(u8"检测到您位于EaseCation测试服，已为您自动开启绕过CPS检测 ");
 		}
 	}
+
+	lastTarget = nullptr;
+}
+
+void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
+	if (rotations.selected == 1) {
+		if (!targetList.empty()) {
+			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
+				auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
+				movePacket->pitch = angle.x;
+				movePacket->headYaw = angle.y;
+				movePacket->yaw = angle.y;
+			}
+			/*if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+				auto* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
+				authInputPacket->pitch = angle.x;
+				authInputPacket->yawUnused = angle.y;
+				authInputPacket->yaw = angle.y;
+			}*/
+		}
+	}
+
+	if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
+		if (packet->isInstanceOf<LevelSoundEventPacket>()) {
+			LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
+			if (soundEventPacket->sound == 43 || soundEventPacket->sound == 42) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包 
+				//soundEventPacket->sound = 0; 
+				cancelSend = true;
+		} //绕过EaseCation服务器CPS检测 
+	}
+}
