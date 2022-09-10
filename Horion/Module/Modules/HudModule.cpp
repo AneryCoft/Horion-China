@@ -13,7 +13,8 @@ HudModule::HudModule() : IModule(0, Category::CLIENT, "Displays things like the 
 	registerBoolSetting("Keystrokes", &keystrokes, keystrokes);
 	registerBoolSetting("Show FPS", &fps, fps);
 	registerBoolSetting("Show CPS", &cps, cps);
-	registerBoolSetting("Show Angle", &this->angle, this->angle);
+	registerBoolSetting("Show Angle", &angle, angle);
+	registerBoolSetting("Show Speed", &speed, speed);
 	registerBoolSetting("Always show", &alwaysShow, alwaysShow);
 	registerFloatSetting("Scale", &scale, scale, 0.5f, 1.5f);
 }
@@ -172,12 +173,17 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	{  // Speed
 		if (!(g_Data.getLocalPlayer() == nullptr || !speed)) {
 			char str[16];
-			sprintf_s(str, 16, "%.2f", g_Data.getLocalPlayer()->getBlocksPerSecond()); //保留两位小数
+			sprintf_s(str, 16, "%.1f", g_Data.getLocalPlayer()->getBlocksPerSecond()); //仅保留一位小数
 			std::string speedText = "Speed: " + std::string(str);
 
 			vec4_t rectPos = vec4_t(2.5f, startY + 5.f * scale, len, startY + 15.f * scale);
 			vec2_t textPos = vec2_t(rectPos.x + 1.5f, rectPos.y + 1.f);
-			DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
+			if (ClientThemes->Theme.selected == 1) {
+				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
+			}
+			else {
+				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
+			}
 			DrawUtils::drawText(textPos, &speedText, MC_Color(200, 200, 200), scale);
 
 			startY += f;
@@ -189,7 +195,12 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			std::string coordsYaw = "Yaw: " + std::to_string((int)floorf(g_Data.getLocalPlayer()->yaw));
 			vec4_t rectPos = vec4_t(2.5f, startY + 5.f * scale, len, startY + 25.f * scale);
 			vec2_t textPos = vec2_t(rectPos.x + 1.5f, rectPos.y + 1.f);
-			DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
+			if (ClientThemes->Theme.selected == 1) {
+				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
+			}
+			else {
+				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
+			}
 			DrawUtils::drawText(textPos, &coordsPitch, MC_Color(200, 200, 200), scale);
 			textPos.y += f;
 			DrawUtils::drawText(textPos, &coordsYaw, MC_Color(200, 200, 200), scale);
