@@ -36,12 +36,12 @@ void AntiVoid::onTick(C_GameMode* gm) {
 
 	vec3_t* playerPos = player->getPos();
 
-	vec3_t blockBelow = player->eyePos0;
-	blockBelow.y -= player->height;
-	blockBelow.y -= 0.5f;
+	vec3_t blockBelow = playerPos->add(0.f,-3.f,0.f);
 
 	//	if (((player->region->getBlock(blockBelow)->blockLegacy))->blockId != 0 && ((player->region->getBlock(blockBelow)->blockLegacy))->material->isSolid) {
 	//if (player->velocity.y == 0.f) {
+	//clientMessageF("%i", ((player->region->getBlock(blockBelow)->blockLegacy))->blockId);
+
 	if (player->onGround && ((player->region->getBlock(blockBelow)->blockLegacy))->blockId != 0) {
 		savePos = *playerPos;
 	}
