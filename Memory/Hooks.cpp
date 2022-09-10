@@ -1162,7 +1162,7 @@ void Hooks::GameMode_startDestroyBlock(C_GameMode* _this, vec3_ti* a2, uint8_t f
 						tempPos.x = a2->x + x;
 						tempPos.y = a2->y + y;
 						tempPos.z = a2->z + z;
-						if (tempPos.y > -65) {
+						if (tempPos.y > -64) {
 							C_Block* blok = region->getBlock(tempPos);
 							uint8_t data = blok->data;
 							auto id = blok->blockLegacy->blockId;
