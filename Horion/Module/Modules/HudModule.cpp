@@ -169,8 +169,22 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			startY += f;
 		}
 	}
+	{  // Speed
+		if (!(g_Data.getLocalPlayer() == nullptr || !speed)) {
+			char str[16];
+			sprintf_s(str, 16, "%.2f", g_Data.getLocalPlayer()->getBlocksPerSecond()); //保留两位小数
+			std::string speedText = "Speed: " + std::string(str);
+
+			vec4_t rectPos = vec4_t(2.5f, startY + 5.f * scale, len, startY + 15.f * scale);
+			vec2_t textPos = vec2_t(rectPos.x + 1.5f, rectPos.y + 1.f);
+			DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
+			DrawUtils::drawText(textPos, &speedText, MC_Color(200, 200, 200), scale);
+
+			startY += f;
+		}
+	}
 	{  // Angle
-		if (!(g_Data.getLocalPlayer() == nullptr || !this->angle)) {
+		if (!(g_Data.getLocalPlayer() == nullptr || !angle)) {
 			std::string coordsPitch = "Pitch: " + std::to_string((int)floorf(g_Data.getLocalPlayer()->pitch));
 			std::string coordsYaw = "Yaw: " + std::to_string((int)floorf(g_Data.getLocalPlayer()->yaw));
 			vec4_t rectPos = vec4_t(2.5f, startY + 5.f * scale, len, startY + 25.f * scale);

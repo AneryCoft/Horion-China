@@ -18,7 +18,8 @@ public:
 	bool fps = true;
 	bool cps = true;
 	bool alwaysShow = false;
-	bool angle = true;
+	bool angle = false;
+	bool speed = true;
 
 	float scale = 1.f;
 
