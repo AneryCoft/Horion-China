@@ -24,11 +24,11 @@ void FastEat::onTick(C_GameMode* gm) {
 		C_ItemStack* stack = inv->getItemStack(i);
 
 		if (stack->item != nullptr && 
-			(*stack->item)->itemId != 300 && //弓
-			(*stack->item)->itemId != 575 && //弩
-			(*stack->item)->getMaxUseDuration(stack) > duration/*防止某些服务器的资源包修改食物的MaxUseDuration*/) {
+			(*stack->item)->itemId != 300 && //弓 
+			(*stack->item)->itemId != 575 && //弩 
+			(*stack->item)->getMaxUseDuration(stack) > duration/*防止某些服务器的资源包修改食物的MaxUseDuration*/ ) {
 			if (items.find(*stack->item) == items.end()) {
-				items[*stack->item] = (*stack->item)->getMaxUseDuration(stack); //保存修改前的MaxUseDuration
+				items[*stack->item] = (*stack->item)->getMaxUseDuration(stack); //保存修改前的MaxUseDuration 
 			}
 			(*stack->item)->setMaxUseDuration(duration);
 		}
