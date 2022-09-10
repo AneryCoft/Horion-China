@@ -157,8 +157,9 @@ void Fly::onDisable() {
 	}
 }
 
-float hiveSpeedArray[] = {
-0.605559,
+float hiveSpeedArray[15] = {
+0.630000,
+0.615559,
 0.583347,
 0.554032,
 0.527356,
@@ -171,12 +172,7 @@ float hiveSpeedArray[] = {
 0.397015,
 0.384470,
 0.373055,
-0.362665,
-0.342665,
-0.287812,
-0.261342,
-0.240971,
-0.231011
+0.362665
 };
 
 void Fly::onMove(C_MoveInputHandler* input) {
