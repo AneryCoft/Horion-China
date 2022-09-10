@@ -55,4 +55,5 @@ public:
 	virtual void onSendPacket(C_Packet* packet, bool& cancelSend) override;
 	virtual void onGetPickRange() override;
 	virtual void onPlayerTick(C_Player* player) override;
+	virtual void onDisable() override;
 };

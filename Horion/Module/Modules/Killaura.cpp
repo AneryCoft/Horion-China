@@ -395,8 +395,6 @@ void Killaura::onEnable() {
 			clientMessageF(u8"检测到您位于EaseCation测试服，已为您自动开启绕过CPS检测 ");
 		}
 	}
-
-	lastTarget = nullptr;
 }
 
 void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
@@ -425,4 +423,9 @@ void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				cancelSend = true;
 		} //绕过EaseCation服务器CPS检测 
 	}
+}
+
+void Killaura::onDisable() {
+	targetList.clear();
+	lastTarget = nullptr;
 }

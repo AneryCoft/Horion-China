@@ -395,8 +395,6 @@ __int64 Hooks::UIScene_render(C_UIScene* uiscene, __int64 screencontext) {
 		strcpy_s(g_Hooks.currentScreenName, alloc.getText());
 	}
 
-	//logF("%s",alloc.getText());
-
 	if (!g_Hooks.shouldRender) {
 		g_Hooks.shouldRender = (strcmp(alloc.getText(), "start_screen") == 0 || strcmp(alloc.getText(), "hud_screen") == 0 || strcmp(alloc.getText(), "inventory_screen") == 0);
 	}
@@ -1164,7 +1162,7 @@ void Hooks::GameMode_startDestroyBlock(C_GameMode* _this, vec3_ti* a2, uint8_t f
 						tempPos.x = a2->x + x;
 						tempPos.y = a2->y + y;
 						tempPos.z = a2->z + z;
-						if (tempPos.y > 0) {
+						if (tempPos.y > -65) {
 							C_Block* blok = region->getBlock(tempPos);
 							uint8_t data = blok->data;
 							auto id = blok->blockLegacy->blockId;
