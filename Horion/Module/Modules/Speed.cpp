@@ -5,8 +5,8 @@ Speed::Speed() : IModule(VK_NUMPAD2, Category::MOVEMENT, "Speed up!") {
 		.addEntry(EnumEntry("Vanilla", 0))
 		.addEntry(EnumEntry("Bhop", 1))
 		.addEntry(EnumEntry("Lowhop", 2))
-		.addEntry(EnumEntry("HiveFast", 3))
-		.addEntry(EnumEntry("HiveSafe", 4));
+		.addEntry(EnumEntry("HiveBhop", 3));
+		//.addEntry(EnumEntry("HiveSafe", 4));
 	registerEnumSetting("Mode", &mode, 1);
 	registerFloatSetting("VanillaSpeed", &vanillaSpeed, vanillaSpeed, 0.1f, 5.f);
 	registerFloatSetting("MaxSpeed", &maxSpeed, maxSpeed, 0.1f, 1.f);
@@ -129,21 +129,6 @@ float hiveSpeed[12] = {
 	0.24647
 };
 
-float hiveSafe[12] = {
-	0.48041,
-	0.45005,
-	0.43040,
-	0.41000,
-	0.39050,
-	0.38000,
-	0.37000,
-	0.36000,
-	0.35000,
-	0.34000,
-	0.32041,
-	0.31647
-};
-
 void Speed::onMove(C_MoveInputHandler* input) {
 	auto player = g_Data.getLocalPlayer();
 	if (player == nullptr) return;
@@ -218,12 +203,6 @@ void Speed::onMove(C_MoveInputHandler* input) {
 			else
 				safeSpeedArray = 0.24247;
 		}
-		else {
-			if (son)
-				safeSpeedArray = hiveSafe[index++ % 12];
-			else
-				safeSpeedArray = 0.24247;
-		}
 		if (player->onGround) {
 			//safeSpeedArray == 0.61000;
 			son = true;
@@ -243,7 +222,7 @@ void Speed::onMove(C_MoveInputHandler* input) {
 				if (inter)
 					*g_Data.getClientInstance()->minecraft->timer = 16;
 				else
-					*g_Data.getClientInstance()->minecraft->timer = 26;
+					*g_Data.getClientInstance()->minecraft->timer = 22;
 			}
 			else {
 				*g_Data.getClientInstance()->minecraft->timer = 16;
@@ -269,11 +248,11 @@ void Speed::onMove(C_MoveInputHandler* input) {
 				son = true;
 			}
 		}
-		if (g_Data.getLocalPlayer()->velocity.squaredxzlen() > 0.01) {
+		/*if (g_Data.getLocalPlayer()->velocity.squaredxzlen() > 0.01) {
 			C_MovePlayerPacket p = C_MovePlayerPacket(g_Data.getLocalPlayer(), player->getPos()->add(vec3_t(moveVec.x / 1.3f, 0.f, moveVec.z / 1.3f)));
 			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&p);
 			C_MovePlayerPacket p2 = C_MovePlayerPacket(g_Data.getLocalPlayer(), player->getPos()->add(vec3_t(player->velocity.x / 3.13f, 0.f, player->velocity.z / 2.3f)));
 			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&p2);
-		}
+		}*/
 	}
 }
