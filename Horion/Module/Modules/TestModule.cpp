@@ -55,9 +55,10 @@ void TestModule::onTick(C_GameMode* gm) {
 	if (g_Data.getLocalPlayer() == nullptr) {
 		return;
 	}
-
-	if (g_Data.getLocalPlayer()->getSelectedItem()->item != nullptr) {
-		clientMessageF("ItemID=%i extraData=%i Damage = %i", (*g_Data.getLocalPlayer()->getSelectedItem()->item)->itemId, g_Data.getLocalPlayer()->getSelectedItem()->extraData, (*g_Data.getLocalPlayer()->getSelectedItem()->item)->getAttackDamage());
+	if (itemInfo) {
+		if (g_Data.getLocalPlayer()->getSelectedItem()->item != nullptr) {
+			clientMessageF("ItemID=%i extraData=%i Damage = %i", (*g_Data.getLocalPlayer()->getSelectedItem()->item)->itemId, g_Data.getLocalPlayer()->getSelectedItem()->extraData, (*g_Data.getLocalPlayer()->getSelectedItem()->item)->getAttackDamage());
+		}
 	}
 	//clientMessageF("color=%i", g_Data.getLocalPlayer()->getArmorColorInSlot(0, 0));
 }
@@ -79,7 +80,7 @@ void TestModule::onLevelRender() {
 
 void TestModule::onAttack(C_Entity* attackedEnt) {
 	if (entityInfo) {
-		logF("EntityTypeId=%i,NameTag=%s,Hight=%f,Width=%f", attackedEnt->getEntityTypeId(), attackedEnt->getNameTag()->getText(), attackedEnt->height, attackedEnt->width);
-		logF("NameTag=%s", attackedEnt->getNameTag()->getText());
+		logF("EntityTypeId=%i,NameTag=%s,Hight=%f,Width=%f Hurttime=%i", attackedEnt->getEntityTypeId(), attackedEnt->getNameTag()->getText(), attackedEnt->height, attackedEnt->width, attackedEnt->damageTime);
+		//logF("NameTag=%s", attackedEnt->getNameTag()->getText());
 	}
 }
