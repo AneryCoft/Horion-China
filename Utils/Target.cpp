@@ -1,4 +1,4 @@
-#include "Target.h"
+﻿#include "Target.h"
 
 #include <regex>
 
@@ -101,26 +101,35 @@ bool Target::isValidTarget(C_Entity* ent) {
 				std::string targetName = ent->getNameTag()->getText();
 				std::string localName = localPlayer->getNameTag()->getText();
 
-				targetName = std::string(targetName, 0, targetName.find('\n'));
-				localName = std::string(localName, 0, localName.find('\n'));
+				if (targetName.size() > 3 && localName.size() > 3){
+					targetName = std::string(targetName, 0, targetName.find('\n'));
+					localName = std::string(localName, 0, localName.find('\n'));
 
-				auto colorTargetName = std::regex_replace(targetName, std::regex(u8"§r"), "");
-				auto colorLocalName = std::regex_replace(localName, std::regex(u8"§r"), "");
+					//logF("%s", targetName.data());
 
-				if (teamsMod->antiRanks) {
-					char colorTarget = colorTargetName.at(colorTargetName.rfind(u8"§") + 2);
-					char colorLocal = colorLocalName.at(colorLocalName.rfind(u8"§") + 2);
+					auto colorTargetName = std::regex_replace(targetName, std::regex(u8"§r"), "");
+					auto colorLocalName = std::regex_replace(localName, std::regex(u8"§r"), "");
 
-					if (colorLocal == colorTarget)
-						return false;
-				}
-				else {
-					
-					char colorTarget = colorTargetName.at(colorTargetName.find(u8"§") + 2);
-					char colorLocal = colorLocalName.at(colorLocalName.find(u8"§") + 2);
+					if (teamsMod->antiRanks) {
+						char colorTarget = colorTargetName[colorTargetName.rfind(u8"§") + 2];
+						char colorLocal = colorLocalName[colorLocalName.rfind(u8"§") + 2];
+						//char colorTarget = colorTargetName.at(colorTargetName.rfind(u8"§") + 2);
+						//char colorLocal = colorLocalName.at(colorLocalName.rfind(u8"§") + 2);
 
-					if (colorLocal == colorTarget)
-						return false;
+						if (colorLocal == colorTarget)
+							return false;
+					}
+					else {
+						char colorTarget = colorTargetName[colorTargetName.find(u8"§") + 2];
+						char colorLocal = colorLocalName[colorLocalName.find(u8"§") + 2];
+						//char colorTarget = colorTargetName.at(colorTargetName.find(u8"§") + 2);
+						//char colorLocal = colorLocalName.at(colorLocalName.find(u8"§") + 2);
+
+						//logF("%c", colorTarget);
+
+						if (colorLocal == colorTarget)
+							return false;
+					}
 				}
 			}break;
 			case 2: {
