@@ -101,7 +101,7 @@ bool Target::isValidTarget(C_Entity* ent) {
 				std::string targetName = ent->getNameTag()->getText();
 				std::string localName = localPlayer->getNameTag()->getText();
 
-				if (targetName.size() > 3 && localName.size() > 3){
+				if (targetName.size() > 2 && localName.size() > 2){
 					targetName = std::string(targetName, 0, targetName.find('\n'));
 					localName = std::string(localName, 0, localName.find('\n'));
 

@@ -291,6 +291,7 @@ void Killaura::onGetPickRange() {
 
 		if (mode.selected != 2 || switchTarget >= targetList.size()) {
 			switchTarget = 0;
+			lastTarget = nullptr;
 		}
 
 		if (lastTarget != nullptr && lastTarget != targetList[switchTarget]) {
@@ -298,7 +299,7 @@ void Killaura::onGetPickRange() {
 		}
 
 		if (rotations.selected != 0) {
-			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*targetList[switchTarget]->getPos());
+			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(targetList[switchTarget]->eyePos0);
 			angle.x += Killaura::randomFloat(0.f, pitchOffset);
 			angle.y += Killaura::randomFloat(0.f, yawOffset);
 		}
@@ -359,7 +360,6 @@ void Killaura::onGetPickRange() {
 		if (mode.selected == 2) {
 			if (switchTime.hasTimedElapsed(switchDelay, true)) {
 				++switchTarget;
-				//clientMessageF("switch");
 				lastTarget = nullptr;
 			}
 			else {
@@ -367,11 +367,15 @@ void Killaura::onGetPickRange() {
 			}
 		}
 	}
-	else if (swing && canswing) {
-		CPS = random(minCPS, maxCPS);
-		if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
-			if (!hurttime) {  //与hurttime的swing分开处理
-				localPlayer->swing();
+	else {
+		lastTarget = nullptr;
+
+		if (swing && canswing) {
+			CPS = random(minCPS, maxCPS);
+			if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
+				if (!hurttime) {  //与hurttime的swing分开处理
+					localPlayer->swing();
+				}
 			}
 		}
 	}
