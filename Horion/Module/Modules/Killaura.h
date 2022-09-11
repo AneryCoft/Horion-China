@@ -7,7 +7,6 @@
 #include "../../../SDK/CAttribute.h"
 #include "../../../Memory/Hooks.h"
 #include <random>
-#include <unordered_map>
 
 class Killaura : public IModule
 {
@@ -28,7 +27,7 @@ private:
 	bool canswing = false;
 	float swingRange = 6.5f;
 	friend void findEntity(C_Entity* currentEntity, bool isRegularEntity);
-	static float randomFloat(float min, float max);
+	//static float randomFloat(float min, float max);
 	bool autoDisable = false;
 	C_Entity* lastTarget = nullptr;
 public:

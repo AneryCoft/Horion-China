@@ -26,8 +26,8 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 	registerIntSetting("Max CPS", &maxCPS, maxCPS, 1, 20);
 	registerIntSetting("Min CPS", &minCPS, minCPS, 1, 20);
 	registerFloatSetting("Switch Delay", &switchDelay, switchDelay, 1.f, 1000.f);
-	registerFloatSetting("Yaw Offset", &yawOffset, yawOffset, 0.f, 10.f);
-	registerFloatSetting("Pitch Offset", &pitchOffset, pitchOffset, 0.f, 10.f);
+	registerFloatSetting("Yaw Offset", &yawOffset, yawOffset, -10.f, 10.f);
+	registerFloatSetting("Pitch Offset", &pitchOffset, pitchOffset, -10.f, 10.f);
 	registerBoolSetting("Mob Aura", &isMobAura, isMobAura);
 	registerBoolSetting("ThroughBlock", &throughBlock, throughBlock);
 	registerBoolSetting("AutoDisable", &autoDisable, autoDisable);
@@ -165,10 +165,11 @@ void Killaura::selectedWeapon() {
 	supplies->selectedHotbarSlot = slot;
 }
 
+/*
 float Killaura::randomFloat(float min, float max) {
 	static std::default_random_engine random(time(nullptr));//注入时的时间作为初始种子
 	return std::uniform_real_distribution<float>(min, max)(random);
-}
+}*/
 
 struct Distance {
 	bool operator()(C_Entity* target, C_Entity* target2) {
@@ -300,8 +301,23 @@ void Killaura::onGetPickRange() {
 
 		if (rotations.selected != 0) {
 			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*targetList[switchTarget]->getPos());
-			angle.x += Killaura::randomFloat(0.f, pitchOffset);
-			angle.y += Killaura::randomFloat(0.f, yawOffset);
+
+			if (pitchOffset > 0) {
+				angle.x += randomFloat(pitchOffset, 0.f);
+			}
+			else if (pitchOffset < 0) {
+				angle.x += randomFloat(0.f, pitchOffset);
+			}
+
+			if (yawOffset > 0) {
+				angle.x += randomFloat(yawOffset, 0.f);
+			}
+			else if (yawOffset < 0) {
+				angle.x += randomFloat(0.f, yawOffset);
+			}
+
+			//angle.x += Killaura::randomFloat(0.f, pitchOffset);
+			//angle.y += Killaura::randomFloat(0.f, yawOffset);
 		}
 
 		if (rotations.selected == 2) {
