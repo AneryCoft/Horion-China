@@ -80,7 +80,8 @@ void TestModule::onLevelRender() {
 
 void TestModule::onAttack(C_Entity* attackedEnt) {
 	if (entityInfo) {
-		logF("EntityTypeId=%i,NameTag=%s,Hight=%f,Width=%f Hurttime=%i eyePos(%f,%f,%f) Pos(%f,%f,%f)", attackedEnt->getEntityTypeId(), attackedEnt->getNameTag()->getText(), attackedEnt->height, attackedEnt->width, attackedEnt->damageTime, attackedEnt->eyePos0.x, attackedEnt->eyePos0.y, attackedEnt->eyePos0.z, attackedEnt->getPos()->x, attackedEnt->getPos()->y, attackedEnt->getPos()->z);
+		logF("EntityTypeId=%i,Hight=%f,Width=%f,Hurttime=%i,NameTag=%s", attackedEnt->getEntityTypeId(), attackedEnt->height, attackedEnt->width, attackedEnt->damageTime, attackedEnt->getNameTag()->getText());
+		logF("eyePos(%f,%f,%f) Pos(%f,%f,%f)", attackedEnt->eyePos0.x, attackedEnt->eyePos0.y, attackedEnt->eyePos0.z, attackedEnt->getPos()->x, attackedEnt->getPos()->y, attackedEnt->getPos()->z);
 		//logF("NameTag=%s", attackedEnt->getNameTag()->getText());
 	}
 }

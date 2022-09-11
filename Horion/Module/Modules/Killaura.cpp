@@ -299,7 +299,7 @@ void Killaura::onGetPickRange() {
 		}
 
 		if (rotations.selected != 0) {
-			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(targetList[switchTarget]->eyePos0);
+			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*targetList[switchTarget]->getPos());
 			angle.x += Killaura::randomFloat(0.f, pitchOffset);
 			angle.y += Killaura::randomFloat(0.f, yawOffset);
 		}
