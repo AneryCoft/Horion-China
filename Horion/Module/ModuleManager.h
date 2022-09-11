@@ -107,6 +107,7 @@
 #include "Modules/FastDig.h"
 #include "Modules/BowSpam.h"
 #include "Modules/RandomDeviceId.h"
+#include "Modules/Breadcrumbs.h"
 
 #ifdef _DEBUG
 #include "Modules/PacketLogger.h"
