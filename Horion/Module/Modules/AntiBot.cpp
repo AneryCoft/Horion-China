@@ -53,7 +53,7 @@ void AntiBot::onWorldTick(C_GameMode* gm) {
 	static TimerUtil checkTimeenable;
 	 
 	if (checkTimeenable.hasTimedElapsed(40, true)) {
-		g_Data.forEachAlive([this](C_Entity* ent, bool) {
+		g_Data.forEachValidEntity([this](C_Entity* ent, bool) {
 			if (![ent]() -> bool {
 				__try {
 					return (ent != nullptr && (__int64)ent != 0xFFFFFFFFFFFFFCD7 && (__int64)ent != 0xFFFFFF00FFFFFF00 && ent != nullptr && *(__int64*)ent != 0xFFFFFFFFFFFFFCD7 && *(__int64*)ent > 0x6FF000000000 && *(__int64*)ent < 0x800000000000 && *((int64_t*)ent + 1) < 0x6FF000000000 && *(__int64*)ent <= Utils::getBase() + 0x10000000 && ent->isPlayer());
@@ -140,7 +140,7 @@ void AntiBot::onWorldTick(C_GameMode* gm) {
 				}
 
 				// onFireCheck
-				if (acl.isbot <= 2ui8 && (ent->isOnFire() || ent->isSwimming || ent->isSneaking() || ent->fallDistance >= 1.f)) {
+				if (acl.isbot <= 2ui8 && (ent->isOnFire() || ent->isSneaking() || ent->fallDistance >= 1.f)) {
 					acl.tpsCheck -= 5;
 				}
 
@@ -150,7 +150,7 @@ void AntiBot::onWorldTick(C_GameMode* gm) {
 					if (ent->damageTime > 1)
 						acl.checkTime2.resetTime();
 					else if (acl.checkTime2.hasTimedElapsed(1000, true)) {
-						if (acl.onGroundCheck != 2ui8 && !ent->isFlying && !ent->canFly) {
+						if (acl.onGroundCheck != 2ui8 && !ent->canFly) {
 							if (acl.onGroundCheck != ent->onGround) 
 								acl.onGroundCheck = 2ui8;
 							else
