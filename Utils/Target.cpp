@@ -91,7 +91,7 @@ bool Target::isValidTarget(C_Entity* ent) {
 			if (ent->gamemode == 1)
 				return false; //不攻击创造模式的玩家
 		}
-		if (antibot->advanceCheck) { //tpd fake player
+		if (antibotMod->advanceCheck) { //tpd fake player
 			if (!ent->isPlayer()) 
 				return false;
 
