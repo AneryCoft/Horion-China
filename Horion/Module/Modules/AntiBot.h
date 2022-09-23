@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Module.h"
-
+#include "../../../Utils/TimerUtil.h"
+#include "../../../Memory/Hooks.h"
 class AntiBot : public IModule {
 private:
 
