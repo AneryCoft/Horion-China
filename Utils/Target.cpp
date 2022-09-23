@@ -11,6 +11,9 @@ void Target::init(C_LocalPlayer** cl) {
 	localPlayer = cl;
 }
 
+struct advancecheck;
+extern std::unordered_map<__int64, advancecheck> advancechecklist;
+
 bool Target::isValidTarget(C_Entity* ent) {
 	static auto antibotMod = moduleMgr->getModule<AntiBot>();
 	static auto hitboxMod = moduleMgr->getModule<Hitbox>();
@@ -87,6 +90,15 @@ bool Target::isValidTarget(C_Entity* ent) {
 		if (antibotMod->modeCheck) {
 			if (ent->gamemode == 1)
 				return false; //不攻击创造模式的玩家
+		}
+		if (antibot->advanceCheck) { //tpd fake player
+			if (!ent->isPlayer()) 
+				return false;
+
+			if (auto tgl = advancechecklist.find(*ent->getUniqueId()); tgl != advancechecklist.end()) 
+				return tgl->second.isbot <= 2ui8;
+		
+			return false;
 		}
 	}
 
