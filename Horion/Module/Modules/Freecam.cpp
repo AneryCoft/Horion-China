@@ -14,7 +14,7 @@ const char* Freecam::getModuleName() {
 void Freecam::onTick(C_GameMode* gm) {
 	gm->player->fallDistance = 0.f;
 	gm->player->velocity = vec3_t(0, 0, 0);
-	gm->player->aabb.upper = gm->player->aabb.lower;
+	gm->player->aabb.upper.y = gm->player->aabb.lower.y - 1.8f;
 }
 
 void Freecam::onEnable() {
@@ -26,7 +26,8 @@ void Freecam::onEnable() {
 
 void Freecam::onMove(C_MoveInputHandler* input) {
 	auto player = g_Data.getLocalPlayer();
-	if (player == nullptr) return;
+	if (player == nullptr) 
+		return;
 
 	vec2_t moveVec2d = {input->forwardMovement, -input->sideMovement};
 	bool pressed = moveVec2d.magnitude() > 0.01f;
@@ -39,8 +40,9 @@ void Freecam::onMove(C_MoveInputHandler* input) {
 	moveVec.x = moveVec2d.x * speed;
 	moveVec.y = player->velocity.y;
 	moveVec.z = moveVec2d.y * speed;
-	if (pressed) player->lerpMotion(moveVec);
-	C_MovePlayerPacket p(g_Data.getLocalPlayer(), *g_Data.getLocalPlayer()->getPos());
+	if (pressed) 
+		player->lerpMotion(moveVec);
+	//C_MovePlayerPacket p(g_Data.getLocalPlayer(), *g_Data.getLocalPlayer()->getPos());
 	if (input->isJumping) {
 		player->velocity.y += 0.50f;
 	}
@@ -55,5 +57,18 @@ void Freecam::onDisable() {
 		plr->setPos(oldPos);
 		*g_Data.getClientInstance()->minecraft->timer = 20.f;
 		plr->aabb.upper = plr->aabb.lower.add(oldOffset);
+	}
+}
+
+void Freecam::onSendPacket(C_Packet* packet, bool& cancelSend) {
+	if (packet->isInstanceOf<C_PlayerActionPacket>()) {
+		C_PlayerActionPacket* packets = reinterpret_cast<C_PlayerActionPacket*>(packet);
+		if (packets->action == 9) { //²»·¢ËÍ¼²ÅÜ°ü
+			cancelSend = true;
+		}
+	}
+
+	if (packet->isInstanceOf<C_MovePlayerPacket>()|| packet->isInstanceOf<PlayerAuthInputPacket>()) {
+		cancelSend = true;
 	}
 }

@@ -450,6 +450,10 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 		{
 			// Main Menu
 			std::string screenName(g_Hooks.currentScreenName);
+
+			//logF("%s", g_Hooks.currentScreenName);
+			moduleMgr->getScreenName(g_Hooks.currentScreenName);
+
 			//if (strcmp(screenName.c_str(), "start_screen") == 0) {
 				// Draw BIG epic horion watermark
 				/*{

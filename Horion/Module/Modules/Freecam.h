@@ -17,4 +17,5 @@ public:
 	virtual void onMove(C_MoveInputHandler* input) override;
 	virtual void onEnable() override;
 	virtual void onDisable() override;
+	virtual void onSendPacket(C_Packet* packet, bool& cancelSend) override;
 };
