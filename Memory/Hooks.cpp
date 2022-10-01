@@ -42,7 +42,7 @@ void Hooks::Init() {
 				g_Hooks.GameMode_startDestroyBlockHook = std::make_unique<FuncHook>(gameModeVtable[1], Hooks::GameMode_startDestroyBlock);
 
 				g_Hooks.GameMode_stopDestroyBlockHook = std::make_unique<FuncHook>(gameModeVtable[4], Hooks::GameMode_stopDestroyBlock);
-				
+
 				g_Hooks.GameMode_getPickRangeHook = std::make_unique<FuncHook>(gameModeVtable[10], Hooks::GameMode_getPickRange);
 
 				g_Hooks.GameMode_attackHook = std::make_unique<FuncHook>(gameModeVtable[14], Hooks::GameMode_attack);
@@ -239,9 +239,7 @@ void Hooks::Init() {
 
 		static auto bobViewHookF = [](__int64 _this, glm::mat4& matrix, float lerpT) {
 			static auto origFunc = g_Hooks.lambdaHooks.at(lambda_counter)->GetFastcall<void, __int64, glm::mat4&, float>();
-			static auto fluxswing = moduleMgr->getModule<FluxSwing>();
-			static auto killaura = moduleMgr->getModule<Killaura>();
-			static auto testMod = moduleMgr->getModule<ViewModel>();
+			static auto swingMod = moduleMgr->getModule<Swing>();
 			auto p = g_Data.getLocalPlayer();
 			float degrees = fmodf(p->getPosOld()->lerp(p->getPos(), lerpT).x, 5) - 2.5f;
 			degrees *= 180 / 2.5f;
@@ -251,21 +249,16 @@ void Hooks::Init() {
 			glm::mat4 View = matrix;
 
 			matrix = View;
-			/*if (testMod->isEnabled()) {
-				if (testMod->doTranslate)
-					matrix = glm::translate<float>(matrix, glm::vec3(testMod->xTrans, testMod->yTrans, testMod->zTrans));
 
-				if (testMod->doScale)
-					matrix = glm::scale<float>(matrix, glm::vec3(testMod->xMod, testMod->yMod, testMod->zMod));
-			}
-			return origFunc(_this, matrix, lerpT);*/
 			// Blocking Animation
 			auto clickGUI = moduleMgr->getModule<ClickGuiMod>();
-			if (fluxswing->isEnabled()) {
+			if (swingMod->isEnabled()) {
 				// Custom Settings
-				matrix = glm::translate<float>(matrix, glm::vec3(fluxswing->xPos, fluxswing->yPos, fluxswing->zPos)); // X Y Z
+				if (swingMod->mode.selected == 2) {
+					matrix = glm::translate<float>(matrix, glm::vec3(swingMod->xPos, swingMod->yPos, swingMod->zPos)); // X Y Z
+				}
 
-				if (fluxswing->fkblock && fluxswing->shouldBlock && g_Data.canUseMoveKeys() && g_Data.isInGame() && !clickGUI->isEnabled()) {
+				if (swingMod->fakeBlock && swingMod->shouldBlock && g_Data.canUseMoveKeys() && g_Data.isInGame() && !clickGUI->isEnabled()) {
 					lerpT = 0.f;
 					matrix = glm::translate<float>(matrix, glm::vec3(0.42222223281, 0.0, -0.16666666269302368));
 					matrix = glm::translate<float>(matrix, glm::vec3(-0.18f, 0.14f, -0.38f));
@@ -315,15 +308,16 @@ bool Hooks::playerCallBack(C_Player* lp, __int64 a2, __int64 a3) {
 			VirtualQuery(ent.ent, &info, sizeof(MEMORY_BASIC_INFORMATION));
 			if (info.State & MEM_FREE) continue;
 			if (info.State & MEM_RESERVE) continue;
-			
-			if ([entity]() -> bool {	
+
+			if ([entity]() -> bool {
 				__try {
 					return (entity != nullptr && (__int64)entity != 0xFFFFFFFFFFFFFCD7 && (__int64)entity != 0xFFFFFF00FFFFFF00 && entity != nullptr && *(__int64*)entity != 0xFFFFFFFFFFFFFCD7 && *(__int64*)entity > 0x6FF000000000 && *(__int64*)entity < 0x800000000000 && *((int64_t*)entity + 1) < 0x6FF000000000 && *(__int64*)entity <= Utils::getBase() + 0x10000000 && entity->isAlive());
-				} __except (EXCEPTION_EXECUTE_HANDLER) {
+				}
+				__except (EXCEPTION_EXECUTE_HANDLER) {
 					return false;
-				} 
-			}()) validEntities.push_back(ent);
-			
+				}
+				}()) validEntities.push_back(ent);
+
 		}
 		g_Hooks.entityList.clear();
 		g_Hooks.entityList = validEntities;
@@ -1094,16 +1088,16 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 		return;
 
 	if (blinkMod->isEnabled()) {
-			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
-				C_MovePlayerPacket* meme = reinterpret_cast<C_MovePlayerPacket*>(packet);
-				//meme->onGround = true;                                                            //Don't take Fall Damages when turned off
-				blinkMod->getMovePlayerPacketHolder()->push_back(new C_MovePlayerPacket(*meme));  // Saving the packets
-			}
-			else if(packet->isInstanceOf<PlayerAuthInputPacket>()){
+		if (packet->isInstanceOf<C_MovePlayerPacket>()) {
+			C_MovePlayerPacket* meme = reinterpret_cast<C_MovePlayerPacket*>(packet);
+			//meme->onGround = true;                                                            //Don't take Fall Damages when turned off
+			blinkMod->getMovePlayerPacketHolder()->push_back(new C_MovePlayerPacket(*meme));  // Saving the packets
+		}
+		else if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 
-				blinkMod->getPlayerAuthInputPacketHolder()->push_back(new PlayerAuthInputPacket(*reinterpret_cast<PlayerAuthInputPacket*>(packet)));
-			}
-			return;  // Dont call LoopbackPacketSender_sendToServer
+			blinkMod->getPlayerAuthInputPacketHolder()->push_back(new PlayerAuthInputPacket(*reinterpret_cast<PlayerAuthInputPacket*>(packet)));
+		}
+		return;  // Dont call LoopbackPacketSender_sendToServer
 	}
 	else {
 		if (blinkMod->getMovePlayerPacketHolder()->size() > 0) {
@@ -1172,7 +1166,7 @@ void Hooks::GameMode_startDestroyBlock(C_GameMode* _this, vec3_ti* a2, uint8_t f
 	static auto killaura = moduleMgr->getModule<Killaura>();
 
 	killaura->isDigging = true;
-	
+
 	if (nukerModule->isEnabled()) {
 		vec3_ti tempPos;
 
@@ -1442,8 +1436,18 @@ void Hooks::Actor_ascendLadder(C_Entity* _this) {
 
 void Hooks::Actor_swing(C_Entity* _this) {
 	static auto oFunc = g_Hooks.Actor_swingHook->GetFastcall<void, C_Entity*>();
-	static auto noSwingMod = moduleMgr->getModule<NoSwing>();
-	if (!noSwingMod->isEnabled()) return oFunc(_this);
+
+	static auto swingMod = moduleMgr->getModule<Swing>();
+	if (swingMod->isEnabled()) {
+		if (swingMod->mode.selected == 0 || swingMod->mode.selected == 1) {
+			if (swingMod->mode.selected == 1) {
+				C_AnimatePacket packet;
+				packet.action = 1;
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
+			}
+			return oFunc(_this);
+		}
+	}
 }
 
 void Hooks::Actor_startSwimming(C_Entity* _this) {
@@ -1481,7 +1485,7 @@ float Hooks::GameMode_getPickRange(C_GameMode* _this, __int64 a2, char a3) {
 }
 
 __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager, void* a3, TextHolder* selfSignedId, TextHolder* serverAddress, __int64 clientRandomId, TextHolder* skinId, SkinData* skinData, __int64 capeData, CoolSkinData* coolSkinStuff, TextHolder* deviceId, int inputMode, int uiProfile, int guiScale, TextHolder* languageCode, bool sendEduModeParams, TextHolder* tenantId, __int64 unused, TextHolder* platformUserId, TextHolder* thirdPartyName, bool thirdPartyNameOnly, TextHolder* platformOnlineId, TextHolder* platformOfflineId, TextHolder* capeId) {
-static auto oFunc = g_Hooks.ConnectionRequest_createHook->GetFastcall<__int64, __int64, __int64, void*, TextHolder*, TextHolder*, __int64, TextHolder*, SkinData*, __int64, CoolSkinData*, TextHolder*, int, int, int, TextHolder*, bool, TextHolder*, __int64, TextHolder*, TextHolder*, bool, TextHolder*, TextHolder*, TextHolder*>();
+	static auto oFunc = g_Hooks.ConnectionRequest_createHook->GetFastcall<__int64, __int64, __int64, void*, TextHolder*, TextHolder*, __int64, TextHolder*, SkinData*, __int64, CoolSkinData*, TextHolder*, int, int, int, TextHolder*, bool, TextHolder*, __int64, TextHolder*, TextHolder*, bool, TextHolder*, TextHolder*, TextHolder*>();
 	static auto EditionFakerMod = moduleMgr->getModule<EditionFaker>();
 	static auto RandomDeviceIdMod = moduleMgr->getModule<RandomDeviceId>();
 
@@ -1497,8 +1501,8 @@ static auto oFunc = g_Hooks.ConnectionRequest_createHook->GetFastcall<__int64, _
 		uuid.setText(uuidtemp);
 		//deviceId = uuid;
 	}
-		//deviceId->setText(RandomDeviceIdMod->GetUUID());
-	
+	//deviceId->setText(RandomDeviceIdMod->GetUUID());
+
 
 	auto geoOverride = g_Data.getCustomGeoOverride();
 
@@ -1529,23 +1533,24 @@ static auto oFunc = g_Hooks.ConnectionRequest_createHook->GetFastcall<__int64, _
 		if (std::get<0>(geoOverride)) {  // Is overriding geometry
 			auto overrideGeo = std::get<1>(geoOverride);
 			newGeometryData = new TextHolder(*overrideGeo.get());
-		} else {        // Default Skin
-		 /*
-		 char* str;  // Obj text
-		 {
-			 auto hResourceObj = FindResourceA(g_Data.getDllModule(), MAKEINTRESOURCEA(IDR_OBJ), "TEXT");
-			 auto hMemoryObj = LoadResource(g_Data.getDllModule(), hResourceObj);
+		}
+		else {        // Default Skin
+	  /*
+	  char* str;  // Obj text
+	  {
+		  auto hResourceObj = FindResourceA(g_Data.getDllModule(), MAKEINTRESOURCEA(IDR_OBJ), "TEXT");
+		  auto hMemoryObj = LoadResource(g_Data.getDllModule(), hResourceObj);
 
-			 auto sizeObj = SizeofResource(g_Data.getDllModule(), hResourceObj);
-			 auto ptrObj = LockResource(hMemoryObj);
+		  auto sizeObj = SizeofResource(g_Data.getDllModule(), hResourceObj);
+		  auto ptrObj = LockResource(hMemoryObj);
 
-			 str = new char[sizeObj + 1];
-			 memset(str, 0, sizeObj + 1);
-			 memcpy(str, ptrObj, sizeObj);
-		 }
+		  str = new char[sizeObj + 1];
+		  memset(str, 0, sizeObj + 1);
+		  memcpy(str, ptrObj, sizeObj);
+	  }
 
-		 newGeometryData = new TextHolder(SkinUtil::modGeometry(reinterpret_cast<char*>(ptrGeometry), SkinUtil::objToMesh(str)));
-		 */
+	  newGeometryData = new TextHolder(SkinUtil::modGeometry(reinterpret_cast<char*>(ptrGeometry), SkinUtil::objToMesh(str)));
+	  */
 		}
 
 		SkinData* newSkinData = new SkinData();

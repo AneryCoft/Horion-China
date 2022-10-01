@@ -265,7 +265,7 @@ void Killaura::onGetPickRange() {
 	if (autoDisable && (isDigging || scaffoldMod->isEnabled() || towerMod->isEnabled() || breakerMod->isEnabled()))
 		return;
 
-	static bool swing = !moduleMgr->getModule<NoSwing>()->isEnabled();
+	//static bool swing = !moduleMgr->getModule<NoSwing>()->isEnabled();
 
 	targetList.clear();
 	canswing = false;
@@ -340,34 +340,28 @@ void Killaura::onGetPickRange() {
 			}
 			*/
 
-			if (canswing && swing && !hurttime) { //与hurttime的swing分开处理
+			if (canswing && !hurttime) { //与hurttime的swing分开处理
 				localPlayer->swing();
 			}
 
 			switch (mode.selected) {
 			case 0:
 				if (!(targetList[0]->damageTime > 1 && hurttime)) {
-					if (hurttime && swing) {
-						localPlayer->swing();
-					}
+					localPlayer->swing();
 					g_Data.getCGameMode()->attack(targetList[0]);
 				}
 				break;
 			case 1:
 				for (auto& i : targetList) {
 					if (!(i->damageTime > 1 && hurttime)) {
-						if (hurttime && swing) {
-							localPlayer->swing();
-						}
+						localPlayer->swing();
 						g_Data.getCGameMode()->attack(i);
 					}
 				}
 				break;
 			case 2:
 				if (!(targetList[switchTarget]->damageTime > 1 && hurttime)) {
-					if (hurttime && swing) {
-						localPlayer->swing();
-					}
+					localPlayer->swing();
 					g_Data.getCGameMode()->attack(targetList[switchTarget]);
 				}
 			}
@@ -386,7 +380,7 @@ void Killaura::onGetPickRange() {
 	else {
 		lastTarget = nullptr;
 
-		if (swing && canswing) {
+		if (canswing) {
 			CPS = random(minCPS, maxCPS);
 			if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
 				if (!hurttime) {  //与hurttime的swing分开处理
@@ -419,7 +413,7 @@ void Killaura::onEnable() {
 		if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
 			clientMessageF(u8"检测到您位于EaseCation测试服，已为您自动开启绕过CPS检测 ");
 		}
-	}	
+	}
 }
 
 void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {

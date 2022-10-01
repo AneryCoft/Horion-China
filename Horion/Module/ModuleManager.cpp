@@ -85,7 +85,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new CrystalAura()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Timer()));
 		moduleList.push_back(std::shared_ptr<IModule>(new NightMode()));
-		moduleList.push_back(std::shared_ptr<IModule>(new NoSwing()));
+//		moduleList.push_back(std::shared_ptr<IModule>(new NoSwing()));
 		//moduleList.push_back(std::shared_ptr<IModule>(new CubeGlide()));
 		//moduleList.push_back(std::shared_ptr<IModule>(new AirStuck()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Zoom()));
@@ -117,7 +117,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new BowSpam()));
 		moduleList.push_back(std::shared_ptr<IModule>(new RandomDeviceId()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Breadcrumbs()));
-		moduleList.push_back(std::shared_ptr<IModule>(new FluxSwing()));
+		moduleList.push_back(std::shared_ptr<IModule>(new Swing()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));

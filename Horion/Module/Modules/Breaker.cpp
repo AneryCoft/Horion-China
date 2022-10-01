@@ -182,7 +182,7 @@ void Breaker::onTick(C_GameMode* gm) {
 				shouldRenderEntity = true;
 				if (tick >= delay) {
 					g_Data.getCGameMode()->attack(ent);
-					if (!moduleMgr->getModule<NoSwing>()->isEnabled())
+					//if (!moduleMgr->getModule<NoSwing>()->isEnabled())
 						g_Data.getLocalPlayer()->swingArm();
 				}
 			}

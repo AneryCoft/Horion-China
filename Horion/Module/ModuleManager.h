@@ -79,7 +79,7 @@
 #include "Modules/TriggerBot.h"
 #include "Modules/Xray.h"
 #include "Modules/NightMode.h"
-#include "Modules/NoSwing.h"
+//#include "Modules/NoSwing.h"
 //#include "Modules/CubeGlide.h"
 //#include "Modules/AirStuck.h"
 #include "Modules/Zoom.h"
@@ -108,7 +108,7 @@
 #include "Modules/BowSpam.h"
 #include "Modules/RandomDeviceId.h"
 #include "Modules/Breadcrumbs.h"
-#include "Modules/FluxSwing.h"
+#include "Modules/Swing.h"
 
 #ifdef _DEBUG
 #include "Modules/PacketLogger.h"
