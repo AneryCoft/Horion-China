@@ -28,11 +28,13 @@ void Swing::onTick(C_GameMode* gm) {
 	shouldBlock = slot != nullptr && slot->item != nullptr && slot->getItem()->isSword() && g_Data.isRightClickDown();
 	isAttacking = g_Data.isLeftClickDown();
 
-	Utils::nopBytes((unsigned char*)SmoothSwing, 6);
+	if (mode.selected == 2) {
+		Utils::nopBytes((unsigned char*)SmoothSwing, 6);
 
-	if (reset) {
-		xPos = 0.f; yPos = 0.f; zPos = 0.f;
-		reset = false;
+		if (reset) {
+			xPos = 0.f; yPos = 0.f; zPos = 0.f;
+			reset = false;
+		}
 	}
 }
 

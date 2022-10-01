@@ -267,7 +267,7 @@ void Hooks::Init() {
 			}
 			return origFunc(_this, matrix, lerpT);
 		};
-		std::shared_ptr<FuncHook> bobViewHook = std::make_shared<FuncHook>(levelRendererBobView, bobViewHookF);
+		std::shared_ptr<FuncHook> bobViewHook = std::make_shared<FuncHook>(levelRendererBobView, (void*)&bobViewHookF);
 
 		g_Hooks.lambdaHooks.push_back(bobViewHook);
 
@@ -465,15 +465,6 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 		{
 			// Main Menu
 			std::string screenName(g_Hooks.currentScreenName);
-
-			//logF("%s", g_Hooks.currentScreenName);
-			TextHolder alloc{};
-			C_UIScene* uiscene;
-			uiscene->getScreenName(&alloc);
-
-			if (alloc.getTextLength() < 100) {
-				strcpy_s(g_Hooks.currentScreenName, alloc.getText());
-			}
 
 			//if (strcmp(screenName.c_str(), "start_screen") == 0) {
 				// Draw BIG epic horion watermark
@@ -1439,6 +1430,7 @@ void Hooks::Actor_swing(C_Entity* _this) {
 
 	static auto swingMod = moduleMgr->getModule<Swing>();
 	if (swingMod->isEnabled()) {
+
 		if (swingMod->mode.selected == 0 || swingMod->mode.selected == 1) {
 			if (swingMod->mode.selected == 1) {
 				C_AnimatePacket packet;
