@@ -40,8 +40,8 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new Scaffold()));
 		moduleList.push_back(std::shared_ptr<IModule>(new NoFall()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Blink()));
-		moduleList.push_back(std::shared_ptr<IModule>(new CrystalPlace()));
-		moduleList.push_back(std::shared_ptr<IModule>(new CrystalBreak()));
+		//moduleList.push_back(std::shared_ptr<IModule>(new CrystalPlace()));
+		//moduleList.push_back(std::shared_ptr<IModule>(new CrystalBreak()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Nuker()));
 		moduleList.push_back(std::shared_ptr<IModule>(new InstaBreak()));
 		moduleList.push_back(std::shared_ptr<IModule>(new NoPacket()));

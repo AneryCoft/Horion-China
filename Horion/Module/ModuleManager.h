@@ -14,7 +14,7 @@
 #include "Modules/AirSwim.h"
 #include "Modules/AntiBot.h"
 #include "Modules/AutoArmor.h"
-#include "Modules/CrystalUtilsJTWD.h"
+//#include "Modules/CrystalUtilsJTWD.h"
 #include "Modules/AutoClicker.h"
 #include "Modules/AutoGapple.h"
 #include "Modules/AutoSneak.h"

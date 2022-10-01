@@ -1058,30 +1058,27 @@ void Hooks::PleaseAutoComplete(__int64 a1, __int64 a2, TextHolder* text, int a4)
 void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packet* packet) {
 	static auto oFunc = g_Hooks.LoopbackPacketSender_sendToServerHook->GetFastcall<void, C_LoopbackPacketSender*, C_Packet*>();
 
-	static auto autoSneakMod = moduleMgr->getModule<AutoSneak>();
-	static auto freecamMod = moduleMgr->getModule<Freecam>();
+	//static auto autoSneakMod = moduleMgr->getModule<AutoSneak>();
+	//static auto freecamMod = moduleMgr->getModule<Freecam>();
 	static auto blinkMod = moduleMgr->getModule<Blink>();
 	static auto noPacketMod = moduleMgr->getModule<NoPacket>();
 
 	if (noPacketMod->isEnabled() && g_Data.isInGame())
 		return;
 
-	if (freecamMod->isEnabled() || blinkMod->isEnabled()) {
-		if (packet->isInstanceOf<C_MovePlayerPacket>() || packet->isInstanceOf<PlayerAuthInputPacket>()) {
-			if (blinkMod->isEnabled()) {
-				if (packet->isInstanceOf<C_MovePlayerPacket>()) {
-					C_MovePlayerPacket* meme = reinterpret_cast<C_MovePlayerPacket*>(packet);
-					meme->onGround = true;                                                            //Don't take Fall Damages when turned off
-					blinkMod->getMovePlayerPacketHolder()->push_back(new C_MovePlayerPacket(*meme));  // Saving the packets
-				}
-				else {
-					blinkMod->getPlayerAuthInputPacketHolder()->push_back(new PlayerAuthInputPacket(*reinterpret_cast<PlayerAuthInputPacket*>(packet)));
-				}
+	if (blinkMod->isEnabled()) {
+			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
+				C_MovePlayerPacket* meme = reinterpret_cast<C_MovePlayerPacket*>(packet);
+				//meme->onGround = true;                                                            //Don't take Fall Damages when turned off
+				blinkMod->getMovePlayerPacketHolder()->push_back(new C_MovePlayerPacket(*meme));  // Saving the packets
+			}
+			else if(packet->isInstanceOf<PlayerAuthInputPacket>()){
+
+				blinkMod->getPlayerAuthInputPacketHolder()->push_back(new PlayerAuthInputPacket(*reinterpret_cast<PlayerAuthInputPacket*>(packet)));
 			}
 			return;  // Dont call LoopbackPacketSender_sendToServer
-		}
 	}
-	else if (!blinkMod->isEnabled()) {
+	else {
 		if (blinkMod->getMovePlayerPacketHolder()->size() > 0) {
 			for (auto it : *blinkMod->getMovePlayerPacketHolder()) {
 				oFunc(a, (it));
@@ -1102,15 +1099,16 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 		}
 	}
 
+	/*
 	if (autoSneakMod->isEnabled() && g_Data.getLocalPlayer() != nullptr && autoSneakMod->doSilent && packet->isInstanceOf<C_PlayerActionPacket>()) {
 		auto* pp = reinterpret_cast<C_PlayerActionPacket*>(packet);
 
 		if (pp->action == 12 && pp->entityRuntimeId == g_Data.getLocalPlayer()->entityRuntimeId)
 			return;  //dont send uncrouch
 	}
+	*/
 
 	bool cancelSend = false;
-
 	moduleMgr->onSendPacket(packet, cancelSend);
 
 	if (cancelSend)
