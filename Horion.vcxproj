@@ -52,7 +52,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <SpectreMitigation>false</SpectreMitigation>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -68,7 +68,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='BetaConf|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <SpectreMitigation>false</SpectreMitigation>
@@ -300,6 +300,7 @@
     <ClCompile Include="Horion\Module\Modules\FastDig.cpp" />
     <ClCompile Include="Horion\Module\Modules\FastEat.cpp" />
     <ClCompile Include="Horion\Module\Modules\FastStop.cpp" />
+    <ClCompile Include="Horion\Module\Modules\FluxSwing.cpp" />
     <ClCompile Include="Horion\Module\Modules\InfiniteAura.cpp" />
     <ClCompile Include="Horion\Module\Modules\InventoryView.cpp" />
     <ClCompile Include="Horion\Module\Modules\Notifications.cpp" />
@@ -508,6 +509,7 @@
     <!--    <ClInclude Include="Horion\Module\Modules\FastEat.h" /> -->
     <ClInclude Include="Horion\Module\Modules\FastLadder.h" />
     <ClInclude Include="Horion\Module\Modules\FastStop.h" />
+    <ClInclude Include="Horion\Module\Modules\FluxSwing.h" />
     <ClInclude Include="Horion\Module\Modules\Fly.h" />
     <ClInclude Include="Horion\Module\Modules\FollowPathModule.h" />
     <ClInclude Include="Horion\Module\Modules\FontChanger.h" />
