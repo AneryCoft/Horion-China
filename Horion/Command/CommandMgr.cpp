@@ -36,7 +36,7 @@ void CommandMgr::initCommands() {
 	commandList.push_back(new SayCommand());
 	commandList.push_back(new SpammerCommand());
 	commandList.push_back(new DupeCommand());
-	commandList.push_back(new DamageCommand());
+	//commandList.push_back(new DamageCommand());
 	commandList.push_back(new ConfigCommand());
 	commandList.push_back(new SetPrefixCommand());
 	commandList.push_back(new NbtCommand());
