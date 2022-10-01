@@ -108,6 +108,7 @@
 #include "Modules/BowSpam.h"
 #include "Modules/RandomDeviceId.h"
 #include "Modules/Breadcrumbs.h"
+#include "Modules/FluxSwing.h"
 
 #ifdef _DEBUG
 #include "Modules/PacketLogger.h"

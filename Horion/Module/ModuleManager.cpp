@@ -117,6 +117,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new BowSpam()));
 		moduleList.push_back(std::shared_ptr<IModule>(new RandomDeviceId()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Breadcrumbs()));
+		moduleList.push_back(std::shared_ptr<IModule>(new FluxSwing()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));

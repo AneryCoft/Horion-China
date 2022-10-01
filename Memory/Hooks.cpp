@@ -17,6 +17,15 @@ bool overrideStyledReturn = false;
 TextHolder styledReturnText;
 //#define TEST_DEBUG
 
+//FluxSwing FakeBlock
+void blockRotate(glm::mat4& matrix, float upper) {
+	float floatY = -1.30F;
+	matrix = glm::translate<float>(matrix, glm::vec3(-0.24F, upper, -0.20F));
+	matrix = glm::rotate<float>(matrix, -1.98F, glm::vec3(0.0F, 1.0F, 0.0F));
+	matrix = glm::rotate<float>(matrix, -floatY, glm::vec3(4.0F, 0.0F, 0.0F));
+	matrix = glm::rotate<float>(matrix, 60.0F, glm::vec3(0.0F, 1.0F, 0.0F));
+}
+
 void Hooks::Init() {
 	logF("Setting up Hooks...");
 	// clang-format off
@@ -228,9 +237,10 @@ void Hooks::Init() {
 
 		void* levelRendererBobView = reinterpret_cast<void*>(FindSignature("48 8B C4 48 89 58 20 57 48 ?? ?? ?? ?? 00 00 0F ?? ?? ?? 0F ?? ?? ?? ?? 0F ?? ?? ?? ?? 0F ?? ?? ??"));
 
-		static void (*bobViewHookF)(__int64, glm::mat4&, float) = [](__int64 _this, glm::mat4& matrix, float lerpT) -> void {
+		static auto bobViewHookF = [](__int64 _this, glm::mat4& matrix, float lerpT) {
 			static auto origFunc = g_Hooks.lambdaHooks.at(lambda_counter)->GetFastcall<void, __int64, glm::mat4&, float>();
-
+			static auto fluxswing = moduleMgr->getModule<FluxSwing>();
+			static auto killaura = moduleMgr->getModule<Killaura>();
 			static auto testMod = moduleMgr->getModule<ViewModel>();
 			auto p = g_Data.getLocalPlayer();
 			float degrees = fmodf(p->getPosOld()->lerp(p->getPos(), lerpT).x, 5) - 2.5f;
@@ -241,23 +251,34 @@ void Hooks::Init() {
 			glm::mat4 View = matrix;
 
 			matrix = View;
-			if (testMod->isEnabled()) {
+			/*if (testMod->isEnabled()) {
 				if (testMod->doTranslate)
 					matrix = glm::translate<float>(matrix, glm::vec3(testMod->xTrans, testMod->yTrans, testMod->zTrans));
 
 				if (testMod->doScale)
 					matrix = glm::scale<float>(matrix, glm::vec3(testMod->xMod, testMod->yMod, testMod->zMod));
 			}
+			return origFunc(_this, matrix, lerpT);*/
+			// Blocking Animation
+			auto clickGUI = moduleMgr->getModule<ClickGuiMod>();
+			if (fluxswing->isEnabled()) {
+				// Custom Settings
+				matrix = glm::translate<float>(matrix, glm::vec3(fluxswing->xPos, fluxswing->yPos, fluxswing->zPos)); // X Y Z
+
+				if (fluxswing->fkblock && fluxswing->shouldBlock && g_Data.canUseMoveKeys() && g_Data.isInGame() && !clickGUI->isEnabled()) {
+					lerpT = 0.f;
+					matrix = glm::translate<float>(matrix, glm::vec3(0.42222223281, 0.0, -0.16666666269302368));
+					matrix = glm::translate<float>(matrix, glm::vec3(-0.18f, 0.14f, -0.38f));
+					blockRotate(matrix, 0.25f);
+				}
+			}
 			return origFunc(_this, matrix, lerpT);
 		};
-
 		std::shared_ptr<FuncHook> bobViewHook = std::make_shared<FuncHook>(levelRendererBobView, bobViewHookF);
 
 		g_Hooks.lambdaHooks.push_back(bobViewHook);
 
 #undef lambda_counter
-
-
 
 		logF("Hooks initialized");
 	}
@@ -452,7 +473,13 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 			std::string screenName(g_Hooks.currentScreenName);
 
 			//logF("%s", g_Hooks.currentScreenName);
-			moduleMgr->getScreenName(g_Hooks.currentScreenName);
+			TextHolder alloc{};
+			C_UIScene* uiscene;
+			uiscene->getScreenName(&alloc);
+
+			if (alloc.getTextLength() < 100) {
+				strcpy_s(g_Hooks.currentScreenName, alloc.getText());
+			}
 
 			//if (strcmp(screenName.c_str(), "start_screen") == 0) {
 				// Draw BIG epic horion watermark
