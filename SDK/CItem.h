@@ -278,6 +278,10 @@ public:
 		if (((std::string)name.getText()).find("axe") != std::string::npos) return true;
 		return false;
 	} //¸«
+	bool isSword(void) {
+		if (((std::string)name.getText()).find("sword") != std::string::npos) return true;
+		return false;
+	} //½£
 
 	bool isBlock(void) {
 		if (itemId == 247)
