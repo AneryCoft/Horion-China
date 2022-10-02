@@ -268,7 +268,7 @@ void Hooks::Init() {
 			return origFunc(_this, matrix, lerpT);
 		};
 		std::shared_ptr<FuncHook> bobViewHook = std::make_shared<FuncHook>(levelRendererBobView, (void*)&bobViewHookF);
-
+		bobViewHook->enableHook(true);
 		g_Hooks.lambdaHooks.push_back(bobViewHook);
 
 #undef lambda_counter
@@ -1429,17 +1429,19 @@ void Hooks::Actor_swing(C_Entity* _this) {
 	static auto oFunc = g_Hooks.Actor_swingHook->GetFastcall<void, C_Entity*>();
 
 	static auto swingMod = moduleMgr->getModule<Swing>();
-	if (swingMod->isEnabled()) {
 
+	if (swingMod->isEnabled()) {
 		if (swingMod->mode.selected == 0 || swingMod->mode.selected == 1) {
 			if (swingMod->mode.selected == 1) {
 				C_AnimatePacket packet;
 				packet.action = 1;
 				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
+				return;
 			}
-			return oFunc(_this);
+			return;
 		}
 	}
+	return oFunc(_this);
 }
 
 void Hooks::Actor_startSwimming(C_Entity* _this) {
