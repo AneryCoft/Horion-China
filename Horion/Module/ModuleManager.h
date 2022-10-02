@@ -31,7 +31,7 @@
 #include "Modules/ClickGuiMod.h"
 #include "Modules/Teleport.h"
 #include "Modules/Crasher.h"
-//#include "Modules/Criticals.h"
+#include "Modules/Criticals.h"
 #include "Modules/CrystalAura.h"
 #include "Modules/Derp.h"
 #include "Modules/ESP.h"
@@ -46,7 +46,7 @@
 #include "Modules/Hitbox.h"
 #include "Modules/HudModule.h"
 #include "Modules/BlockReach.h"
-//#include "Modules/InfiniteAura.h"
+#include "Modules/InfiniteAura.h"
 #include "Modules/InstaBreak.h"
 #include "Modules/InventoryCleaner.h"
 #include "Modules/InventoryMove.h"
@@ -107,8 +107,9 @@
 #include "Modules/FastDig.h"
 #include "Modules/BowSpam.h"
 #include "Modules/RandomDeviceId.h"
-#include "Modules/Breadcrumbs.h"
+//#include "Modules/Breadcrumbs.h"
 #include "Modules/Swing.h"
+#include "Modules/TPAura.h"
 
 #ifdef _DEBUG
 #include "Modules/PacketLogger.h"

@@ -409,11 +409,13 @@ void Killaura::onEnable() {
 	attackTime.hasTimedElapsed(0.1f, true);
 	//计时器初始化
 
+	/*
 	if (g_Data.getRakNetInstance() != nullptr) {
 		if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
 			clientMessageF(u8"检测到您位于EaseCation测试服，已为您自动开启绕过CPS检测 ");
 		}
 	}
+	*/
 }
 
 void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
@@ -434,6 +436,7 @@ void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 		}
 	}
 
+	/*
 	if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
 		if (packet->isInstanceOf<LevelSoundEventPacket>()) {
 			LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
@@ -442,6 +445,7 @@ void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				cancelSend = true;
 		} //绕过EaseCation服务器CPS检测 
 	}
+	*/
 }
 
 void Killaura::onDisable() {

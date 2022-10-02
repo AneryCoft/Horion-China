@@ -50,7 +50,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new Breaker()));
 		moduleList.push_back(std::shared_ptr<IModule>(new NoSlowDown()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoTotem()));
-		//moduleList.push_back(std::shared_ptr<IModule>(new InfiniteAura()));
+		moduleList.push_back(std::shared_ptr<IModule>(new InfiniteAura()));
 		moduleList.push_back(std::shared_ptr<IModule>(new ClickGuiMod()));
 		moduleList.push_back(std::shared_ptr<IModule>(new ChestStealer()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Fly()));
@@ -69,7 +69,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new BlockReach()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoClicker()));
 		moduleList.push_back(std::shared_ptr<IModule>(new NameTags()));
-		//moduleList.push_back(std::shared_ptr<IModule>(new Criticals()));
+		moduleList.push_back(std::shared_ptr<IModule>(new Criticals()));
 		//moduleList.push_back(std::shared_ptr<IModule>(new Bhop()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Tower()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AntiVoid()));
@@ -118,6 +118,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new RandomDeviceId()));
 		//moduleList.push_back(std::shared_ptr<IModule>(new Breadcrumbs()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Swing()));
+		moduleList.push_back(std::shared_ptr<IModule>(new TPAura()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));
