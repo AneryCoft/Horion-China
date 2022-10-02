@@ -267,7 +267,7 @@ void Hooks::Init() {
 			}
 			return origFunc(_this, matrix, lerpT);
 		};
-		std::shared_ptr<FuncHook> bobViewHook = std::make_shared<FuncHook>(levelRendererBobView, (void*)&bobViewHookF);
+		std::shared_ptr<FuncHook> bobViewHook = std::make_shared<FuncHook>(levelRendererBobView, (decltype(&bobViewHookF.operator()))bobViewHookF);
 		bobViewHook->enableHook(true);
 		g_Hooks.lambdaHooks.push_back(bobViewHook);
 

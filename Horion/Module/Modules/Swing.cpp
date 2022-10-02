@@ -24,17 +24,21 @@ void Swing::onTick(C_GameMode* gm) {
 	if (player == nullptr)
 		return;
 
-	auto slot = player->getSupplies()->inventory->getItemStack(player->getSupplies()->selectedHotbarSlot);
-	shouldBlock = slot != nullptr && slot->item != nullptr && slot->getItem()->isSword() && g_Data.isRightClickDown();
+	auto hotbarStack = player->getSupplies()->inventory->getItemStack(player->getSupplies()->selectedHotbarSlot);
+	shouldBlock = hotbarStack != nullptr && hotbarStack->item != nullptr && hotbarStack->getItem()->isSword() && g_Data.isRightClickDown();
 	isAttacking = g_Data.isLeftClickDown();
 
 	if (mode.selected == 2) {
-		Utils::nopBytes((unsigned char*)SmoothSwing, 6);
-
-		if (reset) {
-			xPos = 0.f; yPos = 0.f; zPos = 0.f;
-			reset = false;
+		if ((*hotbarStack->item)->isFood()) {
+			Utils::patchBytes((unsigned char*)((uintptr_t)SmoothSwing), (unsigned char*)"\x0F\x84\x95\x02\x00\x00", 6);
 		}
+		else {
+			Utils::nopBytes((unsigned char*)SmoothSwing, 6);
+		}
+	}
+	if (reset) {
+		xPos = 0.f; yPos = 0.f; zPos = 0.f;
+		reset = false;
 	}
 }
 
