@@ -31,9 +31,6 @@ bool Target::isValidTarget(C_Entity* ent) {
 	if (std::time(nullptr) < g_Hooks.connecttime + 1)
 		return false;
 
-	if (!ent->checkNameTagFunc())
-		return false;
-
 	if (!ent->isAlive())
 		return false;
 
@@ -91,6 +88,7 @@ bool Target::isValidTarget(C_Entity* ent) {
 			if (ent->gamemode == 1)
 				return false; //不攻击创造模式的玩家
 		}
+		/*
 		if (antibotMod->advanceCheck) { //tpd fake player
 			if (!ent->isPlayer()) 
 				return false;
@@ -100,6 +98,7 @@ bool Target::isValidTarget(C_Entity* ent) {
 		
 			return false;
 		}
+		*/
 	}
 
 	if (teamsMod->isEnabled()) {
