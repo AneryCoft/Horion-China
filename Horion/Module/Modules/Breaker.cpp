@@ -1,7 +1,7 @@
 #include "Breaker.h"
 #include "../../../Memory/Hooks.h"
 
-Breaker::Breaker() : IModule(VK_NUMPAD9, Category::MISC, "Destroys certain blocks around you.") {
+Breaker::Breaker() : IModule(VK_NUMPAD9, Category::WORLD, "Destroys certain blocks around you.") {
 	registerIntSetting("Range", &range, range, 3, 10);
 	registerIntSetting("Delay", &delay, delay, 0, 20);
 	this->registerFloatSetting("lineWidth", &this->thick, this->thick, 0.1f, 0.8f);
@@ -169,10 +169,21 @@ void Breaker::onTick(C_GameMode* gm) {
 
 	g_Data.forEachEntity([this](C_Entity* ent, bool b) {
 		std::string name = ent->getNameTag()->getText();
+		//int height = ent->height * 100; //1.25f * 100
+		//int width = ent->width * 10; //0.4f * 10
+		//解决浮点数不精确的问题
+
 		if (g_Data.getLocalPlayer()->getPos()->dist(*ent->getPos()) <= range) {
 			if ((name.find("Treasure") != std::string::npos && treasures) ||
 				(name.find("'s Bed") != std::string::npos && lifeboatBeds) ||
-				(name.find("Core") != std::string::npos && core)) {
+				((ent->height > 1.24f && ent->height < 1.26f) && (ent->width > 0.3 && ent->width < 0.5))/* ||
+				(name.find("Core") != std::string::npos && core)*/) { //Core上面的字是另一个实体的
+				/*
+				EntityTypeId=256
+				Height=0.005000,Width=0.005000
+				NameTag=§l §r§aCore
+§a▌▌▌▌▌▌▌▌▌▌§7
+				*/
 
 				if (rotations) {
 					angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*ent->getPos());
@@ -183,7 +194,7 @@ void Breaker::onTick(C_GameMode* gm) {
 				if (tick >= delay) {
 					g_Data.getCGameMode()->attack(ent);
 					//if (!moduleMgr->getModule<NoSwing>()->isEnabled())
-						g_Data.getLocalPlayer()->swingArm();
+					g_Data.getLocalPlayer()->swingArm();
 				}
 			}
 		}
