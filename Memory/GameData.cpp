@@ -208,24 +208,7 @@ void GameData::initGameData(const SlimUtils::SlimModule* gameModule, SlimUtils::
 
 #endif
 }
-void GameData::sendPacketToInjector(HorionDataPacket horionDataPack) {
-	if (!isInjectorConnectionActive())
-		throw std::exception("Horion injector connection not active");
-	if (horionDataPack.dataArraySize >= 3000) {
-		logF("Tried to send data packet with array size: %i %llX", horionDataPack.dataArraySize, horionDataPack.data.get());
-		throw std::exception("Data packet data too big");
-	}
 
-	horionToInjectorQueue.push(horionDataPack);
-}
-void GameData::callInjectorResponseCallback(int id, std::shared_ptr<HorionDataPacket> packet) {
-	if (injectorToHorionResponseCallbacks.find(id) == injectorToHorionResponseCallbacks.end()) {
-		logF("No response callback for request with id=%i!", id);
-		return;
-	}
-	injectorToHorionResponseCallbacks[id](packet);
-	injectorToHorionResponseCallbacks.erase(id);
-}
 void GameData::log(const char* fmt, ...) {
 	auto lock = std::lock_guard<std::mutex>(g_Data.textPrintLock);
 	va_list arg;
