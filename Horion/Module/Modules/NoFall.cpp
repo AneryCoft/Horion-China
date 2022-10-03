@@ -6,8 +6,10 @@ NoFall::NoFall() : IModule(VK_NUMPAD3, Category::PLAYER, "Prevents you from taki
 		.addEntry(EnumEntry("Mineplex", 0))
 		.addEntry(EnumEntry("CubeCraft", 1))
 		.addEntry(EnumEntry("The Hive", 2))
-		.addEntry(EnumEntry("Nukkit", 3))
-		.addEntry(EnumEntry("CancelPacket", 4));
+		.addEntry(EnumEntry("OldCubeCraft", 3))
+		.addEntry(EnumEntry("Nukkit", 4))
+		.addEntry(EnumEntry("CancelPacket", 5));
+
 	registerEnumSetting("Mode", &mode, 0);
 }
 
@@ -30,7 +32,15 @@ void NoFall::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				movePacket->onGround = true;
 			}
 		}
-		else if (mode.selected == 4) {
+		else if (mode.selected == 1) {
+			if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+				PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
+				authInputPacket->velocity.y = 0.f;
+				authInputPacket->pos.add(0.f, 0.5f, 0.f);
+				localPlayer->fallDistance = 0.f;
+			}
+		}
+		else if (mode.selected == 5) {
 			if (packet->isInstanceOf<C_MovePlayerPacket>() || packet->isInstanceOf<PlayerAuthInputPacket>()) {
 				cancelSend = true;
 			}
@@ -64,10 +74,7 @@ void NoFall::onTick(C_GameMode* gm) {
 	}
 		break;
 		*/
-		case 1: {
-			localPlayer->velocity.y = 0.f;
-			localPlayer->setPos(localPlayerPos.add(0, 0.5, 0));
-		} break;
+
 		case 2: {
 			localPlayerPos.y += 20;
 			gm->player->tryTeleportTo(localPlayerPos, true, true, 1, 1);
@@ -75,11 +82,15 @@ void NoFall::onTick(C_GameMode* gm) {
 			gm->player->fallDistance = 0.f;
 		} break;
 		case 3: {
+			localPlayer->velocity.y = 0.f;
+			localPlayer->setPos(localPlayerPos.add(0, 0.3, 0));
+		}break;
+		case 4: {
 			C_PlayerActionPacket actionPacket;
 			actionPacket.action = 15;  //¿ªÆôÇÊ³á
 			actionPacket.entityRuntimeId = localPlayer->entityRuntimeId;
 			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&actionPacket);
-		}
+		}break;
 		}
 	}
 }
