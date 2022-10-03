@@ -1,7 +1,5 @@
 ﻿#include "Target.h"
-
 #include <regex>
-
 #include "../Horion/Module/ModuleManager.h"
 #include "../Memory/Hooks.h"
 
@@ -46,27 +44,34 @@ bool Target::isValidTarget(C_Entity* ent) {
 
 			}
 			else {
-				if (ent->height > 1.8f || ent->width > 0.6f)
+				if (ent->height > 1.8f || ent->height < 1.7f || ent->width > 0.6f || ent->width < 0.5f)
 					return false;
 			}
 		}
 
 		if (antibotMod->nameCheck) {
+			if (!ent->checkNameTagFunc())
+				return false;
+
 			if (ent->getNameTag()->getTextLength() < 1)
 				return false;
 
 			if (!ent->canShowNameTag())
 				return false;
 
+			std::string name = ent->getNameTag()->getText();
+
+			if (name.find("§eShopkeeper\n§d§lBuy Here!") != std::string::npos) //Lifeboat BedWars的商人
+				return false;
+		}
+
+		if (antibotMod->nameCheckPlus) {
 			if (!Target::containsOnlyASCII(ent->getNameTag()->getText()))
 				return false; // Temporarily removed from gui, tons of false negatives
 
 			if (std::string(ent->getNameTag()->getText()).find(std::string("\n")) != std::string::npos)
 				return false;
-
-			if (!ent->checkNameTagFunc())
-				return false;
-		}
+		} //误判率高
 
 		if (antibotMod->invisibleCheck) {
 			if (ent->isInvisible())
