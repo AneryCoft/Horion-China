@@ -50,18 +50,15 @@ bool Target::isValidTarget(C_Entity* ent) {
 		}
 
 		if (antibotMod->nameCheck) {
-			if (!ent->checkNameTagFunc())
-				return false;
-
 			if (ent->getNameTag()->getTextLength() < 1)
 				return false;
 
-			if (!ent->canShowNameTag())
+			if ((!ent->checkNameTagFunc() && !ent->isSneaking()) && !ent->canShowNameTag())
 				return false;
 
 			std::string name = ent->getNameTag()->getText();
 
-			if (name.find("§eShopkeeper\n§d§lBuy Here!") != std::string::npos) //Lifeboat BedWars的商人
+			if (name.find(u8"§eShopkeeper\n§d§lBuy Here!") != std::string::npos) //Lifeboat BedWars的商人
 				return false;
 		}
 
