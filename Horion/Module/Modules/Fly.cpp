@@ -9,13 +9,15 @@ Fly::Fly() : IModule('F', Category::MOVEMENT, "Fly to the sky") {
 		.addEntry(EnumEntry("Motion", 4))
 		.addEntry(EnumEntry("NoClip", 5))
 		.addEntry(EnumEntry("Lifeboat", 6))
-		.addEntry(EnumEntry("The Hive", 7));
+		//.addEntry(EnumEntry("The Hive", 7));
+		.addEntry(EnumEntry("CubeCraft", 7));
 	registerEnumSetting("Mode", &mode, 4);
-	registerFloatSetting("Horizontal Speed", &this->horizontalSpeed, this->horizontalSpeed, 0.1f, 10.f);
-	registerFloatSetting("Vertical Speed", &this->verticalSpeed, this->verticalSpeed, 0.1f, 10.f);
-	this->registerBoolSetting("Ground Spoof", &this->groundSpoof, this->groundSpoof);
-	this->registerBoolSetting("Elytra Spoof", &this->elytraSpoof, this->elytraSpoof);
-	this->registerBoolSetting("Damage", &this->damage, this->damage);
+	registerFloatSetting("Horizontal Speed", &horizontalSpeed, horizontalSpeed, 0.1f, 10.f);
+	registerFloatSetting("Vertical Speed", &verticalSpeed, verticalSpeed, 0.1f, 10.f);
+	registerFloatSetting("Timer", &timer, timer, 20.f, 100.f);
+	registerBoolSetting("Ground Spoof", &groundSpoof, groundSpoof);
+	registerBoolSetting("Elytra Spoof", &elytraSpoof, elytraSpoof);
+	registerBoolSetting("Damage", &damage, damage);
 }
 
 Fly::~Fly() {
@@ -36,11 +38,12 @@ void Fly::onEnable() {
 	case 1:
 		g_Data.getLocalPlayer()->setPos((*g_Data.getLocalPlayer()->getPos()).add(vec3_t(0, 1, 0)));
 		break;
-	case 7:
-		hiveSpeedIndex = 0;
-		hiveVelocity = 0;
-		enabledTick = 0;
-		g_Data.getLocalPlayer()->jumpFromGround();
+		/*case 7:
+			hiveSpeedIndex = 0;
+			hiveVelocity = 0;
+			enabledTick = 0;
+			g_Data.getLocalPlayer()->jumpFromGround();
+			*/
 	}
 	if (elytraSpoof && g_Data.getLocalPlayer() != nullptr) {
 		C_PlayerActionPacket actionPacket;
@@ -51,6 +54,7 @@ void Fly::onEnable() {
 }
 
 void Fly::onTick(C_GameMode* gm) {
+	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	++gameTick;
 
 	switch (mode.selected) {
@@ -101,9 +105,14 @@ void Fly::onTick(C_GameMode* gm) {
 	} break;
 	case 5:
 		gm->player->aabb.upper.y = gm->player->aabb.lower.y - 1.8f;
+	case 7: {
+		C_MovePlayerPacket packet(localPlayer, *localPlayer->getPos());
+		packet.onGround = false;
+		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
+	}	
 	case 4:
 	case 1:
-		gm->player->velocity = vec3_t(0, 0, 0);
+		gm->player->velocity = vec3_t(0.f, 0.f, 0.f);
 		break;
 	case 6: {
 		float calcYaw = (gm->player->yaw + 90) * (PI / 180);
@@ -135,8 +144,6 @@ void Fly::onTick(C_GameMode* gm) {
 			gm->player->setPos(pos.add(vec3_t(x, 0.5f, z)));
 		}*/
 	} break;
-	case 7:
-		gm->player->setSprinting(true);
 	}
 }
 
@@ -144,19 +151,25 @@ void Fly::onDisable() {
 	if (g_Data.getLocalPlayer() == nullptr)
 		return;
 
+	gameTick = 0;
+
+	g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
+
 	switch (mode.selected) {
 	case 0:
 		if (g_Data.getLocalPlayer()->gamemode != 1)
 			g_Data.getLocalPlayer()->canFly = false;
 		break;
 	case 6:
-		g_Data.getLocalPlayer()->velocity = vec3_t(0, 0, 0);
+	case 7:
+		g_Data.getLocalPlayer()->velocity.x = 0.f;
+		g_Data.getLocalPlayer()->velocity.z = 0.f;
 		break;
 	case 5:
 		g_Data.getLocalPlayer()->aabb.upper.y = g_Data.getLocalPlayer()->aabb.lower.y + 1.8f;
 	}
 }
-
+/*
 float hiveSpeedArray[15] = {
 0.630000,
 0.615559,
@@ -174,7 +187,7 @@ float hiveSpeedArray[15] = {
 0.373055,
 0.362665
 };
-
+*/
 void Fly::onMove(C_MoveInputHandler* input) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	if (localPlayer == nullptr)
@@ -224,7 +237,7 @@ void Fly::onMove(C_MoveInputHandler* input) {
 			localPlayer->lerpMotion(moveVec);
 		}
 	} break;
-	case 7:
+	/*case 7:
 		hiveVelocity++;
 		enabledTick++;
 
@@ -240,8 +253,8 @@ void Fly::onMove(C_MoveInputHandler* input) {
 			moveVec.x = cos(calcYaw) * safeSpeedArray;
 			moveVec.z = sin(calcYaw) * safeSpeedArray;
 
-			if (hiveVelocity >= 3) { 
-				hiveVelocity = 0; moveVec.y = -0.08f; 
+			if (hiveVelocity >= 3) {
+				hiveVelocity = 0; moveVec.y = -0.08f;
 			}
 
 			if (enabledTick >= 5 && pressed && !localPlayer->onGround)
@@ -250,7 +263,53 @@ void Fly::onMove(C_MoveInputHandler* input) {
 		else {
 			localPlayer->velocity.x = 0.f;
 			localPlayer->velocity.z = 0.f;
+		}*/
+	case 7:
+	{
+		vec3_t moveVec;
+		float calcYaw = (localPlayer->yaw + 90) * (PI / 180);
+		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
+		bool pressed = moveVec2d.magnitude() > 0.01f;
+		float c = cos(calcYaw);
+		float s = sin(calcYaw);
+		moveVec2d = { moveVec2d.x * c - moveVec2d.y * s, moveVec2d.x * s + moveVec2d.y * c };
+
+		g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
+
+		if (localPlayer->onGround && pressed)
+			localPlayer->jumpFromGround();
+
+		if (input->isJumping) {
+			g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
+			localPlayer->velocity.y += verticalSpeed;
+			localPlayer->fallDistance = 0.f;
 		}
+		if (input->isSneakDown) {
+			g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
+			localPlayer->velocity.y -= verticalSpeed;
+			localPlayer->fallDistance = 0.f;
+		}
+
+		if (gameTick == 3) {
+			moveVec.x = moveVec2d.x * horizontalSpeed;
+			moveVec.y = localPlayer->velocity.y;
+			moveVec.z = moveVec2d.y * horizontalSpeed;
+			gameTick = 0;
+		}
+		else {
+			g_Data.getClientInstance()->minecraft->setTimerSpeed(50.f);
+			moveVec.x = moveVec2d.x * 0.1;
+			moveVec.y = localPlayer->velocity.y;
+			moveVec.z = moveVec2d.y * 0.1;
+		}
+
+		if (pressed)
+			localPlayer->lerpMotion(moveVec);
+		else {
+			localPlayer->velocity.x = 0;
+			localPlayer->velocity.z = 0;
+		}
+	}
 	}
 }
 

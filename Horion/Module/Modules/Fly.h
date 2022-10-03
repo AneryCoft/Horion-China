@@ -9,9 +9,10 @@ private:
 	bool groundSpoof = false;
 	bool elytraSpoof = false;
 	bool damage = false;
-	int hiveSpeedIndex = 0;
-	int hiveVelocity = 0;
-	int enabledTick = 0;
+	//int hiveSpeedIndex = 0;
+	//int hiveVelocity = 0;
+	//int enabledTick = 0;
+	float timer = 20.f;
 
 	int gameTick = 0;
 
