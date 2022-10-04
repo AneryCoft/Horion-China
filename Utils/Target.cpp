@@ -60,6 +60,12 @@ bool Target::isValidTarget(C_Entity* ent) {
 
 			if (name.find(u8"§eShopkeeper\n§d§lBuy Here!") != std::string::npos) //Lifeboat BedWars的商人
 				return false;
+
+			if (name.find(u8"§bITEM SHOP\n§e§lRIGHT CLICK") != std::string::npos || name.find(u8"§bSOLO\n§bUPGRADES") != std::string::npos) //NetherGames BedWars的商人
+				return false; //这两个商人canShowNameTag = false NameTag != nullptr 和Galaxite的正好相反
+
+			if (name.find(u8"§") == std::string::npos && !ent->canShowNameTag()) //NetherGames Bot
+				return false;
 		}
 
 		if (antibotMod->nameCheckPlus) {
