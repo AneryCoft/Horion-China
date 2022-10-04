@@ -29,13 +29,14 @@ void Teleport::onTick(C_GameMode* gm) {
 
 		vec3_ti block = g_Data.getLocalPlayer()->getlevel()->block;
 		if (block == vec3_ti(0, 0, 0)) return;
-		vec3_t pos = block.toFloatVector();
+		pos = block.toFloatVector();
 		pos.x += 0.5f;
 		pos.z += 0.5f;
 
 		tpPos = pos;
 		shouldTP = true;
 
+		if(onlySneak)
 		g_Data.getGuiData()->displayClientMessageF("%sTeleport position set to %sX: %.1f Y: %.1f Z: %.1f%s. Sneak to teleport!", GREEN, GRAY, pos.x, pos.y, pos.z, GREEN);
 	}
 	if (!GameData::isRightClickDown())
@@ -69,6 +70,9 @@ void Teleport::onTick(C_GameMode* gm) {
 			gm->player->setPos(tpPos);
 		}
 		}
+		if (!onlySneak)
+			g_Data.getGuiData()->displayClientMessageF(" % sTeleport to % sX: % .1f Y : % .1f Z : % .1f", GREEN, GRAY, pos.x, pos.y, pos.z);
+
 		shouldTP = false;
 	}
 }
