@@ -6,10 +6,10 @@ class Teleport : public IModule {
 private:
 	bool hasClicked = false;
 	bool onlyHand = false;
-	bool bypass = false;
 	bool shouldTP = false;
+	bool onlySneak = true;
 	vec3_t tpPos;
-
+	SettingEnum mode;
 public:
 	Teleport();
 	~Teleport();
