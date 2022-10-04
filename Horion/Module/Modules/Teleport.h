@@ -9,6 +9,7 @@ private:
 	bool shouldTP = false;
 	bool onlySneak = true;
 	vec3_t tpPos;
+	vec3_t pos;
 	SettingEnum mode;
 public:
 	Teleport();

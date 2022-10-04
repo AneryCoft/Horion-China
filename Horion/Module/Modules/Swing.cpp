@@ -2,7 +2,7 @@
 
 void* SmoothSwing = (void*)FindSignature("0F 84 ? ? ? ? 48 8B 56 ? 48 85 D2 74 ? 48 8B 02");
 
-Swing::Swing() : IModule(0, Category::PLAYER, "Swing like Flux and Fakeblock!") {
+Swing::Swing() : IModule(0, Category::PLAYER, "Change swing") {
 	mode = SettingEnum(this)
 		.addEntry(EnumEntry("None", 0))
 		.addEntry(EnumEntry("Packet", 1))
