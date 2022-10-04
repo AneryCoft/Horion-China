@@ -109,7 +109,7 @@ void Fly::onTick(C_GameMode* gm) {
 		C_MovePlayerPacket packet(localPlayer, *localPlayer->getPos());
 		packet.onGround = false;
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
-	}	
+	}
 	case 4:
 	case 1:
 		gm->player->velocity = vec3_t(0.f, 0.f, 0.f);
@@ -160,13 +160,13 @@ void Fly::onDisable() {
 		if (g_Data.getLocalPlayer()->gamemode != 1)
 			g_Data.getLocalPlayer()->canFly = false;
 		break;
+	case 5:
+		g_Data.getLocalPlayer()->aabb.upper.y = g_Data.getLocalPlayer()->aabb.lower.y + 1.8f;
 	case 6:
 	case 7:
 		g_Data.getLocalPlayer()->velocity.x = 0.f;
 		g_Data.getLocalPlayer()->velocity.z = 0.f;
 		break;
-	case 5:
-		g_Data.getLocalPlayer()->aabb.upper.y = g_Data.getLocalPlayer()->aabb.lower.y + 1.8f;
 	}
 }
 /*
@@ -280,12 +280,12 @@ void Fly::onMove(C_MoveInputHandler* input) {
 			localPlayer->jumpFromGround();
 
 		if (input->isJumping) {
-			g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
+			//g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
 			localPlayer->velocity.y += verticalSpeed;
 			localPlayer->fallDistance = 0.f;
 		}
 		if (input->isSneakDown) {
-			g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
+			//g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
 			localPlayer->velocity.y -= verticalSpeed;
 			localPlayer->fallDistance = 0.f;
 		}
@@ -305,10 +305,6 @@ void Fly::onMove(C_MoveInputHandler* input) {
 
 		if (pressed)
 			localPlayer->lerpMotion(moveVec);
-		else {
-			localPlayer->velocity.x = 0;
-			localPlayer->velocity.z = 0;
-		}
 	}
 	}
 }
