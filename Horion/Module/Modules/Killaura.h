@@ -30,6 +30,9 @@ private:
 	//static float randomFloat(float min, float max);
 	bool autoDisable = false;
 	C_Entity* lastTarget = nullptr;
+	float rotspeed = 100.f;
+	vec2_t lastrotangle;
+	bool canlastrot;
 public:
 	//bool rotations = false;
 	bool targetListEmpty = false;
