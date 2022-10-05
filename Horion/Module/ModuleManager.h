@@ -110,6 +110,7 @@
 //#include "Modules/Breadcrumbs.h"
 #include "Modules/Swing.h"
 #include "Modules/TPAura.h"
+#include "Modules/TargetHud.h"
 
 #ifdef _DEBUG
 #include "Modules/PacketLogger.h"

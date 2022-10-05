@@ -119,6 +119,7 @@ void ModuleManager::initModules() {
 		//moduleList.push_back(std::shared_ptr<IModule>(new Breadcrumbs()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Swing()));
 		moduleList.push_back(std::shared_ptr<IModule>(new TPAura()));
+		moduleList.push_back(std::shared_ptr<IModule>(new TargetHud()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));
