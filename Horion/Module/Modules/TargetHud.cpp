@@ -37,27 +37,41 @@ void TargetHud::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 
 	if (target != nullptr && target->isEntityExist()) {
 		std::string name = target->getNameTag()->getText();
-		name = std::regex_replace(name,std::regex("\n"), " "); //½«»»ÐÐ¸ÄÎª¿Õ¸ñ
-		std::string nameStr = "Name : " + name + "\n"; //Ãû×Ö
+		name = std::regex_replace(name,std::regex("\n"), " "); //å°†æ¢è¡Œæ”¹ä¸ºç©ºæ ¼
+		std::string nameStr = "Name : " + name + "\n"; //åå­—
 
 		vec3_t position = *target->getPos();
 		std::string posStr = "Position : " +
 			std::to_string((int)floor(position.x)) + " " +
 			std::to_string((int)floor(position.y)) + " " +
-			std::to_string((int)floor(position.z)) + "\n"; //Î»ÖÃ
+			std::to_string((int)floor(position.z)) + "\n"; //ä½ç½®
 
 		float distance = g_Data.getLocalPlayer()->getPos()->dist(position);
 		char str[16];
 		sprintf_s(str, 16, "%.1f", distance);
-		std::string disStr = "Distance : " + std::string(str) + "\n"; //¾àÀë
+		std::string disStr = "Distance : " + std::string(str) + "\n"; //è·ç¦»
 
-		float maxHealth = target->getAttribute(&HealthAttribute())->maximumValue;
-		float currentHealth = target->getAttribute(&HealthAttribute())->currentValue;
+		float maxHealth, currentHealth;
+		static auto healthattr = HealthAttribute();
+		bool canreturn = false;
+		[this, &maxHealth, &currentHealth, &canreturn] {
+			__try {
+				auto i = target->getAttribute(&healthattr);
+				maxHealth = i->maximumValue;
+				currentHealth = i->currentValue;
+			}
+			__except (EXCEPTION_EXECUTE_HANDLER) {
+				canreturn = true;
+			}
+		}();
+		if (canreturn)
+			return;
+		
 		std::string healthStr = "Health : "
 			+ std::to_string((int)currentHealth) +
 			"/" +
 			std::to_string((int)maxHealth) +
-			"\n"; //ÉúÃü
+			"\n"; //ç”Ÿå‘½
 
 		float armorValue = 0.f;
 		for (int i = 0; i < 4; i++) {
@@ -67,7 +81,7 @@ void TargetHud::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 				armorValue += (*stack->item)->getArmorValue();
 			}
 		}
-		std::string armorStr = "ArmorValue : " + std::to_string((int)armorValue) + "/20"  + "\n"; //¿ø¼×Öµ
+		std::string armorStr = "ArmorValue : " + std::to_string((int)armorValue) + "/20"  + "\n"; //ç›”ç”²å€¼
 
 
 		vec2_t windowSize = g_Data.getClientInstance()->getGuiData()->windowSize;
