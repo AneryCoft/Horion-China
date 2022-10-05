@@ -67,7 +67,7 @@ void TargetHud::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 				armorValue += (*stack->item)->getArmorValue();
 			}
 		}
-		std::string armorStr = "ArmorValue : " + std::to_string((int)armorValue) + "\n"; //¿ø¼×Öµ
+		std::string armorStr = "ArmorValue : " + std::to_string((int)armorValue) + "/20"  + "\n"; //¿ø¼×Öµ
 
 
 		vec2_t windowSize = g_Data.getClientInstance()->getGuiData()->windowSize;
@@ -77,24 +77,24 @@ void TargetHud::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 		//DrawUtils::drawText()
 
 
-		DrawUtils::drawText(vec2_t(windowSize.x / 1.5f - windowSize.x / 7.25f,
-			windowSize.y / 2 - windowSize.y / 5.0f + windowSize.y / 4),
+		DrawUtils::drawText(vec2_t(windowSize.x / 1.3f - windowSize.x / 7.f,
+			windowSize.y / 2 + windowSize.y / 12.0f),
 			&nameStr,
 			MC_Color(1.f, 1.f, 1.f), 1.f);
-		DrawUtils::drawText(vec2_t(windowSize.x / 1.5f - windowSize.x / 7.25f,
-			windowSize.y / 2 - windowSize.y / 6.0f + windowSize.y / 4),
+		DrawUtils::drawText(vec2_t(windowSize.x / 1.3f - windowSize.x / 7.f,
+			windowSize.y / 2 + (windowSize.y + 85.f) / 12.0f),
 			&posStr,
 			MC_Color(1.f, 1.f, 1.f), 1.f);
-		DrawUtils::drawText(vec2_t(windowSize.x / 1.5f - windowSize.x / 7.25f,
-			windowSize.y / 2 - windowSize.y / 7.0f + windowSize.y / 4),
+		DrawUtils::drawText(vec2_t(windowSize.x / 1.3f - windowSize.x / 7.f,
+			windowSize.y / 2 + (windowSize.y + 170.f) / 12.0f),
 			&disStr,
 			MC_Color(1.f, 1.f, 1.f), 1.f);
-		DrawUtils::drawText(vec2_t(windowSize.x / 1.5f - windowSize.x / 7.25f,
-			windowSize.y / 2 - windowSize.y / 8.0f + windowSize.y / 4),
+		DrawUtils::drawText(vec2_t(windowSize.x / 1.3f - windowSize.x / 7.f,
+			windowSize.y / 2 + (windowSize.y + 255.f) / 12.0f),
 			&healthStr,
 			MC_Color(1.f, 1.f, 1.f), 1.f);
-		DrawUtils::drawText(vec2_t(windowSize.x / 1.5f - windowSize.x / 7.25f,
-			windowSize.y / 2 - windowSize.y / 9.0f + windowSize.y / 4),
+		DrawUtils::drawText(vec2_t(windowSize.x / 1.3f - windowSize.x / 7.f,
+			windowSize.y / 2 + (windowSize.y + 340.f) / 12.0f),
 			&armorStr,
 			MC_Color(1.f, 1.f, 1.f), 1.f);
 		//Test
