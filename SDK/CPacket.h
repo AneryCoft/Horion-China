@@ -48,7 +48,7 @@ public:
 	float InputAD;  // 1 for A, -1 for D, multiply by sqrt(2)/2 if mixed with InputWS
 	float InputWS;  // 1 for W, -1 for S, multiply by sqrt(2)/2 if mixed with InputAD
 	uint8_t epicpad[12];
-	uint32_t inputKeys;
+	uint32_t inputMode;
 	int zero;
 	int one;
 	int two;
@@ -99,7 +99,7 @@ private:
 public:
 	int64_t entityId;
 	int64_t action;
-	float unknown;
+	float rowingTime;
 };
 
 class C_NPCRequestPacket : public C_Packet {

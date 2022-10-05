@@ -47,6 +47,6 @@ int EditionFaker::getFakedInputMode() {
 void EditionFaker::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 		auto* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-		authInputPacket->inputKeys = inputMode.selected;
+		authInputPacket->inputMode = inputMode.selected;
 	}
 }

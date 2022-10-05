@@ -28,7 +28,7 @@ TestModule::TestModule() : IModule(0, Category::MISC, "For testing purposes only
 		.addEntry(EnumEntry("1", 1))
 		.addEntry(EnumEntry("2", 2))
 		.addEntry(EnumEntry("3", 3));
-	
+
 	registerBoolSetting("ItemInfo", &itemInfo, itemInfo);
 	registerBoolSetting("EntityInfo", &entityInfo, entityInfo);
 	registerFloatSetting("float1", &float1, 0, -10, 10);
@@ -63,7 +63,7 @@ void TestModule::onTick(C_GameMode* gm) {
 	//clientMessageF("color=%i", g_Data.getLocalPlayer()->getArmorColorInSlot(0, 0));
 }
 
-void TestModule::onMove(C_MoveInputHandler* hand){
+void TestModule::onMove(C_MoveInputHandler* hand) {
 }
 
 void TestModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
@@ -80,8 +80,8 @@ void TestModule::onLevelRender() {
 
 void TestModule::onAttack(C_Entity* attackedEnt) {
 	if (entityInfo) {
-		logF("EntityTypeId=%i,Hight=%f,Width=%f,Hurttime=%i,NameTag=%s", attackedEnt->getEntityTypeId(), attackedEnt->height, attackedEnt->width, attackedEnt->damageTime, attackedEnt->getNameTag()->getText());
-		logF("eyePos(%f,%f,%f) Pos(%f,%f,%f)", attackedEnt->eyePos0.x, attackedEnt->eyePos0.y, attackedEnt->eyePos0.z, attackedEnt->getPos()->x, attackedEnt->getPos()->y, attackedEnt->getPos()->z);
-		//logF("NameTag=%s", attackedEnt->getNameTag()->getText());
+		logF("EntityTypeId=%i,Height=%f,Width=%f,Hurttime=%i,Sneaking=%i,CanShowName=%i,NameTag=%s", attackedEnt->getEntityTypeId(), attackedEnt->height, attackedEnt->width, attackedEnt->damageTime, attackedEnt->isSneaking(), attackedEnt->canShowNameTag(), attackedEnt->getNameTag()->getText());
+		logF("lower(%f,%f,%f) upper(%f,%f,%f)", attackedEnt->aabb.lower.x, attackedEnt->aabb.lower.y, attackedEnt->aabb.lower.z, attackedEnt->aabb.upper.x, attackedEnt->aabb.upper.y, attackedEnt->aabb.upper.z);
+		logF("Pos(%f,%f,%f)", attackedEnt->getPos()->x, attackedEnt->getPos()->y, attackedEnt->getPos()->z);
 	}
 }
