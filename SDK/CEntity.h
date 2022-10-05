@@ -625,17 +625,12 @@ public:
 	bool checkNameTagFunc();
 	
 	bool isEntityExist() {
-		const auto localPlayer = g_Data.getLocalPlayer();
-		if (localPlayer == nullptr)
+		__try {
+			this->canAttack(this, false);
+			return this != nullptr && (uintptr_t)this != 0xFFFFFFFFFFFFFCD7 && (uintptr_t)this != 0xFFFFFF00FFFFFF00 && this != nullptr && *(uintptr_t *)this != 0xFFFFFFFFFFFFFCD7 && *(uintptr_t *)this > 0x6FF000000000 && *(uintptr_t *)this < 0x800000000000 && *((int64_t *)this + 1) < 0x6FF000000000 && *(uintptr_t *)this <= Utils::getBase() + 0x10000000;
+		} __except (EXCEPTION_EXECUTE_HANDLER) {
 			return false;
-		[localPlayer, this] {
-			__try {
-				localPlayer->canAttack(this, false);
-				return this != nullptr && (uintptr_t)this != 0xFFFFFFFFFFFFFCD7 && (uintptr_t)this != 0xFFFFFF00FFFFFF00 && this != nullptr && *(uintptr_t *)this != 0xFFFFFFFFFFFFFCD7 && *(uintptr_t *)this > 0x6FF000000000 && *(uintptr_t *)this < 0x800000000000 && *((int64_t *)this + 1) < 0x6FF000000000 && *(uintptr_t *)this <= Utils::getBase() + 0x10000000;
-			} __except (EXCEPTION_EXECUTE_HANDLER) {
-				return false;
-			}
-		}();
+		}
 	}
 };
 #pragma pack(pop)
