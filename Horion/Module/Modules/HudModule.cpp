@@ -13,7 +13,9 @@ HudModule::HudModule() : IModule(0, Category::CLIENT, "Displays things like the 
 	registerBoolSetting("Keystrokes", &keystrokes, keystrokes);
 	registerBoolSetting("Show FPS", &fps, fps);
 	registerBoolSetting("Show CPS", &cps, cps);
+#ifdef _DEBUG
 	registerBoolSetting("Show Angle", &angle, angle);
+#endif
 	registerBoolSetting("Show Speed", &speed, speed);
 	registerBoolSetting("Always show", &alwaysShow, alwaysShow);
 	registerFloatSetting("Scale", &scale, scale, 0.5f, 1.5f);
