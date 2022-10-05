@@ -318,6 +318,7 @@ void Killaura::onGetPickRange() {
 				angle.x += randomFloat(0.f, yawOffset);
 			}
 			
+			if (vspeed<100.f){
 			auto turn = angle.sub(lastrotangle).normAngles();
 			//turn.x = -turn.x;
 
@@ -330,6 +331,7 @@ void Killaura::onGetPickRange() {
 				turn.div(abs(turn.y));
 			angle = lastrotangle.add(turn);
 			lastrotangle = angle;
+			}
 			//angle.x += Killaura::randomFloat(0.f, pitchOffset);
 			//angle.y += Killaura::randomFloat(0.f, yawOffset);
 		}
@@ -407,6 +409,7 @@ void Killaura::onGetPickRange() {
 			lastrotangle = localPlayer->viewAngles;
 		} else if (rotations.selected != 0 && rotations.selected < 5) {
 			canlastrot = true;
+			if (vspeed<100.f){
 			auto turn = localPlayer->viewAngles.sub(lastrotangle).normAngles();
 			// turn.x = -turn.x;
 
@@ -419,6 +422,7 @@ void Killaura::onGetPickRange() {
 				turn.div(abs(turn.y));
 			angle = lastrotangle.add(turn);
 			lastrotangle = angle;
+			}
 		}
 	}
 }
