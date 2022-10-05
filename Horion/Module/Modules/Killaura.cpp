@@ -16,7 +16,7 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 		.addEntry(EnumEntry("Distance", 0))
 		.addEntry(EnumEntry("Angle", 1))
 		.addEntry(EnumEntry("Health", 2));
-	//.addEntry(EnumEntry("Threaten", 3));
+	registerFloatSetting("RotSpeed", &rotspeed, rotspeed, 10.f, 100.f);	//.addEntry(EnumEntry("Threaten", 3));
 	registerEnumSetting("Priority", &priority, 0);
 	/*registerFloatSetting("Max Range", &maxRange, maxRange, 1.5f, 10.f);
 	registerFloatSetting("Min Range", &minRange, minRange, 1.5f, 10.f);*/
@@ -272,6 +272,8 @@ void Killaura::onGetPickRange() {
 
 	g_Data.forEachValidEntity(findEntity);
 
+	static TimerUtil rottime;
+	
 	targetListEmpty = targetList.empty();
 
 	if (!targetList.empty()) {
@@ -315,7 +317,19 @@ void Killaura::onGetPickRange() {
 			else if (yawOffset < 0) {
 				angle.x += randomFloat(0.f, yawOffset);
 			}
+			
+			auto turn = angle.sub(lastrotangle).normAngles();
+			//turn.x = -turn.x;
 
+			const float vspeed = rotspeed;
+			turn.x /= (100.f - vspeed);
+			turn.y /= (100.f - vspeed);
+			if (turn.x >= 1 || turn.x <= -1)
+				turn.div(abs(turn.x));
+			if (turn.y >= 1 || turn.y <= -1)
+				turn.div(abs(turn.y));
+			angle = lastrotangle.add(turn);
+			lastrotangle = angle;
 			//angle.x += Killaura::randomFloat(0.f, pitchOffset);
 			//angle.y += Killaura::randomFloat(0.f, yawOffset);
 		}
@@ -379,7 +393,6 @@ void Killaura::onGetPickRange() {
 	}
 	else {
 		lastTarget = nullptr;
-
 		if (canswing) {
 			CPS = random(minCPS, maxCPS);
 			if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
@@ -388,12 +401,31 @@ void Killaura::onGetPickRange() {
 				}
 			}
 		}
+		
+		if (rottime.hasTimedElapsed(1000, false)) {
+			canlastrot = false;
+			lastrotangle = localPlayer->viewAngles;
+		} else if (rotations.selected != 0 && rotations.selected < 5) {
+			canlastrot = true;
+			auto turn = localPlayer->viewAngles.sub(lastrotangle).normAngles();
+			// turn.x = -turn.x;
+
+			const float vspeed = rotspeed;
+			turn.x /= (100.f - vspeed);
+			turn.y /= (100.f - vspeed);
+			if (turn.x >= 1 || turn.x <= -1)
+				turn.div(abs(turn.x));
+			if (turn.y >= 1 || turn.y <= -1)
+				turn.div(abs(turn.y));
+			angle = lastrotangle.add(turn);
+			lastrotangle = angle;
+		}
 	}
 }
 
 void Killaura::onPlayerTick(C_Player* player) {
 	if (rotations.selected == 1) {
-		if (!targetList.empty()) {
+		if (!targetList.empty() || canlastrot) {
 			player->pitch = angle.x;
 			player->bodyYaw = angle.y;
 			player->yawUnused1 = angle.y;
@@ -416,11 +448,16 @@ void Killaura::onEnable() {
 		}
 	}
 	*/
+	if (auto localPlayer = g_Data.getLocalPlayer(); localPlayer == nullptr)
+		setEnabled(false);
+	else
+		lastrotangle = localPlayer->viewAngles;
+	canlastrot = false;
 }
 
 void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (rotations.selected == 1) {
-		if (!targetList.empty()) {
+		if (!targetList.empty() || canlastrot) {
 			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
 				auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
 				movePacket->pitch = angle.x;
@@ -452,4 +489,5 @@ void Killaura::onDisable() {
 	targetList.clear();
 	lastTarget = nullptr;
 	switchTarget = 0;
+	canlastrot = false;
 }
