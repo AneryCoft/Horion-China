@@ -15,8 +15,9 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 	priority = SettingEnum(this)
 		.addEntry(EnumEntry("Distance", 0))
 		.addEntry(EnumEntry("Angle", 1))
-		.addEntry(EnumEntry("Health", 2));
-	registerFloatSetting("RotSpeed", &rotspeed, rotspeed, 10.f, 100.f);	//.addEntry(EnumEntry("Threaten", 3));
+		.addEntry(EnumEntry("Health", 2))
+		.addEntry(EnumEntry("Armor", 3));
+	//.addEntry(EnumEntry("Threaten", 3));
 	registerEnumSetting("Priority", &priority, 0);
 	/*registerFloatSetting("Max Range", &maxRange, maxRange, 1.5f, 10.f);
 	registerFloatSetting("Min Range", &minRange, minRange, 1.5f, 10.f);*/
@@ -28,6 +29,7 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 	registerFloatSetting("Switch Delay", &switchDelay, switchDelay, 1.f, 1000.f);
 	registerFloatSetting("Yaw Offset", &yawOffset, yawOffset, -10.f, 10.f);
 	registerFloatSetting("Pitch Offset", &pitchOffset, pitchOffset, -10.f, 10.f);
+	registerFloatSetting("Rotation Speed", &rotationSpeed, rotationSpeed, 1.f, 100.f);
 	registerBoolSetting("Mob Aura", &isMobAura, isMobAura);
 	registerBoolSetting("ThroughBlock", &throughBlock, throughBlock);
 	registerBoolSetting("AutoDisable", &autoDisable, autoDisable);
@@ -205,6 +207,25 @@ struct Health {
 	}
 };
 
+struct Armor {
+	bool operator()(C_Entity* target, C_Entity* target2) {
+		float armorValue, armorValue2;
+
+		for (int i = 0; i < 4; i++) {
+			C_ItemStack* stack = target->getArmor(i);
+			C_ItemStack* stack2 = target2->getArmor(i);
+
+			if (stack->item != nullptr) {
+				armorValue += stack->getArmorValueWithEnchants();
+			}
+			if (stack2->item != nullptr) {
+				armorValue2 += stack2->getArmorValueWithEnchants();
+			}
+		}
+		return armorValue < armorValue2;
+	}
+};
+
 /*
 struct Threaten {
 	bool operator()(C_Entity* target, C_Entity* target2) {
@@ -290,6 +311,8 @@ void Killaura::onGetPickRange() {
 		case 2:
 			sort(targetList.begin(), targetList.end(), Health());
 			break;
+		case 3:
+			sort(targetList.begin(), targetList.end(), Armor());
 		}
 
 		if (mode.selected != 2 || switchTarget >= targetList.size()) {
@@ -302,7 +325,13 @@ void Killaura::onGetPickRange() {
 		}
 
 		if (rotations.selected != 0) {
-			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*targetList[switchTarget]->getPos());
+			vec3_t centrePos = {
+			targetList[switchTarget]->getPos()->x,
+			targetList[switchTarget]->aabb.lower.y + targetList[switchTarget]->height / 2,
+			targetList[switchTarget]->getPos()->z
+			};
+
+			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(centrePos);
 
 			if (pitchOffset > 0) {
 				angle.x += randomFloat(pitchOffset, 0.f);
@@ -318,11 +347,11 @@ void Killaura::onGetPickRange() {
 				angle.x += randomFloat(0.f, yawOffset);
 			}
 			
-			if (rotspeed<100.f){
+			if (rotationSpeed <100.f){
 			auto turn = angle.sub(lastrotangle).normAngles();
 			//turn.x = -turn.x;
 
-			const float vspeed = rotspeed;
+			const float vspeed = rotationSpeed;
 			turn.x /= (100.f - vspeed);
 			turn.y /= (100.f - vspeed);
 			if (turn.x >= 1 || turn.x <= -1)
@@ -335,6 +364,19 @@ void Killaura::onGetPickRange() {
 			//angle.x += Killaura::randomFloat(0.f, pitchOffset);
 			//angle.y += Killaura::randomFloat(0.f, yawOffset);
 		}
+		/*
+		vec2_t angleUpper = g_Data.getLocalPlayer()->getPos()->CalcAngle(targetList[switchTarget]->aabb.upper);
+		vec2_t angleLower = g_Data.getLocalPlayer()->getPos()->CalcAngle(targetList[switchTarget]->aabb.lower);
+
+		if (angle.x > angleLower.x) {
+			angle.x = angleLower.x;
+			clientMessageF(u8"Pitch超出Lower 值：%f", angle.x);
+		}
+		else if (angle.x < angleUpper.x) {
+			angle.x = angleUpper.x;
+			clientMessageF(u8"Pitch超出Upper 值：%f", angle.x);
+		} //防止Pitch超出Hitbox
+		*/
 
 		if (rotations.selected == 2) {
 			localPlayer->setRot(angle);
@@ -403,27 +445,6 @@ void Killaura::onGetPickRange() {
 				}
 			}
 		}
-		
-		if (rottime.hasTimedElapsed(1000, false)) {
-			canlastrot = false;
-			lastrotangle = localPlayer->viewAngles;
-		} else if (rotations.selected != 0 && rotations.selected < 5) {
-			canlastrot = true;
-			if (rotspeed<100.f){
-			auto turn = localPlayer->viewAngles.sub(lastrotangle).normAngles();
-			// turn.x = -turn.x;
-
-			const float vspeed = rotspeed;
-			turn.x /= (100.f - vspeed);
-			turn.y /= (100.f - vspeed);
-			if (turn.x >= 1 || turn.x <= -1)
-				turn.div(abs(turn.x));
-			if (turn.y >= 1 || turn.y <= -1)
-				turn.div(abs(turn.y));
-			angle = lastrotangle.add(turn);
-			lastrotangle = angle;
-			}
-		}
 	}
 }
 
@@ -441,8 +462,8 @@ void Killaura::onEnable() {
 	if (g_Data.getLocalPlayer() == nullptr)
 		setEnabled(false);
 
-	switchTime.hasTimedElapsed(0.1f, true);
-	attackTime.hasTimedElapsed(0.1f, true);
+	switchTime.resetTime();
+	attackTime.resetTime();
 	//计时器初始化
 
 	/*
@@ -481,10 +502,10 @@ void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
 		if (packet->isInstanceOf<LevelSoundEventPacket>()) {
 			LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
-			if (soundEventPacket->sound == 43 || soundEventPacket->sound == 42) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包 
-				//soundEventPacket->sound = 0; 
+			if (soundEventPacket->sound == 43 || soundEventPacket->sound == 42) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包
+				//soundEventPacket->sound = 0;
 				cancelSend = true;
-		} //绕过EaseCation服务器CPS检测 
+		} //绕过EaseCation服务器CPS检测
 	}
 	*/
 }
