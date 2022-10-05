@@ -318,7 +318,7 @@ void Killaura::onGetPickRange() {
 				angle.x += randomFloat(0.f, yawOffset);
 			}
 			
-			if (vspeed<100.f){
+			if (rotspeed<100.f){
 			auto turn = angle.sub(lastrotangle).normAngles();
 			//turn.x = -turn.x;
 
@@ -409,7 +409,7 @@ void Killaura::onGetPickRange() {
 			lastrotangle = localPlayer->viewAngles;
 		} else if (rotations.selected != 0 && rotations.selected < 5) {
 			canlastrot = true;
-			if (vspeed<100.f){
+			if (rotspeed<100.f){
 			auto turn = localPlayer->viewAngles.sub(lastrotangle).normAngles();
 			// turn.x = -turn.x;
 
