@@ -98,7 +98,10 @@ private:
 	const char* tooltip;
 
 	std::vector<SettingEntry*> settings;
-
+	
+public:
+	std::shared_mutex iModuleLook;
+	
 protected:
 	IModule(int key, Category c, const char* tooltip);
 
