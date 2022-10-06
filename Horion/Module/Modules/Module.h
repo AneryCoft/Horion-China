@@ -99,6 +99,9 @@ private:
 
 	std::vector<SettingEntry*> settings;
 
+public:
+	std::shared_mutex iModuleLook;
+
 protected:
 	IModule(int key, Category c, const char* tooltip);
 
@@ -117,6 +120,9 @@ public:
 	inline vec2_t* getPos() { return &ModulePos; };
 
 	inline std::vector<SettingEntry*>* getSettings() { return &settings; };
+
+	void enablelook();
+	void disablelook();
 
 	virtual const char* getModuleName() = 0;
 	virtual const char* getRawModuleName();
@@ -144,7 +150,7 @@ public:
 	virtual void onPlayerTick(C_Player*);
 	virtual void onGetPickRange();
 	
-	virtual void newThread();
+	virtual void onUpdate();
 	
 	const char* getTooltip();
 };
