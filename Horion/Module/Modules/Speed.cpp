@@ -136,8 +136,8 @@ void Speed::onMove(C_MoveInputHandler* input) {
 	if (player->isInLava() == 1 || player->isInWater() == 1)
 		return;
 
-	if (player->isSneaking())
-		return;
+	//if (player->isSneaking())
+	//	return;
 
 	if (mode.selected == 1) {
 		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
