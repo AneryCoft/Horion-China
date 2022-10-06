@@ -448,6 +448,7 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 		bool shouldRenderArrayList = true;
 		bool shouldRenderTabGui = true;
 		bool shouldRenderWatermark = true;
+		bool shouldRenderNotifications = true;
 
 		static float rcolors[4];          // Rainbow color array RGBA
 		static float disabledRcolors[4];  // Rainbow Colors, but for disabled modules
@@ -593,6 +594,7 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 				shouldRenderTabGui = hudModule->tabgui && hudModule->isEnabled();
 				shouldRenderArrayList = hudModule->arraylist && hudModule->isEnabled();
 				shouldRenderWatermark = hudModule->watermark && hudModule->isEnabled();
+				shouldRenderNotifications = hudModule->notifications && hudModule->isEnabled();
 				static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
 
 				if (clickGuiModule->isEnabled()) {
@@ -601,6 +603,7 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 					shouldRenderArrayList = false;
 					shouldRenderTabGui = false;
 					shouldRenderWatermark = false;
+					shouldRenderNotifications = false;
 				}
 
 				if (shouldRenderTabGui) TabGui::render();
@@ -809,6 +812,10 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 						}
 						c = 0;
 						modContainerList.clear();
+					}
+
+					if (moduleMgr->isInitialized() && shouldRenderNotifications) { // Draw Notifications
+
 					}
 				}
 			}
