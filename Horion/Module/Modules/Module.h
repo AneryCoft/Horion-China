@@ -121,6 +121,10 @@ public:
 
 	inline std::vector<SettingEntry*>* getSettings() { return &settings; };
 
+	
+	void enablelook();
+	void disablelook();
+	
 	virtual const char* getModuleName() = 0;
 	virtual const char* getRawModuleName();
 	virtual int getKeybind();
