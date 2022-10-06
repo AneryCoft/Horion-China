@@ -169,6 +169,7 @@ void ModuleManager::onSaveConfig(void* confVoid) {
 		return;
 	auto lock = lockModuleList();
 	for (auto& mod : moduleList) {
+		auto look = std::shared_lock(mod->iModuleLook);
 		mod->onSaveConfig(conf);
 	}
 }
@@ -178,6 +179,7 @@ void ModuleManager::onWorldTick(C_GameMode* gameMode) {
 		return;
 	auto lock = lockModuleList();
 	for (auto& mod : moduleList) {
+		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
 			mod->onWorldTick(gameMode);
 	}
@@ -188,6 +190,7 @@ void ModuleManager::onTick(C_GameMode* gameMode) {
 		return;
 	auto lock = lockModuleList();
 	for (auto& mod : moduleList) {
+		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
 			mod->onTick(gameMode);
 	}
@@ -199,6 +202,7 @@ void ModuleManager::onAttack(C_Entity* attackEnt) {
 
 	auto lock = lockModuleList();
 	for (auto& mod : moduleList) {
+		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
 			mod->onAttack(attackEnt);
 	}
@@ -209,6 +213,7 @@ void ModuleManager::onKeyUpdate(int key, bool isDown) {
 		return;
 	auto lock = lockModuleList();
 	for (auto& mod : moduleList) {
+		auto look = std::shared_lock(mod->iModuleLook);
 		mod->onKeyUpdate(key, isDown);
 	}
 }
@@ -219,6 +224,7 @@ void ModuleManager::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	auto mutex = lockModuleList();
 
 	for (auto& mod : moduleList) {
+		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
 			mod->onPreRender(renderCtx);
 	}
@@ -230,6 +236,7 @@ void ModuleManager::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	auto mutex = lockModuleList();
 
 	for (auto& mod : moduleList) {
+		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
 			mod->onPostRender(renderCtx);
 	}
@@ -240,6 +247,7 @@ void ModuleManager::onSendPacket(C_Packet* packet, bool& cancelSend) {
 		return;
 	auto lock = lockModuleList();
 	for (auto& it : moduleList) {
+		auto look = std::shared_lock(it->iModuleLook);
 		if (it->isEnabled() || it->callWhenDisabled())
 			it->onSendPacket(packet, cancelSend);
 	}
@@ -266,6 +274,7 @@ void ModuleManager::onMove(C_MoveInputHandler* hand) {
 		return;
 	auto lock = lockModuleList();
 	for (auto& it : moduleList) {
+		auto look = std::shared_lock(it->iModuleLook);
 		if (it->isEnabled() || it->callWhenDisabled())
 			it->onMove(hand);
 	}
@@ -275,6 +284,7 @@ void ModuleManager::onLevelRender() {
 		return;
 	auto lock = lockModuleList();
 	for (auto& it : moduleList) {
+		auto look = std::shared_lock(it->iModuleLook);
 		if (it->isEnabled() || it->callWhenDisabled())
 			it->onLevelRender();
 	}
@@ -284,6 +294,7 @@ void ModuleManager::onPlayerTick(C_Player* player) {
 		return;
 	auto lock = lockModuleList();
 	for (auto& mod : moduleList) {
+		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
 			mod->onPlayerTick(player);
 	}
@@ -293,6 +304,7 @@ void ModuleManager::onGetPickRange() {
 		return;
 	auto lock = lockModuleList();
 	for (auto& it : moduleList) {
+		auto look = std::shared_lock(it->iModuleLook);
 		if (it->isEnabled() || it->callWhenDisabled())
 			it->onGetPickRange();
 	}
@@ -302,6 +314,7 @@ void ModuleManager::onNewThread() {
 		return;
 	auto lock = lockModuleList();
 	for (auto& it : moduleList) {
+		auto look = std::shared_lock(it->iModuleLook);
 		if (it->isEnabled() || it->callWhenDisabled())
 			it->newThread();
 	}
