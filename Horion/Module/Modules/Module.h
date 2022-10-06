@@ -4,6 +4,7 @@
 #include "../../FriendList/FriendList.h"
 #include "../../../Utils/keys.h"
 //#include "../../DrawUtils.h"
+#include <shared_mutex>
 
 class IModule;
 
@@ -151,7 +152,7 @@ public:
 	virtual void onPlayerTick(C_Player*);
 	virtual void onGetPickRange();
 	
-	virtual void onUpdate();
+	//virtual void onUpdate();
 	
 	const char* getTooltip();
 };

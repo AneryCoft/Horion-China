@@ -309,6 +309,7 @@ void ModuleManager::onGetPickRange() {
 			it->onGetPickRange();
 	}
 }
+/*
 void ModuleManager::onUpdate() {
 	if (!isInitialized())
 		return;
@@ -319,4 +320,5 @@ void ModuleManager::onUpdate() {
 			it->onUpdate();
 	}
 }
+*/
 ModuleManager* moduleMgr = new ModuleManager(&g_Data);
