@@ -127,6 +127,7 @@ DWORD WINAPI start(LPVOID lpParam) {
 	countThread.detach();
 
 	std::thread newThread([] {
+		Sleep(500); //wait for ModuleManager()
 		while (isRunning) {
 			Sleep(10);
 			moduleMgr->onNewThread();
