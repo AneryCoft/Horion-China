@@ -297,5 +297,13 @@ void ModuleManager::onGetPickRange() {
 			it->onGetPickRange();
 	}
 }
-
+void ModuleManager::onNewThread() {
+	if (!isInitialized())
+		return;
+	auto lock = lockModuleList();
+	for (auto& it : moduleList) {
+		if (it->isEnabled() || it->callWhenDisabled())
+			it->newThread();
+	}
+}
 ModuleManager* moduleMgr = new ModuleManager(&g_Data);
