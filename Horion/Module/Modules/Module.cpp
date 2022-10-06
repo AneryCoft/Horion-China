@@ -185,7 +185,6 @@ void IModule::disablelook() {
 	onDisable();
 }
 
-
 const char* IModule::getModuleName() {
 	return "Module";
 }
@@ -290,7 +289,7 @@ void IModule::onLoadConfig(void* confVoid) {
 			}
 		}
 		if (this->enabled)
-			this->onEnable();
+			this->enablelook();
 	}
 }
 

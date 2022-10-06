@@ -98,10 +98,10 @@ private:
 	const char* tooltip;
 
 	std::vector<SettingEntry*> settings;
-
+	
 public:
 	std::shared_mutex iModuleLook;
-
+	
 protected:
 	IModule(int key, Category c, const char* tooltip);
 
@@ -121,9 +121,10 @@ public:
 
 	inline std::vector<SettingEntry*>* getSettings() { return &settings; };
 
+	
 	void enablelook();
 	void disablelook();
-
+	
 	virtual const char* getModuleName() = 0;
 	virtual const char* getRawModuleName();
 	virtual int getKeybind();
