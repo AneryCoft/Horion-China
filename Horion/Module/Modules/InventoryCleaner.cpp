@@ -37,6 +37,7 @@ void InventoryCleaner::onGetPickRange() {
 		}*/
 	} //丢弃无用物品
 	else {
+		dropTime.resetTime();
 		i = 0;
 		if (autoSort) {
 			C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();

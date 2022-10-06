@@ -29,7 +29,7 @@ void Swing::onTick(C_GameMode* gm) {
 	isAttacking = g_Data.isLeftClickDown();
 
 	if (mode.selected == 2) {
-		if (hotbarStack->item != nullptr && (*hotbarStack->item)->isFood() && (*hotbarStack->item)->itemId != 426/*ҩˮ*/) {
+		if (hotbarStack->item != nullptr && (*hotbarStack->item)->isFood() && (*hotbarStack->item)->itemId != 426 && (*hotbarStack->item)->itemId != 561/*ҩˮ*/) {
 			Utils::patchBytes((unsigned char*)((uintptr_t)SmoothSwing), (unsigned char*)"\x0F\x84\x95\x02\x00\x00", 6);
 		}
 		else {
