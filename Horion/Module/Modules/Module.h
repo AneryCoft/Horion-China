@@ -143,5 +143,8 @@ public:
 	virtual bool callWhenDisabled();
 	virtual void onPlayerTick(C_Player*);
 	virtual void onGetPickRange();
+	
+	virtual void newThread();
+	
 	const char* getTooltip();
 };
