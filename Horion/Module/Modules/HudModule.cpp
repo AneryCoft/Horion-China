@@ -6,6 +6,7 @@ HudModule::HudModule() : IModule(0, Category::CLIENT, "Displays things like the 
 	registerBoolSetting("TabGui", &tabgui, tabgui);
 	registerBoolSetting("ArrayList", &arraylist, arraylist);
 	registerBoolSetting("ClickToggle", &clickToggle, clickToggle);
+	registerBoolSetting("Notifications", &notifications, notifications);
 	registerBoolSetting("Watermark", &watermark, watermark);
 	registerBoolSetting("Coordinates", &coordinates, coordinates);
 	registerBoolSetting("Show Keybinds", &keybinds, keybinds);

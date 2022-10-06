@@ -20,6 +20,7 @@ public:
 	bool alwaysShow = false;
 	bool angle = false;
 	bool speed = true;
+	bool notifications = true;
 
 	float scale = 1.f;
 
