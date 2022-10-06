@@ -175,6 +175,16 @@ IModule::~IModule() {
 	this->settings.clear();
 }
 
+void IModule::enablelook() {
+	auto look = std::shared_lock(iModuleLook);
+	onEnable();
+}
+
+void IModule::disablelook() {
+	auto look = std::shared_lock(iModuleLook);
+	onDisable();
+}
+
 const char* IModule::getModuleName() {
 	return "Module";
 }
@@ -279,7 +289,7 @@ void IModule::onLoadConfig(void* confVoid) {
 			}
 		}
 		if (this->enabled)
-			this->onEnable();
+			this->enablelook();
 	}
 }
 
@@ -337,9 +347,9 @@ void IModule::setEnabled(bool enabled) {
 			logF("%s %s", enabled ? "Enabled" : "Disabled", this->getModuleName());
 
 		if (enabled)
-			this->onEnable();
+			this->enablelook();
 		else
-			this->onDisable();
+			this->disablelook();
 	}
 }
 
