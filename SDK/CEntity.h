@@ -10,6 +10,7 @@
 #include "CInventoryTransaction.h"
 #include "TextHolder.h"
 #include "Dimension.h"
+#include <excpt.h>
 
 class C_GameMode;
 
