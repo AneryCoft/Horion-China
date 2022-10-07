@@ -26,7 +26,7 @@ public:
 	vec3_t pos;          //0x2C
 	int extraData = -1;  //0x38
 private:
-	int unknown = 0;  //0x3C
+	int pitch = 0;  //0x3C
 public:
 	TextHolder entityType;               //0x40
 	bool isBabyMod = false;              //0x60
@@ -109,7 +109,7 @@ public:
 	__int64 Unknown0;      //Test
 	std::string Unknown1;  //Test
 	__int64 Unknown2;      //Test
-};
+}; //NPC请求包 仅在教育版有用
 
 class PlayerSkinPacket : public C_Packet {
 public:
@@ -151,7 +151,7 @@ private:
 	char padding[0x28];
 public:
 	int action;
-	long target;
+	long runtimeEntityId;
 };
 
 class ActorEventPacket : public C_Packet {
