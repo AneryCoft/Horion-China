@@ -15,12 +15,12 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 #ifdef _DEBUG
 	char* packetName = packet->getName()->getText();
 
-	if (showAuth) {
-		if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+	if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+		if (showAuth) {
 			auto packets = reinterpret_cast<PlayerAuthInputPacket*>(packet);
 			g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s Pos(X=%f Y=%f Z=%f) pitch=%f yaw=%f yawUnused=%f velocity(x=%f y=%f z=%f)", packetName, packets->pos.x, packets->pos.y, packets->pos.z, packets->pitch, packets->yaw, packets->yawUnused, packets->velocity.x, packets->velocity.y, packets->velocity.z);
-			return;
 		}
+		return;
 	}
 	if (packet->isInstanceOf<C_MovePlayerPacket>()) {
 		auto packets = reinterpret_cast<C_MovePlayerPacket*>(packet);
@@ -29,17 +29,17 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	}
 	if (packet->isInstanceOf<C_PlayerActionPacket>()) {
 		auto packets = reinterpret_cast<C_PlayerActionPacket*>(packet);
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s action=%i face=%i blockPos(X=%i Y=%i Z=%i)", packetName, packets->action, packets->face,packets->blockPosition.x, packets->blockPosition.y, packets->blockPosition.z);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s action=%i face=%i blockPos(X=%i Y=%i Z=%i)", packetName, packets->action, packets->face, packets->blockPosition.x, packets->blockPosition.y, packets->blockPosition.z);
 		return;
 	}
 	if (packet->isInstanceOf<LevelSoundEventPacket>()) {
 		auto packets = reinterpret_cast<LevelSoundEventPacket*>(packet);
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s sound=%i extraData=%i disableRelativeVolume=%i isBabyMod=%i Pos(X=%f,Y=%f,Z=%f)", packetName, packets->sound, packets->extraData, (int)packets->disableRelativeVolume, (int)packets->isBabyMod,packets->pos.x, packets->pos.y, packets->pos.z);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s sound=%i extraData=%i disableRelativeVolume=%i isBabyMod=%i Pos(X=%f,Y=%f,Z=%f)", packetName, packets->sound, packets->extraData, (int)packets->disableRelativeVolume, (int)packets->isBabyMod, packets->pos.x, packets->pos.y, packets->pos.z);
 		return;
 	}
 	if (packet->isInstanceOf<C_AnimatePacket>()) {
 		auto packets = reinterpret_cast<C_AnimatePacket*>(packet);
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s action=%i rowingTime=%f", packetName, (int)packets->action, packets->rowingTime);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s action=%i rowingTime=%f entityId=%i", packetName, (int)packets->action, packets->rowingTime,packets->entityRuntimeId);
 		return;
 	}
 	if (packet->isInstanceOf<NetworkLatencyPacket>()) {
@@ -61,13 +61,23 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 		else {
 			itemId = 0;
 		}
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s itemId=%i hotbarSlot=%i inventorySlot=%i", packetName, itemId,(int)packets->hotbarSlot1, (int)packets->inventorySlot1);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s itemId=%i hotbarSlot=%i inventorySlot=%i", packetName, itemId, (int)packets->hotbarSlot1, (int)packets->inventorySlot1);
+		return;
+	}
+	if (packet->isInstanceOf<CommandRequestPacket>()) {
+		auto packets = reinterpret_cast<CommandRequestPacket*>(packet);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s command=%c", packetName, packets->payload.getText());
+		return;
+	}
+	if (packet->isInstanceOf<ActorEventPacket>()) {
+		auto packets = reinterpret_cast<ActorEventPacket*>(packet);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s eventId=%i itemId=%i", packetName, packets->eventId,packets->itemId);
 		return;
 	}
 
-	if (strcmp(packet->getName()->getText(), "PlayerAuthInputPacket") != 0) {
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s", packetName);
-	}
+	//if (strcmp(packet->getName()->getText(), "PlayerAuthInputPacket") != 0) {
+	g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s", packetName);
+	//}
 #endif  // DEBUG
 
 }

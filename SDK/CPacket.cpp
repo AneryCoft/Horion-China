@@ -276,6 +276,21 @@ NetworkLatencyPacket::NetworkLatencyPacket() {
 	vTable = networkLatencyPacketVtable;
 }
 
+CommandRequestPacket::CommandRequestPacket() {
+	static uintptr_t** commandRequestPacketVtable = 0x0;
+	if (commandRequestPacketVtable == 0x0) {
+		uintptr_t sigOffset = FindSignature("48 8D 0D ?? ?? ?? ?? 0F 11 00 C7 40 ?? ?? ?? ?? ?? C7 40 ?? ?? ?? ?? ?? 48 8D 05 ?? ?? ?? ?? 48 89 02 33 C0 48 89 42 28 48 89 42 30 89 42 38 48 89 42 40 48 89 42 50 88 42 60");
+		int offset = *reinterpret_cast<int*>(sigOffset + 3);
+		commandRequestPacketVtable = reinterpret_cast<uintptr_t**>(sigOffset + offset + /*length of instruction*/ 7);
+#ifdef _DEBUG
+		if (commandRequestPacketVtable == 0x0 || sigOffset == 0x0)
+			__debugbreak();
+#endif
+	}
+	memset(this, 0, sizeof(CommandRequestPacket));  // Avoid overwriting vtable
+	vTable = commandRequestPacketVtable;
+}
+
 CommandRequestPacket::CommandRequestPacket(std::string cmd) {
 	static uintptr_t** commandRequestPacketVtable = 0x0;
 	if (commandRequestPacketVtable == 0x0) {
@@ -307,6 +322,21 @@ C_InteractPacket::C_InteractPacket(/*enum InteractPacket::Action, class ActorRun
 	}
 	memset(this, 0, sizeof(C_InteractPacket));  // Avoid overwriting vtable
 	vTable = interactPacketVtable;
+}
+
+ActorEventPacket::ActorEventPacket() {
+	static uintptr_t** actorEvenPacketVtable = 0x0;
+	if (actorEvenPacketVtable == 0x0) {
+		uintptr_t sigOffset = FindSignature("48 8D 0D ? ? ? ? 48 89 4D ? 48 89 45 ? C6 45 ? ? 44 89 7D");
+		int offset = *reinterpret_cast<int*>(sigOffset + 3);
+		actorEvenPacketVtable = reinterpret_cast<uintptr_t**>(sigOffset + offset + /*length of instruction*/ 7);
+#ifdef _DEBUG
+		if (actorEvenPacketVtable == 0x0 || sigOffset == 0x0)
+			__debugbreak();
+#endif
+	}
+	memset(this, 0, sizeof(ActorEventPacket));  // Avoid overwriting vtable
+	vTable = actorEvenPacketVtable;
 }
 
 ActorEventPacket::ActorEventPacket(uint64_t entityRuntimeId, char eventId, int16_t itemId) {

@@ -97,7 +97,7 @@ private:
 	char padding[0x28];
 
 public:
-	int64_t entityId;
+	long entityRuntimeId;
 	int64_t action;
 	float rowingTime;
 };
@@ -164,7 +164,7 @@ public:
 	char eventId;              //0x0038
 	char pad_0x39[0x5];        //0x0039
 	int16_t itemId;            //0x003E
-	//ActorEventPacket();
+	ActorEventPacket();
 	ActorEventPacket(uint64_t entityRuntimeId, char eventId, int16_t itemId);
 };
 

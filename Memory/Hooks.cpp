@@ -1441,7 +1441,9 @@ void Hooks::Actor_swing(C_Entity* _this) {
 		if (swingMod->mode.selected == 0 || swingMod->mode.selected == 1) {
 			if (swingMod->mode.selected == 1) {
 				C_AnimatePacket packet;
+				packet.entityRuntimeId = g_Data.getLocalPlayer()->entityRuntimeId;
 				packet.action = 1;
+				packet.rowingTime = 8.376486f;
 				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
 				return;
 			}
