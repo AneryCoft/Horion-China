@@ -432,9 +432,14 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 		static auto clickGuiModule = moduleMgr->getModule<ClickGuiMod>();
 
 		HImGui.startFrame();
+		g_Data.frameCount++;
 
-		if (g_Data.frameCount++ % 3 != 0)
+		static int count = 0;
+		count++;
+
+		if (count % 3 != 0) {
 			return oText(a1, renderCtx);
+		} //防止多次渲染 同时解决了渲染闪烁的问题
 
 		auto wid = g_Data.getClientInstance()->getGuiData()->windowSize;
 
