@@ -8,10 +8,9 @@ private:
 	int Odelay = 0;
 	int turn = 0;
 	bool lerp = true;
+	SettingEnum position;
 public:
 	float range = 7;
-
-	SettingEnum position;
 
 	TPAura();
 	~TPAura();

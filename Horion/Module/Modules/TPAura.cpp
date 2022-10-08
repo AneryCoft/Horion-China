@@ -1,6 +1,6 @@
 #include "TPAura.h"
 
-TPAura::TPAura() : IModule(0x0, Category::COMBAT, "TP like fuck so you dont get hit") {
+TPAura::TPAura() : IModule(0x0, Category::COMBAT, "TP near the target") {
 	position = SettingEnum(this)
 		.addEntry(EnumEntry("Around", 0))
 		.addEntry(EnumEntry("Above", 1))
@@ -36,12 +36,10 @@ void findTarget(C_Entity* currentEntity, bool isRegularEntity) {
 void TPAura::onTick(C_GameMode* gm) {
 	C_LocalPlayer* player = g_Data.getLocalPlayer();
 
-	if (!player->isAlive())
+	if (g_Data.getLocalPlayer() == nullptr || !player->isAlive())
 		return;
 
-	//Loop through all our players and retrieve their information
 	targetList.clear();
-
 	g_Data.forEachValidEntity(findTarget);
 
 	Odelay++;
@@ -87,8 +85,8 @@ void TPAura::onTick(C_GameMode* gm) {
 		}
 
 		if (lerp) {
-			float dist2 = gm->player->getPos()->dist(pos);
-			player->lerpTo(pos, vec2_t(1, 1), (int)fmax((int)dist2 * 0.1, 1));
+			float dist = player->getPos()->dist(pos);
+			player->lerpTo(pos, vec2_t(1, 1), (int)fmax((int)dist * 0.1, 1));
 			player->lerpMotion(pos);
 		}
 		else {
@@ -99,8 +97,6 @@ void TPAura::onTick(C_GameMode* gm) {
 }
 
 void TPAura::onEnable() {
-	if (g_Data.getLocalPlayer() == nullptr) {
+	if (g_Data.getLocalPlayer() == nullptr)
 		this->setEnabled(false);
-		return;
-	}
 }
