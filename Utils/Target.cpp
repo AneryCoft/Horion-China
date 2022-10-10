@@ -151,10 +151,10 @@ bool Target::isValidTarget(C_Entity* ent) {
 					}
 				}
 			}break;
-			case 2: {
+			/*case 2: {
 				if (localPlayer->getArmorColorInSlot(0, 0) == ent->getArmorColorInSlot(0, 0))
 					return false;
-			}
+			}*/
 			}
 		}
 	}
