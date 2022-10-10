@@ -7,18 +7,21 @@
 class CrystalAura : public IModule {
 private:
 	int prevSlot;
+	int tick = 0;
 	int delay = 0;
-	int eRange = 3;
-	bool autoplace = true;
-	bool pEnhanced = true;
-	bool dEnhanced = true;
-	bool Preview = true;
-	bool AutoSelect = true;
-	bool FinishSelect = false;
-	C_PlayerInventoryProxy* supplies = nullptr;
-	C_Inventory* inv = nullptr;
-
+	bool autoPlace = true;
+	bool preview = true;
+	bool autoSelect = true;
+	void selectCrystal();
+	void placeCrystal(C_GameMode* gm, vec3_t* pos);
+	vec3_ti bestPos;
+	void destroyCrystal();
+	SettingEnum mode;
 public:
+	float destroyRange = 3.5f;
+	float placeRange = 5.f;
+	int multiPlaceRange = 3;
+
 	CrystalAura();
 	~CrystalAura();
 
@@ -28,11 +31,4 @@ public:
 	virtual void onPreRender(C_MinecraftUIRenderContext* renderCtx) override;
 	virtual void onEnable() override;
 	virtual void onDisable() override;
-
-	int cRange = 10;
-	int pRange = 5;
-	int range = 10;
-
-	void CPlace(C_GameMode* gm, vec3_t* pos);
-	void DestroyC(C_Entity* ent, int range);
 };
