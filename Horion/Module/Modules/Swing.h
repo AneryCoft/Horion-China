@@ -8,7 +8,6 @@ class Swing : public IModule {
 private:
     bool reset = false;
 public:
-    float xPos = 0.f, yPos = 0.f, zPos = 0.f;
     bool shouldBlock = false;
     bool isAttacking = false;
     bool fakeBlock = false;

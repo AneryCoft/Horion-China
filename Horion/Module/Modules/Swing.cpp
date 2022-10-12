@@ -9,10 +9,6 @@ Swing::Swing() : IModule(0, Category::PLAYER, "Change swing") {
 		.addEntry(EnumEntry("Smooth", 2));
 	registerEnumSetting("Mode", &mode, 2);
 	registerBoolSetting("FakeBlock", &fakeBlock, fakeBlock);
-	registerBoolSetting("ResetRotate", &reset, reset);
-	registerFloatSetting("Rotate-X", &xPos, xPos, -3.f, 3.f);
-	registerFloatSetting("Rotate-Y", &yPos, yPos, -3.f, 3.f);
-	registerFloatSetting("Rotate-Z", &zPos, zPos, -3.f, 3.f);
 }
 
 const char* Swing::getModuleName() {
@@ -21,8 +17,8 @@ const char* Swing::getModuleName() {
 
 void Swing::onTick(C_GameMode* gm) {
 	auto player = g_Data.getLocalPlayer();
-	if (player == nullptr)
-		return;
+	/*if (player == nullptr)
+		return;*/
 
 	auto hotbarStack = player->getSupplies()->inventory->getItemStack(player->getSupplies()->selectedHotbarSlot);
 	shouldBlock = hotbarStack != nullptr && hotbarStack->item != nullptr && hotbarStack->getItem()->isSword() && g_Data.isRightClickDown();
@@ -35,10 +31,6 @@ void Swing::onTick(C_GameMode* gm) {
 		else {
 			Utils::nopBytes((unsigned char*)SmoothSwing, 6);
 		}
-	}
-	if (reset) {
-		xPos = 0.f; yPos = 0.f; zPos = 0.f;
-		reset = false;
 	}
 }
 

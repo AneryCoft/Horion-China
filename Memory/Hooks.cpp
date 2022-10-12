@@ -240,6 +240,7 @@ void Hooks::Init() {
 		static auto bobViewHookF = [](__int64 _this, glm::mat4& matrix, float lerpT) {
 			static auto origFunc = g_Hooks.lambdaHooks.at(lambda_counter)->GetFastcall<void, __int64, glm::mat4&, float>();
 			static auto swingMod = moduleMgr->getModule<Swing>();
+			static auto viewModelMod = moduleMgr->getModule<ViewModel>();
 			auto p = g_Data.getLocalPlayer();
 			float degrees = fmodf(p->getPosOld()->lerp(p->getPos(), lerpT).x, 5) - 2.5f;
 			degrees *= 180 / 2.5f;
@@ -250,15 +251,17 @@ void Hooks::Init() {
 
 			matrix = View;
 
-			// Blocking Animation
-			auto clickGUI = moduleMgr->getModule<ClickGuiMod>();
-			if (swingMod->isEnabled()) {
-				// Custom Settings
-				if (swingMod->mode.selected == 2) {
-					matrix = glm::translate<float>(matrix, glm::vec3(swingMod->xPos, swingMod->yPos, swingMod->zPos)); // X Y Z
-				}
+			if (viewModelMod->isEnabled()) {
+				if (viewModelMod->doTranslate)
+					matrix = glm::translate<float>(matrix, glm::vec3(viewModelMod->xTrans, viewModelMod->yTrans, viewModelMod->zTrans));
 
-				if (swingMod->fakeBlock && swingMod->shouldBlock && g_Data.canUseMoveKeys() && g_Data.isInGame() && !clickGUI->isEnabled()) {
+				if (viewModelMod->doScale)
+					matrix = glm::scale<float>(matrix, glm::vec3(viewModelMod->xMod, viewModelMod->yMod, viewModelMod->zMod));
+			}
+
+			// Blocking Animation
+			if (swingMod->isEnabled()) {
+				if (swingMod->fakeBlock && swingMod->shouldBlock && g_Data.canUseMoveKeys() && g_Data.isInGame()) {
 					lerpT = 0.f;
 					matrix = glm::translate<float>(matrix, glm::vec3(0.42222223281, 0.0, -0.16666666269302368));
 					matrix = glm::translate<float>(matrix, glm::vec3(-0.18f, 0.14f, -0.38f));
@@ -268,7 +271,7 @@ void Hooks::Init() {
 			return origFunc(_this, matrix, lerpT);
 		};
 		std::shared_ptr<FuncHook> bobViewHook = std::make_shared<FuncHook>(levelRendererBobView, (decltype(&bobViewHookF.operator()))bobViewHookF);
-		bobViewHook->enableHook(true);
+		//bobViewHook->enableHook(true);
 		g_Hooks.lambdaHooks.push_back(bobViewHook);
 
 #undef lambda_counter
@@ -439,6 +442,9 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 
 		if (count % 3 != 0) {
 			return oText(a1, renderCtx);
+		}
+		else {
+			count = 0;
 		} //防止多次渲染 同时解决了渲染闪烁的问题
 
 		auto wid = g_Data.getClientInstance()->getGuiData()->windowSize;
@@ -471,6 +477,8 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 		{
 			// Main Menu
 			std::string screenName(g_Hooks.currentScreenName);
+
+			moduleMgr->getScreenName(*screenName.c_str());
 
 			//if (strcmp(screenName.c_str(), "start_screen") == 0) {
 				// Draw BIG epic horion watermark
@@ -595,6 +603,7 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 						g_Data.sendPacketToInjector(packet);
 					}
 				}*/
+
 			if (strcmp(screenName.c_str(), "start_screen") != 0) {
 				shouldRenderTabGui = hudModule->tabgui && hudModule->isEnabled();
 				shouldRenderArrayList = hudModule->arraylist && hudModule->isEnabled();
