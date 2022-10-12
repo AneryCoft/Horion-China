@@ -11,31 +11,33 @@ EnchantCommand::EnchantCommand() : IMCCommand("enchant", "Enchants items", "<enc
 	enchantMap["respiration"] = 6;
 	enchantMap["depth_strider"] = 7;
 	enchantMap["aqua_affinity"] = 8;
-	enchantMap["frost_walker"] = 25;
 	enchantMap["sharpness"] = 9;
 	enchantMap["smite"] = 10;
 	enchantMap["bane_of_arthropods"] = 11;
 	enchantMap["knockback"] = 12;
 	enchantMap["fire_aspect"] = 13;
 	enchantMap["looting"] = 14;
-	enchantMap["channeling"] = 32;
-	enchantMap["impaling"] = 29;
-	enchantMap["loyalty"] = 31;
-	enchantMap["riptide"] = 30;
-	enchantMap["silktouch"] = 16;
-	enchantMap["fortune"] = 18;
-	enchantMap["unbreaking"] = 17;
 	enchantMap["efficiency"] = 15;
-	enchantMap["mending"] = 26;
+	enchantMap["silktouch"] = 16;
+	enchantMap["unbreaking"] = 17;
+	enchantMap["fortune"] = 18;
 	enchantMap["power"] = 19;
 	enchantMap["punch"] = 20;
 	enchantMap["flame"] = 21;
 	enchantMap["infinity"] = 22;
-	enchantMap["multishot"] = 33;
-	enchantMap["quick_charge"] = 35;
-	enchantMap["piercing"] = 34;
 	enchantMap["luck_of_sea"] = 23;
 	enchantMap["lure"] = 24;
+	enchantMap["frost_walker"] = 25;
+	enchantMap["mending"] = 26;
+	enchantMap["binding"] = 27;
+	enchantMap["vanishing"] = 28;
+	enchantMap["impaling"] = 29;
+	enchantMap["riptide"] = 30;
+	enchantMap["loyalty"] = 31;
+	enchantMap["channeling"] = 32;
+	enchantMap["multishot"] = 33;
+	enchantMap["piercing"] = 34;
+	enchantMap["quick_charge"] = 35;
 	enchantMap["soul_speed"] = 36;
 }
 
@@ -61,7 +63,7 @@ bool EnchantCommand::execute(std::vector<std::string>* args) {
 			else
 				enchantId = assertInt(args->at(1));
 		} catch (int) {
-			clientMessageF("exception while trying to get enchant string");
+			clientMessageF("[%sHorion%s] %sexception while trying to get enchant string",GOLD, WHITE, RED);
 			enchantId = assertInt(args->at(1));
 		}
 	}
@@ -133,7 +135,7 @@ bool EnchantCommand::execute(std::vector<std::string>* args) {
 			}
 			free(EnchantData);
 		}
-		clientMessageF("%sEnchant successful!", GREEN);
+		clientMessageF("[%sHorion%s] %sEnchant successful!", GOLD, WHITE, GREEN);
 	} else {
 		void* EnchantData = malloc(0x60);
 		if (EnchantData != nullptr)
@@ -153,9 +155,9 @@ bool EnchantCommand::execute(std::vector<std::string>* args) {
 					item);  // Player::selectItem
 
 			//g_Data.getLocalPlayer()->sendInventory();
-			clientMessageF("%sEnchant successful!", GREEN);
+			clientMessageF("[%sHorion%s] %sEnchant successful!", GOLD, WHITE, GREEN);
 		} else
-			clientMessageF("%sEnchant failed, try using a lower enchant-level", RED);
+			clientMessageF("[%sHorion%s] %sEnchant failed, try using a lower enchant-level", GOLD, WHITE, RED);
 
 		free(EnchantData);
 	}

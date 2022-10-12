@@ -16,7 +16,7 @@ bool BindCommand::execute(std::vector<std::string>* args) {
 
 	auto modOpt = moduleMgr->getModuleByName(moduleName);
 	if (!modOpt.has_value()) {
-		clientMessageF("%sCould not find module with name: %s", RED, moduleName.c_str());
+		clientMessageF("[%sHorion%s] %sCould not find module with name: %s%s", GOLD, WHITE, RED, GRAY, moduleName.c_str());
 		return true;
 	}
 	auto mod = modOpt.value();
@@ -32,7 +32,7 @@ bool BindCommand::execute(std::vector<std::string>* args) {
 
 			if (key == "none") {
 				mod->setKeybind(0x0);
-				clientMessageF("%sSuccessfully unbound %s!", GREEN, mod->getModuleName());
+				clientMessageF("[%sHorion%s] %sSuccessfully unbound %s%s%s!", GOLD, WHITE, GREEN, GRAY, mod->getModuleName(), GREEN);
 				return true;
 			}
 
@@ -45,13 +45,13 @@ bool BindCommand::execute(std::vector<std::string>* args) {
 
 				if (strcmp(needle, haystackLowercase) == 0) {
 					mod->setKeybind(i);
-					clientMessageF("%sThe keybind of %s is now '%s'", GREEN, mod->getModuleName(), haystack);
+					clientMessageF("[%sHorion%s] %sThe keybind of %s%s %sis now %s'%s'", GOLD, WHITE, GREEN, GRAY, mod->getModuleName(), GREEN, GRAY, haystack);
 					delete[] haystackLowercase;
 					return true;
 				}
 				delete[] haystackLowercase;
 			}
-			clientMessageF("%sInvalid key!", RED);
+			clientMessageF("[%sHorion%s] %sInvalid key!", GOLD, WHITE, RED);
 			return true;
 		}
 
@@ -62,18 +62,21 @@ bool BindCommand::execute(std::vector<std::string>* args) {
 		if (keyCode >= 0x30 && keyCode <= 0x5A) {
 			auto modOpt = moduleMgr->getModuleByName(moduleName);
 			if (!modOpt.has_value()) {
-				clientMessageF("%sCould not find module with name: %s", RED, moduleName.c_str());
-			} else {
-				modOpt.value()->setKeybind(keyCode);
-				clientMessageF("%sThe Keybind of %s is now '%c'", GREEN, mod->getModuleName(), keyCode);
+				clientMessageF("[%sHorion%s] %sCould not find module with name: %s%s", GOLD, WHITE, RED, GRAY, moduleName.c_str());
 			}
-		} else {
-			clientMessageF("%sInvalid Key! Outside of ascii range: %X", RED, keyCode);
+			else {
+				modOpt.value()->setKeybind(keyCode);
+				clientMessageF("[%sHorion%s] %sThe Keybind of %s%s %sis now %s'%c'", GOLD, WHITE, GREEN, GRAY, mod->getModuleName(), GREEN, GRAY, keyCode);
+			}
+		}
+		else {
+			clientMessageF("[%sHorion%s] %sInvalid Key! Outside of ASCII range: %s%X", GOLD, WHITE, RED, GRAY, keyCode);
 		}
 		return true;
-	} else {
-		clientMessageF("%s%s is currently bound to %s", RED, mod->getModuleName(), Utils::getKeybindName(mod->getKeybind()));
+	}
+	else {
+		clientMessageF("[%sHorion%s] %s%s is currently bound to %s%s", GOLD, WHITE, GRAY, mod->getModuleName(), RED, GRAY, Utils::getKeybindName(mod->getKeybind()));
 		return true;
 	}
-	
+
 }

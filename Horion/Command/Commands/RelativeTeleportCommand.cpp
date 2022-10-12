@@ -21,6 +21,6 @@ bool RelativeTeleportCommand::execute(std::vector<std::string>* args) {
 	pos.z = assertFloat(args->at(3)) + pPos.z;
 
 	g_Data.getLocalPlayer()->setPos(pos);
-	clientMessageF("%sTeleported!", GREEN);
+	clientMessageF("[%sHorion%s] %sTeleported!", GOLD, WHITE, GREEN);
 	return true;
 }

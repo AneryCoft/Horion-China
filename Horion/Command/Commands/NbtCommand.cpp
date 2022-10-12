@@ -37,7 +37,7 @@ bool NbtCommand::execute(std::vector<std::string>* args) {
 		} else {
 			if (level->getEntity() != nullptr) {
 				if (g_Data.getRakNetInstance()->serverIp.getTextLength() >= 1) {
-					clientMessageF("%sNBT tags for mobs only works in local world!", RED);
+					clientMessageF("[%sHorion%s] %sNBT tags for mobs only works in local world!", GOLD, WHITE, RED);
 					return true;
 				}
 				level->getEntity()->save(tag.get());
@@ -48,14 +48,14 @@ bool NbtCommand::execute(std::vector<std::string>* args) {
 			} else if (item != nullptr && item->tag != nullptr) {
 				item->tag->write(build);
 			} else {
-				clientMessageF("%sCouldn't find NBT tags!", RED);
+				clientMessageF("[%sHorion%s] %sCouldn't find NBT tags!", GOLD, WHITE, RED);
 				return true;
 			}
 		}
 
 		auto builtStr = build.str();
 		Utils::setClipboardText(builtStr);
-		clientMessageF("%s%s", GREEN, "CompoundTag copied:");
+		clientMessageF("[%sHorion%s] %s%s", GOLD, WHITE, GREEN, "CompoundTag copied:");
 		clientMessageF(builtStr.c_str());
 	} else if ((args->at(1) == "write" || args->at(1) == "load") && item) {
 		std::string tag;
@@ -85,7 +85,7 @@ bool NbtCommand::execute(std::vector<std::string>* args) {
 				item->count = 64;
 			}
 		} else {
-			clientMessageF("%sInvalid NBT tag!", RED);
+			clientMessageF("[%sHorion%s] %sInvalid NBT tag!", GOLD, WHITE, RED);
 			return true;
 		}
 
@@ -94,9 +94,9 @@ bool NbtCommand::execute(std::vector<std::string>* args) {
 			manager->addInventoryAction(C_InventoryAction(supplies->selectedHotbarSlot, nullptr, item));
 		}
 
-		clientMessageF("%s%s", GREEN, "Successfully loaded mojangson !");
+		clientMessageF("[%sHorion%s] %s%s", GOLD, WHITE, GREEN, "Successfully loaded mojangson !");
 	} else {
-		clientMessageF("%s%s", RED, "Couldn't execute command correctly");
+		clientMessageF("[%sHorion%s] %s%s", GOLD, WHITE, RED, "Couldn't execute command correctly");
 	}
 
 	return true;

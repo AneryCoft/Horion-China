@@ -26,14 +26,14 @@ bool TopCommand::execute(std::vector<std::string>* args) {
 		for (int y(0); y < 256 - blockPos.y; ++y) {  //This time we're going through loop again, but continuing where we left off to find open air pocket.
 			if ((player->region->getBlock(vec3_t{blockPos.x, blockPos.y + y, blockPos.z})->toLegacy()->blockId == 0) && (player->region->getBlock(vec3_t{blockPos.x, blockPos.y + y + 1, blockPos.z})->toLegacy()->blockId == 0)) {
 				player->setPos(vec3_t{blockPos.x, blockPos.y + y + 1, blockPos.z});
-				clientMessageF("Whoosh!");
+				clientMessageF("[%sHorion%s] %sWhoosh!", GOLD, WHITE, GREEN);
 				return true;
 			}
 		}
-		clientMessageF("There is no open space above you!");
+		clientMessageF("[%sHorion%s] %sThere is no open space above you!", GOLD, WHITE, RED);
 		return true;
 	} else {
-		clientMessageF("There are no blocks above you!");
+		clientMessageF("[%sHorion%s] %sThere are no blocks above you!", GOLD, WHITE, RED);
 		return true;
 	}
 }

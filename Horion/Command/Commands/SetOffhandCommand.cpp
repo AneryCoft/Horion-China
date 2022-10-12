@@ -34,7 +34,7 @@ bool SetOffhandCommand::execute(std::vector<std::string>* args) {
 		std::unique_ptr<void*> buffer = std::make_unique<void*>();
 		C_Item*** cStack = ItemRegistry::lookUpByName(ItemPtr.get(), buffer.get(), tempText);
 		if (*cStack == nullptr) {
-			clientMessageF("%sInvalid item name!", RED);
+			clientMessageF("[%sHorion%s] %sInvalid item name!", GOLD, WHITE, RED);
 			return true;
 		}
 		yot = new C_ItemStack(***cStack, count, itemData);
@@ -42,7 +42,7 @@ bool SetOffhandCommand::execute(std::vector<std::string>* args) {
 		std::unique_ptr<void*> ItemPtr = std::make_unique<void*>();
 		C_Item*** cStack = ItemRegistry::getItemFromId(ItemPtr.get(), itemId);
 		if (cStack == nullptr || *cStack == nullptr || **cStack == nullptr) {
-			clientMessageF("%sInvalid item ID!", RED);
+			clientMessageF("[%sHorion%s] %sInvalid item ID!", GOLD, WHITE, RED);
 			return true;
 		}
 		yot = new C_ItemStack(***cStack, count, itemData);
@@ -72,6 +72,6 @@ bool SetOffhandCommand::execute(std::vector<std::string>* args) {
 	delete desc;
 	g_Data.getLocalPlayer()->setOffhandSlot(yot);
 
-	clientMessageF("%sSuccessfully set item to offhand!", GREEN);
+	clientMessageF("[%sHorion%s] %sSuccessfully set item to offhand!", GOLD, WHITE, GREEN);
 	return true;
 }

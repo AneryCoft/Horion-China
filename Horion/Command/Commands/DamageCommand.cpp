@@ -13,7 +13,7 @@ bool DamageCommand::execute(std::vector<std::string>* args) {
 	assertTrue(g_Data.getLocalPlayer() != nullptr);
 	float amount = assertFloat(args->at(1));
 	if (amount < 1.f) {
-		clientMessageF("%sPlease put a number bigger than 0", RED);
+		clientMessageF("[%sHorion%s] %sPlease put a number bigger than 0", GOLD, WHITE, RED);
 		return true;
 	}
 	auto noFallMod = moduleMgr->getModule<NoFall>();

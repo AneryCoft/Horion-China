@@ -14,7 +14,7 @@ bool PathCommand::execute(std::vector<std::string> *args) {
 	assertTrue(args->size() > 1);
 	static auto mod = moduleMgr->getModule<FollowPathModule>();
 	if(mod->isEnabled()){
-		clientMessageF("Joe is already enabled, disable joe to use this command");
+		clientMessageF("[%sHorion%s] %sJoe is already enabled, disable joe to use this command", GOLD, WHITE, RED);
 		return true;
 	}
 
@@ -27,7 +27,7 @@ bool PathCommand::execute(std::vector<std::string> *args) {
 		mod->goal = std::make_unique<JoeGoalY>((float)yLevel);
 		mod->setEnabled(true);
 
-		clientMessageF("Starting search...");
+		clientMessageF("[%sHorion%s] %sStarting search...", GOLD, WHITE, GREEN);
 		return true;
 	}
 	if(cmd == "xz"){
@@ -38,7 +38,7 @@ bool PathCommand::execute(std::vector<std::string> *args) {
 		mod->goal = std::make_unique<JoeGoalXZ>(vec3_ti(x, 0, z));
 		mod->setEnabled(true);
 
-		clientMessageF("Starting search...");
+		clientMessageF("[% sHorion % s] % sStarting search...", GOLD, WHITE, GREEN);
 		return true;
 	}
 	if(cmd == "xyz"){
@@ -50,7 +50,7 @@ bool PathCommand::execute(std::vector<std::string> *args) {
 		mod->goal = std::make_unique<JoeGoalXYZ>(vec3_ti(x, y, z));
 		mod->setEnabled(true);
 
-		clientMessageF("Starting search...");
+		clientMessageF("[% sHorion % s] % sStarting search...", GOLD, WHITE, GREEN);
 		return true;
 	}
 	if(cmd == "p" || cmd == "player"){
@@ -77,14 +77,14 @@ bool PathCommand::execute(std::vector<std::string> *args) {
 		g_Data.forEachEntity(playerFinder);
 
 		if(pos.iszero()){
-			clientMessageF("%s Player \"%s\" could not be found!", GOLD, nameOfPlayer.c_str());
+			clientMessageF("[%sHorion%s] %s Player \"%s\" could not be found!", GOLD, WHITE, RED, nameOfPlayer.c_str());
 			return true;
 		}
 
 		vec3_ti endNode((int)floorf(pos.x), (int)roundf(pos.y - 1.62f), (int)floorf(pos.z));
 		mod->goal = std::make_unique<JoeGoalXYZ>(endNode);
 		mod->setEnabled(true);
-		clientMessageF("Starting search...");
+		clientMessageF("[% sHorion % s] % sStarting search...", GOLD, WHITE, GREEN);
 
 		return true;
 	}

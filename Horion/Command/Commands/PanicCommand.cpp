@@ -16,6 +16,6 @@ bool PanicCommand::execute(std::vector<std::string>* args) {
 		auto mod = *it;
 		mod->setEnabled(false);
 	}
-	clientMessageF("%sDisabled all Modules!", YELLOW);
+	clientMessageF("[%sHorion%s] %sDisabled all Modules!", GOLD, WHITE, GREEN);
 	return true;
 }

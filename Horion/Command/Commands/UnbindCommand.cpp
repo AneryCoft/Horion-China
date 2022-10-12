@@ -22,22 +22,22 @@ bool UnbindCommand::execute(std::vector<std::string>* args) {
 				auto mod = *it;
 				mod->setKeybind(0x0);
 			}
-			clientMessageF("%sUnbound all modules!", YELLOW);
+			clientMessageF("[%sHorion%s] %sUnbound all modules!", GOLD, WHITE, GREEN);
 		} else {
-			clientMessageF("%sAre you sure? This will unbind %sALL%s%s modules!", RED, BOLD, RESET, RED);
-			clientMessageF("%sUse %s.unbind all force%s to unbind all modules", RED, WHITE, RED);
+			clientMessageF("[%sHorion%s] %sAre you sure? This will unbind %sALL%s%s modules!", GOLD, WHITE, RED, BOLD, RESET, RED);
+			clientMessageF("[%sHorion%s] %sUse %s.unbind all force%s to unbind all modules", GOLD, WHITE, RED, WHITE, RED);
 		}
 		return true;
 	}
 
 	auto modOpt = moduleMgr->getModuleByName(moduleName);
 	if (!modOpt.has_value()) {
-		clientMessageF("%sCould not find module with name: %s", RED, moduleName.c_str());
+		clientMessageF("[%sHorion%s] %sCould not find module with name: %s", GOLD, WHITE, RED, moduleName.c_str());
 		return true;
 	} 
 
 	auto mod = modOpt.value();
 	mod->setKeybind(0x0);
-	clientMessageF("%sSuccessfully unbound %s!", GREEN, mod->getModuleName());
+	clientMessageF("[%sHorion%s] %sSuccessfully unbound %s!", GOLD, WHITE, GREEN, mod->getModuleName());
 	return true;
 }

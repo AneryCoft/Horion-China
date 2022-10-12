@@ -17,16 +17,16 @@ bool ToggleCommand::execute(std::vector<std::string>* args) {
 
 	auto modOpt = moduleMgr->getModuleByName(moduleName);
 	if (!modOpt.has_value()) {
-		clientMessageF("%sCould not find Module with name: %s", RED, moduleName.c_str());
+		clientMessageF("[%sHorion%s] %sCould not find Module with name: %s", GOLD, WHITE, RED, moduleName.c_str());
 		return true;
 	} 
 
 	auto mod = modOpt.value();
 	if (mod->isFlashMode()) 
-		clientMessageF("%sModule cannot be toggled!", RED);
+		clientMessageF("[%sHorion%s] %sModule cannot be toggled!", GOLD, WHITE, RED);
 	else {
 		mod->toggle();
-		clientMessageF("%s%s is now %s", GREEN, mod->getModuleName(), mod->isEnabled() ? "enabled" : "disabled");
+		clientMessageF("[%sHorion%s] %s%s is now %s", GOLD, WHITE, GREEN, mod->getModuleName(), mod->isEnabled() ? "enabled" : "disabled");
 	}
 		
 	return true;

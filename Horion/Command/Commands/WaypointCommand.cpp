@@ -19,7 +19,7 @@ bool WaypointCommand::execute(std::vector<std::string>* args) {
 	if (opt == "removeall") {
 		auto num = mod->getWaypoints()->size();
 		mod->getWaypoints()->clear();
-		clientMessageF("%sRemoved %i waypoints!", YELLOW, num);
+		clientMessageF("[%sHorion%s] %sRemoved %i waypoints!", GOLD, WHITE, GREEN, num);
 		return true;
 	}
 
@@ -28,7 +28,7 @@ bool WaypointCommand::execute(std::vector<std::string>* args) {
 	std::string name = args->at(2);
 	name = Utils::sanitize(name);
 	if (name.size() <= 1 || name.size() > 30) {
-		clientMessageF("%sInvalid name! Must be less than 30 characters!", RED);
+		clientMessageF("[%sHorion%s] %sInvalid name! Must be less than 30 characters!", GOLD, WHITE, RED);
 		return true;
 	}
 
@@ -45,26 +45,26 @@ bool WaypointCommand::execute(std::vector<std::string>* args) {
 		int dimension;
 		player->getDimensionId(&dimension);
 		if (mod->add(name, pos, dimension)) {
-			clientMessageF("%sSuccessfully added waypoint \"%s\"", GREEN, name.c_str());
+			clientMessageF("[%sHorion%s] %sSuccessfully added waypoint \"%s\"", GOLD, WHITE, GREEN, name.c_str());
 			if (!mod->isEnabled())
-				clientMessageF("%sEnable the waypoints module to see it ingame!", YELLOW);
+				clientMessageF("[%sHorion%s] %sEnable the waypoints module to see it ingame!", GOLD, WHITE, YELLOW);
 		} else {
 			clientMessageF("%sWaypoint \"%s\" already exists", RED, name.c_str());
 		}
 	} else if (opt == "remove") {
 		if (mod->remove(name)) {
-			clientMessageF("%sRemoved waypoint \"%s\"", YELLOW, name.c_str());
+			clientMessageF("[%sHorion%s] %sRemoved waypoint \"%s\"", GOLD, WHITE, GREEN, name.c_str());
 		} else {
-			clientMessageF("%sUnknown waypoint \"%s\"", RED, name.c_str());
+			clientMessageF("[%sHorion%s] %sUnknown waypoint \"%s\"", GOLD, WHITE, RED, name.c_str());
 		}
 	}else if (opt == "tp" || opt == "teleport") {
 		if (auto wp = mod->getWaypoint(name)) {
 			auto wpV = wp.value();
 			auto pos = wpV.pos;
 			player->setPos(pos);
-			clientMessageF("%sTeleported to waypoint \"%s\" (%.02f, %.02f, %.02f)", GREEN, name.c_str(), pos.x, pos.y, pos.z);
+			clientMessageF("[%sHorion%s] %sTeleported to waypoint \"%s\" (%.02f, %.02f, %.02f)", GOLD, WHITE, GREEN, name.c_str(), pos.x, pos.y, pos.z);
 		} else {
-			clientMessageF("%sUnknown waypoint \"%s\"", RED, name.c_str());
+			clientMessageF("[%sHorion%s] %sUnknown waypoint \"%s\"", GOLD, WHITE, RED, name.c_str());
 		}
 	} else {
 		return false;

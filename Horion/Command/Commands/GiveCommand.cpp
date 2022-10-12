@@ -80,14 +80,14 @@ bool GiveCommand::execute(std::vector<std::string> *args) {
 				item->setUserData(std::move(Mojangson::parseTag(tag)));
 			}
 		} else {
-			clientMessageF("%sInvalid NBT tag!", RED);
+			clientMessageF("[%sHorion%s] %sInvalid NBT tag!", GOLD, WHITE, RED);
 			return true;
 		}
 
 		if (args->size() > 4) {
 			g_Data.getLocalPlayer()->getTransactionManager()->addInventoryAction(C_InventoryAction(0, nullptr, nullptr, item, nullptr, 1, 507, 99999));
 		}
-		clientMessageF("%s%s", GREEN, "Successfully loaded mojangson !");
+		clientMessageF("[%sHorion%s] %s%s", GOLD, WHITE, GREEN, "Successfully loaded mojangson !");
 	}
 	if (args->size() > 4) {
 		C_InventoryAction *firstAction = nullptr;
@@ -97,7 +97,7 @@ bool GiveCommand::execute(std::vector<std::string> *args) {
 		inv->addItemToFirstEmptySlot(item);
 	}
 
-	clientMessageF("%sSuccessfully gave items!", GREEN);
+	clientMessageF("[%sHorion%s] %sSuccessfully gave items!", GOLD, WHITE, GREEN);
 	return true;
 }
 
@@ -109,7 +109,7 @@ bool GiveCommand::giveItem(uint8_t count, int itemId, uint8_t itemData, std::str
 	std::unique_ptr<void *> ItemPtr = std::make_unique<void *>();
 	C_Item ***cStack = ItemRegistry::getItemFromId(ItemPtr.get(), itemId);
 	if (cStack == nullptr || *cStack == nullptr || **cStack == nullptr) {
-		clientMessageF("%sInvalid item ID!", RED);
+		clientMessageF("[%sHorion%s] %sInvalid item ID!", GOLD, WHITE, RED);
 		return false;
 	}
 	itemStack = new C_ItemStack(***cStack, count, itemData);
@@ -154,7 +154,7 @@ bool GiveCommand::giveItem(uint8_t count, TextHolder &text, uint8_t itemData, st
 	std::unique_ptr<void *> buffer = std::make_unique<void *>();
 	C_Item ***cStack = ItemRegistry::lookUpByName(ItemPtr.get(), buffer.get(), text);
 	if (*cStack == nullptr) {
-		clientMessageF("%sInvalid item name!", RED);
+		clientMessageF("[%sHorion%s] %sInvalid item name!", GOLD, WHITE, RED);
 		return false;
 	}
 	itemStack = new C_ItemStack(***cStack, count, itemData);

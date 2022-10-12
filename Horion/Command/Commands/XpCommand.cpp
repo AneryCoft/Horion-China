@@ -20,9 +20,9 @@ bool XpCommand::execute(std::vector<std::string>* args) {
 			player->addLevels(xp);
 		else
 			player->addExperience(xp);
-		clientMessageF("%sAdded %i experience %s", GREEN, xp, levels ? "levels" : "points");
+		clientMessageF("[%sHorion%s] %sAdded \"%s%i\" experience %s", GOLD, WHITE, GREEN, GRAY, xp, levels ? "levels" : "points");
 	} catch (std::invalid_argument&) {
-		clientMessageF("%sInvalid amount of experience!", RED);
+		clientMessageF("[%sHorion%s] %sInvalid amount of experience!", GOLD, WHITE, RED);
 	}
 	return true;
 }

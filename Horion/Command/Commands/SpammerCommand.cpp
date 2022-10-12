@@ -29,12 +29,12 @@ bool SpammerCommand::execute(std::vector<std::string>* args) {
 		}
 		std::string text = os.str().substr(1);
 		spamMod->getMessage() = text;
-		clientMessageF("%sSpammer message set to %s%s%s!", GREEN, GRAY, text.c_str(), GREEN);
+		clientMessageF("[%sHorion%s] %sSpammer message set to %s%s%s!", GOLD, WHITE, GREEN, GRAY, text.c_str(), GREEN);
 		return true;
 	} else if (option == "delay") {
 		int delay = assertInt(args->at(2));
 		if (delay < 1) {
-			clientMessageF("%sDelay needs to be 1 or more!", RED);
+			clientMessageF("[%sHorion%s] %sDelay needs to be 1 or more!", GOLD, WHITE, RED);
 			return true;
 		} else {
 			spamMod->getDelay() = delay;
@@ -45,12 +45,12 @@ bool SpammerCommand::execute(std::vector<std::string>* args) {
 		std::transform(data.begin(), data.end(), data.begin(), ::tolower);
 		bool state = (data == "true") ? true : false;
 		spamMod->getBypass() = state;
-		clientMessageF("%sBypass set to %s%s%s!", GREEN, GRAY, state ? "true" : "false", GREEN);
+		clientMessageF("[%sHorion%s] %sBypass set to %s%s%s!", GOLD, WHITE, GREEN, GRAY, state ? "true" : "false", GREEN);
 		return true;
 	} else if (option == "length") {
 		int length = assertInt(args->at(2));
 		if (length < 1) {
-			clientMessageF("%sLength needs to be 1 or more!", RED);
+			clientMessageF("[%sHorion%s] %sLength needs to be 1 or more!", GOLD, WHITE, RED);
 			return true;
 		} else {
 			spamMod->getLength() = length;

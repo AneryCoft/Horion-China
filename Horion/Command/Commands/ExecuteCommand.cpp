@@ -18,6 +18,6 @@ bool ExecuteCommand::execute(std::vector<std::string>* args) {
 	auto str = os.str();
 
 	auto wstr = Utils::stringToWstring(str);
-	clientMessageF("%sScript returned: %s%S", GOLD, WHITE, scriptMgr.runScript(wstr).c_str());
+	clientMessageF("[%sHorion%s] %sScript returned: %s%S", GOLD, WHITE, GREEN, GRAY, scriptMgr.runScript(wstr).c_str());
 	return true;
 }
