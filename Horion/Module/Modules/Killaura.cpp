@@ -21,15 +21,15 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 	registerEnumSetting("Priority", &priority, 0);
 	/*registerFloatSetting("Max Range", &maxRange, maxRange, 1.5f, 10.f);
 	registerFloatSetting("Min Range", &minRange, minRange, 1.5f, 10.f);*/
-	registerFloatSetting("Range", &range, range, 3.f, 10.f);
+	registerFloatSetting("Attack Range", &range, range, 3.f, 10.f);
 	registerFloatSetting("Swing Range", &swingRange, swingRange, 3.f, 15.f);
 	registerFloatSetting("FOV", &FOV, FOV, 15.f, 360.f);
 	registerIntSetting("Max CPS", &maxCPS, maxCPS, 1, 20);
 	registerIntSetting("Min CPS", &minCPS, minCPS, 1, 20);
 	registerFloatSetting("Switch Delay", &switchDelay, switchDelay, 1.f, 1000.f);
-	registerFloatSetting("Yaw Offset", &yawOffset, yawOffset, -10.f, 10.f);
-	registerFloatSetting("Pitch Offset", &pitchOffset, pitchOffset, -10.f, 10.f);
-	registerFloatSetting("Rotation Speed", &rotationSpeed, rotationSpeed, 1.f, 100.f);
+	registerFloatSetting("Rotation Speed", &rotationSpeed, rotationSpeed, 10.f, 180.f);
+	registerBoolSetting("RandomPitch", &randomPitch, randomPitch);
+	registerBoolSetting("RandomYaw", &randomYaw, randomYaw);
 	registerBoolSetting("Mob Aura", &isMobAura, isMobAura);
 	registerBoolSetting("ThroughBlock", &throughBlock, throughBlock);
 	registerBoolSetting("AutoDisable", &autoDisable, autoDisable);
@@ -209,7 +209,7 @@ struct Health {
 
 struct Armor {
 	bool operator()(C_Entity* target, C_Entity* target2) {
-		float armorValue, armorValue2;
+		float armorValue = 0.f, armorValue2 = 0.f;
 
 		for (int i = 0; i < 4; i++) {
 			C_ItemStack* stack = target->getArmor(i);
@@ -273,7 +273,7 @@ struct Threaten {
 	}
 };
 */
-void Killaura::onGetPickRange() {
+void Killaura::onTick(C_GameMode* gm) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 
 	static auto scaffoldMod = moduleMgr->getModule<Scaffold>();
@@ -283,7 +283,7 @@ void Killaura::onGetPickRange() {
 	if (localPlayer == nullptr || !localPlayer->isAlive())
 		return;
 
-	if (autoDisable && (isDigging || scaffoldMod->isEnabled() || towerMod->isEnabled() || breakerMod->isEnabled()))
+	if (autoDisable && (isDigging || scaffoldMod->isEnabled() || towerMod->isEnabled() || (breakerMod->isEnabled() && !breakerMod->blockList.empty())))
 		return;
 
 	//static bool swing = !moduleMgr->getModule<NoSwing>()->isEnabled();
@@ -293,8 +293,6 @@ void Killaura::onGetPickRange() {
 
 	g_Data.forEachValidEntity(findEntity);
 
-	static TimerUtil rottime;
-	
 	targetListEmpty = targetList.empty();
 
 	if (!targetList.empty()) {
@@ -326,14 +324,30 @@ void Killaura::onGetPickRange() {
 
 		if (rotations.selected != 0) {
 			vec3_t centrePos = {
-			targetList[switchTarget]->getPos()->x,
-			targetList[switchTarget]->aabb.lower.y + targetList[switchTarget]->height / 2,
-			targetList[switchTarget]->getPos()->z
+		targetList[switchTarget]->getPos()->x,
+		targetList[switchTarget]->aabb.lower.y + targetList[switchTarget]->height / 2,
+		targetList[switchTarget]->getPos()->z
 			};
+			vec3_t upperPos = targetList[switchTarget]->aabb.upper;
+			vec3_t lowerPos = targetList[switchTarget]->aabb.lower;
 
-			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(centrePos);
+			angle = localPlayer->getPos()->CalcAngle(centrePos);
 
-			if (pitchOffset > 0) {
+			if (randomPitch) {
+				float upperPitch = localPlayer->getPos()->CalcAngle(upperPos).x;
+				float lowerPitch = localPlayer->getPos()->CalcAngle(lowerPos).x;
+				angle.x = randomFloat(upperPitch, lowerPitch);
+				//clientMessageF("RandomPitch :%f", angle.x);
+			}
+
+			if (randomYaw) {
+				float upperYaw = localPlayer->getPos()->CalcAngle(upperPos).y;
+				float lowerYaw = localPlayer->getPos()->CalcAngle(lowerPos).y;
+				angle.y = randomFloat(upperYaw, lowerYaw);
+				//clientMessageF("RandomYaw :%f", angle.y);
+			}
+
+			/*if (pitchOffset > 0) {
 				angle.x += randomFloat(pitchOffset, 0.f);
 			}
 			else if (pitchOffset < 0) {
@@ -345,8 +359,11 @@ void Killaura::onGetPickRange() {
 			}
 			else if (yawOffset < 0) {
 				angle.x += randomFloat(0.f, yawOffset);
-			}
-			
+			}*/
+
+			//currentAngle = localPlayer->viewAngles;
+
+			/*
 			if (rotationSpeed <100.f){
 			auto turn = angle.sub(lastrotangle).normAngles();
 			//turn.x = -turn.x;
@@ -360,26 +377,11 @@ void Killaura::onGetPickRange() {
 				turn.div(abs(turn.y));
 			angle = lastrotangle.add(turn);
 			lastrotangle = angle;
+			}*/
+
+			if (rotations.selected == 2) {
+				localPlayer->setRot(angle);
 			}
-			//angle.x += Killaura::randomFloat(0.f, pitchOffset);
-			//angle.y += Killaura::randomFloat(0.f, yawOffset);
-		}
-		/*
-		vec2_t angleUpper = g_Data.getLocalPlayer()->getPos()->CalcAngle(targetList[switchTarget]->aabb.upper);
-		vec2_t angleLower = g_Data.getLocalPlayer()->getPos()->CalcAngle(targetList[switchTarget]->aabb.lower);
-
-		if (angle.x > angleLower.x) {
-			angle.x = angleLower.x;
-			clientMessageF(u8"Pitch超出Lower 值：%f", angle.x);
-		}
-		else if (angle.x < angleUpper.x) {
-			angle.x = angleUpper.x;
-			clientMessageF(u8"Pitch超出Upper 值：%f", angle.x);
-		} //防止Pitch超出Hitbox
-		*/
-
-		if (rotations.selected == 2) {
-			localPlayer->setRot(angle);
 		}
 
 		if (minCPS > maxCPS)
@@ -450,7 +452,7 @@ void Killaura::onGetPickRange() {
 
 void Killaura::onPlayerTick(C_Player* player) {
 	if (rotations.selected == 1) {
-		if (!targetList.empty() || canlastrot) {
+		if (!targetList.empty()) {
 			player->pitch = angle.x;
 			player->bodyYaw = angle.y;
 			player->yawUnused1 = angle.y;
@@ -459,30 +461,17 @@ void Killaura::onPlayerTick(C_Player* player) {
 }
 
 void Killaura::onEnable() {
-	if (g_Data.getLocalPlayer() == nullptr)
+	if (auto localPlayer = g_Data.getLocalPlayer(); localPlayer == nullptr)
 		setEnabled(false);
 
 	switchTime.resetTime();
 	attackTime.resetTime();
 	//计时器初始化
-
-	/*
-	if (g_Data.getRakNetInstance() != nullptr) {
-		if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
-			clientMessageF(u8"检测到您位于EaseCation测试服，已为您自动开启绕过CPS检测 ");
-		}
-	}
-	*/
-	if (auto localPlayer = g_Data.getLocalPlayer(); localPlayer == nullptr)
-		setEnabled(false);
-	else
-		lastrotangle = localPlayer->viewAngles;
-	canlastrot = false;
 }
 
 void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (rotations.selected == 1) {
-		if (!targetList.empty() || canlastrot) {
+		if (!targetList.empty()) {
 			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
 				auto* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
 				movePacket->pitch = angle.x;
@@ -497,22 +486,10 @@ void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 			}*/
 		}
 	}
-
-	/*
-	if (strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "ntest.easecation.net") == 0) {
-		if (packet->isInstanceOf<LevelSoundEventPacket>()) {
-			LevelSoundEventPacket* soundEventPacket = reinterpret_cast<LevelSoundEventPacket*>(packet);
-			if (soundEventPacket->sound == 43 || soundEventPacket->sound == 42) //sound 42是空挥手时的数值 也会被计算进CPS 但是攻击的时候不发那个包
-				//soundEventPacket->sound = 0;
-				cancelSend = true;
-		} //绕过EaseCation服务器CPS检测
-	}
-	*/
 }
 
 void Killaura::onDisable() {
 	targetList.clear();
 	lastTarget = nullptr;
 	switchTarget = 0;
-	canlastrot = false;
 }

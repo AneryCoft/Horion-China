@@ -44,7 +44,7 @@ public:
 	float yaw;
 	vec3_t pos;       //0x0030
 	float yawUnused;  //0x0038
-	vec3_t velocity;
+	vec2_t velocity;
 	float InputAD;  // 1 for A, -1 for D, multiply by sqrt(2)/2 if mixed with InputWS
 	float InputWS;  // 1 for W, -1 for S, multiply by sqrt(2)/2 if mixed with InputAD
 	uint8_t epicpad[12];

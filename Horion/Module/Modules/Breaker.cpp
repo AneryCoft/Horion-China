@@ -1,21 +1,20 @@
 #include "Breaker.h"
-#include "../../../Memory/Hooks.h"
 
 Breaker::Breaker() : IModule(VK_NUMPAD9, Category::WORLD, "Destroys certain blocks around you.") {
 	registerIntSetting("Range", &range, range, 3, 10);
 	registerIntSetting("Delay", &delay, delay, 0, 20);
-	this->registerFloatSetting("lineWidth", &this->thick, this->thick, 0.1f, 0.8f);
-	registerBoolSetting("TargetESP", &this->targetEsp, this->targetEsp);
-	registerBoolSetting("Rotations", &this->rotations, this->rotations);
+	registerFloatSetting("lineWidth", &thick, thick, 0.1f, 0.8f);
+	registerBoolSetting("TargetESP", &targetEsp, targetEsp);
+	registerBoolSetting("Rotations", &rotations, rotations);
 	registerBoolSetting("Beds", &beds, beds);
 	registerBoolSetting("Eggs", &eggs, eggs);
 	registerBoolSetting("Cakes", &cakes, cakes);
 	registerBoolSetting("Chests", &chests, chests);
 	registerBoolSetting("Barrels", &barrels, barrels);
 	registerBoolSetting("RedStone", &redStone, redStone);
-	registerBoolSetting("Treasures", &this->treasures, this->treasures);       //用于The Hive的Treasure Wars
-	registerBoolSetting("Bed Item", &this->lifeboatBeds, this->lifeboatBeds);  //Lifeboat的实体床
-	registerBoolSetting("Core", &this->core, this->core);                      //用于Galaxite的Core Wars
+	registerBoolSetting("Treasures", &treasures, treasures);       //用于The Hive的Treasure Wars
+	registerBoolSetting("Bed Item", &lifeboatBeds, lifeboatBeds);  //Lifeboat的实体床
+	registerBoolSetting("Core", &core, core);                      //用于Galaxite的Core Wars
 }
 
 Breaker::~Breaker() {
@@ -61,7 +60,6 @@ void Breaker::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	}
 }
 
-static std::vector<vec3_ti> blockList;
 void Breaker::onTick(C_GameMode* gm) {
 	if (std::time(nullptr) < g_Hooks.connecttime + 1)
 		return;
@@ -150,8 +148,7 @@ void Breaker::onTick(C_GameMode* gm) {
 			}
 
 			if (eat) {
-				bool idk = true;
-				gm->buildBlock(&blockList[0], 0, idk);
+				gm->buildBlock(&blockList[0], 0, true);
 			}
 		}
 

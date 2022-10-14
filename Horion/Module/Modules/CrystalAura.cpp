@@ -94,8 +94,7 @@ void CrystalAura::placeCrystal(C_GameMode* gm, vec3_t* pos) {
 							} //寻找距离目标最近的位置
 						}
 						else {
-							bool idk = true;
-							gm->buildBlock(&blockPos, 0, idk);
+							gm->buildBlock(&blockPos, 0, true);
 						}
 					}
 				}
@@ -104,8 +103,7 @@ void CrystalAura::placeCrystal(C_GameMode* gm, vec3_t* pos) {
 	}
 
 	if (mode.selected == 0 && hasBestPos) {
-		bool idk = true;
-		gm->buildBlock(&bestPos, 0, idk);
+		gm->buildBlock(&bestPos, 0, true);
 	}
 } //放置末地水晶
 

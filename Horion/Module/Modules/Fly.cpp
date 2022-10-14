@@ -17,7 +17,7 @@ Fly::Fly() : IModule('F', Category::MOVEMENT, "Fly to the sky") {
 	registerFloatSetting("Timer", &timer, timer, 20.f, 100.f);
 	registerBoolSetting("Ground Spoof", &groundSpoof, groundSpoof);
 	registerBoolSetting("Elytra Spoof", &elytraSpoof, elytraSpoof);
-	registerBoolSetting("Damage", &damage, damage);
+	//registerBoolSetting("Damage", &damage, damage);
 }
 
 Fly::~Fly() {
@@ -28,12 +28,14 @@ const char* Fly::getModuleName() {
 }
 
 void Fly::onEnable() {
-	if (damage) {
+	if (g_Data.getLocalPlayer() == nullptr)
+		return;
+	/*if (damage) {
 		C_MovePlayerPacket packet;
 		packet.onGround = false;
 		packet.Position = g_Data.getLocalPlayer()->getPos()->add(0.f, 4.f, 0.f);
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
-	}
+	}*/
 	switch (mode.selected) {
 	case 1:
 		g_Data.getLocalPlayer()->setPos((*g_Data.getLocalPlayer()->getPos()).add(vec3_t(0, 1, 0)));
@@ -45,11 +47,33 @@ void Fly::onEnable() {
 			g_Data.getLocalPlayer()->jumpFromGround();
 			*/
 	}
-	if (elytraSpoof && g_Data.getLocalPlayer() != nullptr) {
+	if (elytraSpoof) {
 		C_PlayerActionPacket actionPacket;
 		actionPacket.action = 15;  //开启鞘翅
 		actionPacket.entityRuntimeId = g_Data.getLocalPlayer()->entityRuntimeId;
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&actionPacket);
+	}
+}
+
+void Fly::onDisable() {
+	if (g_Data.getLocalPlayer() == nullptr)
+		return;
+
+	gameTick = 0;
+
+	g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
+
+	switch (mode.selected) {
+	case 0:
+		if (g_Data.getLocalPlayer()->gamemode != 1)
+			g_Data.getLocalPlayer()->canFly = false;
+		break;
+	case 5:
+		g_Data.getLocalPlayer()->aabb.upper.y = g_Data.getLocalPlayer()->aabb.lower.y + 1.8f;
+	case 6:
+	case 7:
+		g_Data.getLocalPlayer()->velocity = vec3_t(0.f, 0.f, 0.f);
+		break;
 	}
 }
 
@@ -105,11 +129,7 @@ void Fly::onTick(C_GameMode* gm) {
 	} break;
 	case 5:
 		gm->player->aabb.upper.y = gm->player->aabb.lower.y - 1.8f;
-	case 7: {
-		C_MovePlayerPacket packet(localPlayer, *localPlayer->getPos());
-		packet.onGround = false;
-		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
-	}
+	case 7:
 	case 4:
 	case 1:
 		gm->player->velocity = vec3_t(0.f, 0.f, 0.f);
@@ -147,28 +167,6 @@ void Fly::onTick(C_GameMode* gm) {
 	}
 }
 
-void Fly::onDisable() {
-	if (g_Data.getLocalPlayer() == nullptr)
-		return;
-
-	gameTick = 0;
-
-	g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
-
-	switch (mode.selected) {
-	case 0:
-		if (g_Data.getLocalPlayer()->gamemode != 1)
-			g_Data.getLocalPlayer()->canFly = false;
-		break;
-	case 5:
-		g_Data.getLocalPlayer()->aabb.upper.y = g_Data.getLocalPlayer()->aabb.lower.y + 1.8f;
-	case 6:
-	case 7:
-		g_Data.getLocalPlayer()->velocity.x = 0.f;
-		g_Data.getLocalPlayer()->velocity.z = 0.f;
-		break;
-	}
-}
 /*
 float hiveSpeedArray[15] = {
 0.630000,
@@ -269,41 +267,41 @@ void Fly::onMove(C_MoveInputHandler* input) {
 		vec3_t moveVec;
 		float calcYaw = (localPlayer->yaw + 90) * (PI / 180);
 		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
-		bool pressed = moveVec2d.magnitude() > 0.01f;
+		//bool pressed = moveVec2d.magnitude() > 0.01f;
 		float c = cos(calcYaw);
 		float s = sin(calcYaw);
 		moveVec2d = { moveVec2d.x * c - moveVec2d.y * s, moveVec2d.x * s + moveVec2d.y * c };
 
 		g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
 
-		if (localPlayer->onGround && pressed)
+		if (localPlayer->onGround)
 			localPlayer->jumpFromGround();
 
 		if (input->isJumping) {
 			//g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
-			localPlayer->velocity.y += verticalSpeed;
+			moveVec.y = localPlayer->velocity.y + verticalSpeed;
 			localPlayer->fallDistance = 0.f;
 		}
 		if (input->isSneakDown) {
 			//g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
-			localPlayer->velocity.y -= verticalSpeed;
+			moveVec.y = localPlayer->velocity.y - verticalSpeed;
 			localPlayer->fallDistance = 0.f;
 		}
 
 		if (gameTick == 3) {
 			moveVec.x = moveVec2d.x * horizontalSpeed;
-			moveVec.y = localPlayer->velocity.y;
+			//moveVec.y = localPlayer->velocity.y;
 			moveVec.z = moveVec2d.y * horizontalSpeed;
 			gameTick = 0;
 		}
 		else {
 			g_Data.getClientInstance()->minecraft->setTimerSpeed(50.f);
 			moveVec.x = moveVec2d.x * 0.1;
-			moveVec.y = localPlayer->velocity.y;
+			moveVec.y = 0.01f;
 			moveVec.z = moveVec2d.y * 0.1;
 		}
 
-		if (pressed)
+		//if (pressed)
 			localPlayer->lerpMotion(moveVec);
 	}
 	}

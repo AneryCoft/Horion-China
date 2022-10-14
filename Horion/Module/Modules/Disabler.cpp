@@ -3,7 +3,9 @@
 Disabler::Disabler() : IModule(0, Category::MISC, "Makes some Anti-Cheats unworkable") {
 	mode = SettingEnum(this)
 		.addEntry(EnumEntry("Velocity Spoof", 0))
-		.addEntry(EnumEntry("0 CPS", 1));
+		.addEntry(EnumEntry("0 CPS", 1))
+		.addEntry(EnumEntry("Mineplex", 2))
+		.addEntry(EnumEntry("CubeCraft", 3));
 	registerEnumSetting("Mode", &mode, 0);
 }
 
@@ -14,11 +16,29 @@ const char* Disabler::getModuleName() {
 	return ("Disabler");
 }
 
+void Disabler::onTick(C_GameMode* gm) {
+	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
+	vec3_t* localPlayerPos = localPlayer->getPos();
+
+	if (mode.selected == 2) {
+		C_MovePlayerPacket movePacket;
+
+		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
+	}
+	else if (mode.selected == 3) {
+		if (localPlayer->velocity.magnitude() > 0.1f) {
+			C_MovePlayerPacket movePacket(localPlayer, *localPlayerPos);
+			movePacket.onGround = false;
+			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
+		}
+	}
+}
+
 void Disabler::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (mode.selected == 0) {
 		if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 			PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-			authInputPacket->velocity = vec3_t(0.f, 0.f, 0.f);
+			authInputPacket->velocity = vec2_t(0.f, 0.f);
 		}
 	}
 	else if (mode.selected == 1) {

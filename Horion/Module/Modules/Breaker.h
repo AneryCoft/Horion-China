@@ -37,6 +37,8 @@ private:
 	int delay = 0;
 
 public:
+	std::vector<vec3_ti> blockList;
+
 	Breaker();
 	~Breaker();
 

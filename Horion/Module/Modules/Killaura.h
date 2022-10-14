@@ -6,7 +6,6 @@
 #include "../../../Utils/TimerUtil.h"
 #include "../../../SDK/CAttribute.h"
 #include "../../../Memory/Hooks.h"
-#include <random>
 
 class Killaura : public IModule
 {
@@ -19,8 +18,6 @@ private:
 	int CPS;
 	float switchDelay = 500.f;
 	int switchTarget = 0;
-	float yawOffset = 0.f;
-	float pitchOffset = 0.f;
 	TimerUtil attackTime;
 	TimerUtil switchTime;
 	float FOV = 360.f;
@@ -30,9 +27,9 @@ private:
 	//static float randomFloat(float min, float max);
 	bool autoDisable = false;
 	C_Entity* lastTarget = nullptr;
-	float rotspeed = 100.f;
-	vec2_t lastrotangle;
-	bool canlastrot;
+	float rotationSpeed = 180.f;
+	bool randomPitch = false;
+	bool randomYaw = false;
 public:
 	//bool rotations = false;
 	bool targetListEmpty = false;
@@ -52,10 +49,10 @@ public:
 
 	// Inherited via IModule
 	virtual const char* getModuleName() override;
-	//virtual void onTick(C_GameMode* gm) override;
+	virtual void onTick(C_GameMode* gm) override;
 	virtual void onEnable() override;
 	virtual void onSendPacket(C_Packet* packet, bool& cancelSend) override;
-	virtual void onGetPickRange() override;
+	//virtual void onGetPickRange() override;
 	virtual void onPlayerTick(C_Player* player) override;
 	virtual void onDisable() override;
 };
