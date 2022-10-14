@@ -5,6 +5,9 @@
 class NoFall : public IModule {
 private:
 	float distanceToGround();
+	bool selectWaterBucket();
+	vec3_ti blockPos;
+	int prevSlot;
 public:
 	SettingEnum mode;
 
