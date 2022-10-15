@@ -25,7 +25,22 @@ void Swing::onTick(C_GameMode* gm) {
 	isAttacking = g_Data.isLeftClickDown();
 
 	if (mode.selected == 2) {
-		if (hotbarStack->item != nullptr && (*hotbarStack->item)->isFood() && (*hotbarStack->item)->itemId != 426 && (*hotbarStack->item)->itemId != 561/*ҩˮ*/) {
+		if (hotbarStack->item != nullptr && (
+			(*hotbarStack->item)->isFood() ||
+			(*hotbarStack->item)->itemId == 426 || //药水
+			(*hotbarStack->item)->itemId == 561 || //喷溅药水
+			(*hotbarStack->item)->itemId == 562 || //滞留药水
+			(*hotbarStack->item)->itemId == 360 ||
+			(*hotbarStack->item)->itemId == 361 ||
+			(*hotbarStack->item)->itemId == 362 ||
+			(*hotbarStack->item)->itemId == 363 ||
+			(*hotbarStack->item)->itemId == 364 ||
+			(*hotbarStack->item)->itemId == 365 ||
+			(*hotbarStack->item)->itemId == 366 ||
+			(*hotbarStack->item)->itemId == 367 ||
+			(*hotbarStack->item)->itemId == 368 ||
+			(*hotbarStack->item)->itemId == 369 //各种桶
+			)) {
 			Utils::patchBytes((unsigned char*)((uintptr_t)SmoothSwing), (unsigned char*)"\x0F\x84\x95\x02\x00\x00", 6);
 		}
 		else {
