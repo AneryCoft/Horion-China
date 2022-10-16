@@ -36,7 +36,7 @@ void AntiVoid::onTick(C_GameMode* gm) {
 
 	vec3_t* playerPos = player->getPos();
 
-	vec3_t blockBelow = playerPos->add(0.f,-3.f,0.f);
+	vec3_t blockBelow = playerPos->add(0.f,-2.8f,0.f);
 
 	//	if (((player->region->getBlock(blockBelow)->blockLegacy))->blockId != 0 && ((player->region->getBlock(blockBelow)->blockLegacy))->material->isSolid) {
 	//if (player->velocity.y == 0.f) {

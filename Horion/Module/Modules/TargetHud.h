@@ -7,11 +7,6 @@
 
 class TargetHud : public IModule {
 private:
-	bool displayPosition = true;
-	bool displayDistance = true;
-	bool displayHealth = true;
-	bool displayArmorValue = true;
-
 	bool attacked = false;
 	C_Entity* target = nullptr;
 	TimerUtil renderTime;

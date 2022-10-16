@@ -1,10 +1,10 @@
 #include "TargetHud.h"
 
 TargetHud::TargetHud() : IModule(0, Category::VISUAL, "Displays some information about the target") {
-	registerBoolSetting("Position", &displayPosition, displayPosition);
-	registerBoolSetting("Distance", &displayDistance, displayDistance);
-	registerBoolSetting("Health", &displayHealth, displayHealth);
-	registerBoolSetting("ArmorValue", &displayArmorValue, displayArmorValue);
+	//registerBoolSetting("Position", &displayPosition, displayPosition);
+	//registerBoolSetting("Distance", &displayDistance, displayDistance);
+	//registerBoolSetting("Health", &displayHealth, displayHealth);
+	//registerBoolSetting("ArmorValue", &displayArmorValue, displayArmorValue);
 }
 
 TargetHud::~TargetHud() {
@@ -35,7 +35,7 @@ void TargetHud::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 		}
 	}
 
-	if (target != nullptr && target->isEntityExist()) {
+	if (target != nullptr && Target::isValidTarget(target)) {
 		std::string name = target->getNameTag()->getText();
 		name = std::regex_replace(name,std::regex("\n"), " "); //将换行改为空格
 		std::string nameStr = "Name : " + name + "\n"; //名字
@@ -51,7 +51,10 @@ void TargetHud::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 		sprintf_s(str, 16, "%.1f", distance);
 		std::string disStr = "Distance : " + std::string(str) + "\n"; //距离
 
-		float maxHealth, currentHealth;
+		float maxHealth = target->getAttribute(&HealthAttribute())->maximumValue;
+		float currentHealth = target->getAttribute(&HealthAttribute())->currentValue;
+
+		/*float maxHealth, currentHealth;
 		static auto healthattr = HealthAttribute();
 		bool canreturn = false;
 		[this, &maxHealth, &currentHealth, &canreturn] {
@@ -65,7 +68,7 @@ void TargetHud::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 			}
 		}();
 		if (canreturn)
-			return;
+			return;*/
 		
 		std::string healthStr = "Health : "
 			+ std::to_string((int)currentHealth) +
