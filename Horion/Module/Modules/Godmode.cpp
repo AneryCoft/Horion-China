@@ -12,6 +12,7 @@ const char* Godmode::getModuleName() {
 
 void Godmode::onTick(C_GameMode* gm) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
+	if(localPlayer == nullptr) return;
 	vec3_t localPlayerPos = *localPlayer->getPos();
 	float posY = localPlayerPos.y + 0.8f;
 
