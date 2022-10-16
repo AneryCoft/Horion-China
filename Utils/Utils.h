@@ -14,6 +14,8 @@
 #include <array>
 #include <string>
 #include <future>
+#include <windows.h>
+#include <Psapi.h>
 //#include "xorstr.h"
 
 static const char* const KeyNames[] = {
