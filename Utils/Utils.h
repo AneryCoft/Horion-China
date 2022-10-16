@@ -641,4 +641,15 @@ public:
 
 		return 0;
 	}
+	
+	static void makeRoamingFoldr(std::string file) {
+		using std::operator""s;
+		std::string path = getenv("APPDATA") + "\\..\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\RoamingState\\"s + std::string(file);
+		// Creating File
+		//mkdir(path.c_str());
+		if (_mkdir(path.c_str()) == -1)
+			return;
+		else
+			return;
+	}
 };
