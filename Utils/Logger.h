@@ -35,6 +35,7 @@ class Logger {
 public:
 	static bool isActive();
 	static std::wstring GetRoamingFolderPath();
+	static std::wstring GetRoamingFolderPathNew() ;
 	static void WriteLogFileF(volatile char* fmt, ...);
 	static void WriteBigLogFileF(size_t maxSize, const char* fmt, ...);
 	static void SendToConsoleF(const char* msg);
