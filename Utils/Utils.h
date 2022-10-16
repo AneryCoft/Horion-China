@@ -11,6 +11,9 @@
 #include <random>
 #include <vector>
 
+#include <array>
+#include <string>
+#include <future>
 //#include "xorstr.h"
 
 static const char* const KeyNames[] = {
@@ -222,9 +225,19 @@ static inline void ImSwap(T& a, T& b) {
 }
 
 #ifdef JM_XORSTR_HPP
-#define FindSignature(szSignature) Utils::FindSignatureModule("Minecraft.Windows.exe", xorstr_(szSignature))
+#define FindSignatureOld(szSignature) Utils::FindSignatureModule("Minecraft.Windows.exe", szSignature)
+
+#define FindSignature(x) Utils::FindSignatureModuleNew(Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x))
+
+#define FindSignatureAsync(x) std::async(std::launch::async | std::launch::deferred, Utils::FindSignatureModuleNew<Utils::StrToSignatureSize(x)>, Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x))
+
 #else
-#define FindSignature(szSignature) Utils::FindSignatureModule("Minecraft.Windows.exe", szSignature)
+#define FindSignatureOld(szSignature) Utils::FindSignatureModule("Minecraft.Windows.exe", szSignature)
+
+#define FindSignature(x) Utils::FindSignatureModuleNew(Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x))
+
+#define FindSignatureAsync(x) std::async(std::launch::async | std::launch::deferred, Utils::FindSignatureModuleNew<Utils::StrToSignatureSize(x)>, Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x))
+
 #endif
 
 struct vec3_ti;
@@ -477,4 +490,153 @@ public:
 	static std::string getRttiBaseClassName(void* ptr);
 	static void patchBytes(unsigned char* dst, unsigned char* src, unsigned int size);
 	static void nopBytes(unsigned char* dst, unsigned int size);
+	
+	_NODISCARD inline static constexpr size_t StrToSignatureSize(const _STD string_view szSignature) noexcept {
+		size_t size = 0;
+
+		constexpr auto check = [](uint8_t str) noexcept -> bool {
+			return (str >= 'a' && str <= 'z') || (str >= 'A' && str <= 'Z') || (str >= '0' && str <= '9');
+		};
+
+		size_t reset = 0;  // Erase '?' at the end
+
+		for (size_t i = 0; i < szSignature.length(); ++i) {
+			if (szSignature[i] == ' ')
+				continue;
+			else if (check(szSignature[i])) {
+				reset = 0;
+				++size;
+				if (i + 1 < szSignature.length() && check(szSignature[i + 1]))
+					++i;
+			}
+			else if (szSignature[i] == '?') {
+				++reset;
+				++size;
+				if (i + 1 < szSignature.length() && szSignature[i + 1] == '?')
+					++i;
+			}
+		}
+		return size - reset;
+	}
+
+	template <size_t Size>
+	_NODISCARD inline static constexpr _STD array<uint16_t, Size> StrToSignatureArray(const _STD string_view szSignature) noexcept {
+		_STD array<uint16_t, Size> signature_result{};
+
+		constexpr auto check = [](uint8_t str) noexcept -> bool {
+			return (str >= 'a' && str <= 'z') || (str >= 'A' && str <= 'Z') || (str >= '0' && str <= '9');
+		};
+
+		constexpr auto HexToOct = [](uint8_t str) noexcept -> uint8_t {
+			if (str >= 'a' && str <= 'z')
+				return str - 'a' + 10ui8;
+			else if (str >= 'A' && str <= 'Z')
+				return str - 'A' + 10ui8;
+			else if (str >= '0' && str <= '9')
+				return str - '0';
+			else
+				return 0ui8;
+		};
+
+		size_t s_i = 0;
+		for (size_t i = 0; i < szSignature.length() && s_i < Size; ++i) {
+			if (szSignature[i] == ' ')
+				continue;
+			else if (check(szSignature[i])) {
+				if (i + 1 < szSignature.length() && check(szSignature[i + 1])) {
+					signature_result[s_i++] = (HexToOct(szSignature[i]) << 4) | HexToOct(szSignature[i + 1]);
+					++i;
+				}
+				else
+					signature_result[s_i++] = HexToOct(szSignature[i]);
+			}
+			else if (szSignature[i] == '?') {
+				if (i + 1 < szSignature.length() && szSignature[i + 1] == '?')  // "??"
+					++i;
+				signature_result[s_i++] = 0xffffui16;
+			}
+		}
+
+		return signature_result;
+	}
+
+	template <size_t Size>
+	_NODISCARD inline static constexpr _STD array<size_t, 256> Pretreatment(const _STD array<uint16_t, Size> szSignature) noexcept {
+		_STD array<size_t, 256> result{};
+		size_t res_counter = 0;
+		for (size_t i = 0; i < Size; ++i) {
+			if (res_counter >= 256)
+				break;
+			if (const auto str = szSignature[i]; str != 0xffffui16 && result[str] == 0) {
+				++res_counter;
+				size_t fallbackSize = 1;
+				for (size_t f_i = Size; f_i > 0; --f_i)
+					if (szSignature[f_i - 1] == str)  // alignment
+						break;
+					else  // '?' or others
+						++fallbackSize;
+				result[str] = fallbackSize;
+			}
+		}
+		// '?' alignment
+		size_t anysign_counter = Size;
+		for (; anysign_counter > 0 && szSignature[anysign_counter - 1] != 0xffffui16; --anysign_counter)
+			if (szSignature[anysign_counter - 1] == 0xffffui16)
+				break;
+		if (anysign_counter != 0)
+			for (size_t i = 0; i < 256; ++i)
+				if (result[i] == 0 || result[i] > Size - anysign_counter + 1)
+					result[i] = Size - anysign_counter + 1;
+		return result;
+	}
+
+	template <size_t Size>
+	_NODISCARD static uintptr_t FindSignatureModuleNew(const _STD array<uint16_t, Size> szSignature) {  // Find the 'times' occurrence in memory
+
+
+		//======================
+		// GetModuleHandleA
+
+		static const auto rangeStart = (uintptr_t)GetModuleHandleA("Minecraft.Windows.exe");
+		static MODULEINFO miModInfo;
+		static bool init = false;
+		if (!init) {
+			init = true;
+			GetModuleInformation(GetCurrentProcess(), (HMODULE)rangeStart, &miModInfo, sizeof(MODULEINFO));
+		}
+		static const uintptr_t rangeEnd = rangeStart + miModInfo.SizeOfImage;
+		//======================
+
+		const auto Table = Pretreatment(szSignature);  // Pretreatment Table
+
+		size_t t = 0;
+		for (uintptr_t i = rangeStart; i < rangeEnd;) {
+			if (*reinterpret_cast<uint8_t*>(i) == szSignature.front()) {
+				size_t fallbackSize = 1;
+				for (size_t f_i = 1; f_i < Size && i + f_i <= rangeEnd; ++f_i) {
+					if (szSignature[f_i] == 0xffffui16 || *reinterpret_cast<uint8_t*>(i + f_i) == szSignature[f_i]) {
+						++fallbackSize;
+					}
+					else
+						break;
+				}
+				if (fallbackSize == Size)  // Match All
+					return i;
+			}
+			if (i + Size <= rangeEnd) {
+				if (const auto str = *reinterpret_cast<uint8_t*>(i + Size); Table[str] != 0) {  // Fallback
+					i += Table[str];
+				}
+				else {
+					i += Size + 1;  // alignment
+				}
+			}
+			else
+				return 0;
+		}
+
+		// thread
+
+		return 0;
+	}
 };
