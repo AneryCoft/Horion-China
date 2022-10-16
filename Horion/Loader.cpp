@@ -151,7 +151,7 @@ BOOL __stdcall DllMain(HMODULE hModule,
 	} break;
 	case DLL_PROCESS_DETACH:
 		isRunning = false;
-
+		Utils::makeRoamingFoldr("Horion-China");
 		scriptMgr.unloadAllScripts();
 		configMgr->saveConfig();
 		moduleMgr->disable();
