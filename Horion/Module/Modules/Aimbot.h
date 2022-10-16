@@ -14,6 +14,7 @@ private:
 	float verticalrange = 40.f;
 	float horizontalrange = 60.f;
 	bool lock = false;
+	std::vector<C_Entity*> targetList;
 
 public:
 	Aimbot();
