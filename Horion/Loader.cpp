@@ -1,5 +1,4 @@
 #include "Loader.h"
-#include "Config/AccountInformation.h"
 
 SlimUtils::SlimMem mem;
 const SlimUtils::SlimModule* gameModule;

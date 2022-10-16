@@ -211,7 +211,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include=".clang-format" />
     <None Include="packages.config" />
     <None Include="resources\coolroblox.json" />
     <None Include="resources\Steve.dat" />
@@ -222,8 +221,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="bitmap1.bmp" />
-    <Image Include="icon1.ico" />
     <Image Include="resources\cat.png" />
   </ItemGroup>
   <ItemGroup>
