@@ -70,7 +70,7 @@ void Logger::WriteLogFileF(volatile char* fmt, ...) {
 		EnterCriticalSection(&loggerLock);
 
 
-		std::wstring roam = GetRoamingFolderPath();
+		std::wstring roam = GetRoamingFolderPathNew();
 		sprintf_s(logPath, 200, "%S\\logs.txt", roam.c_str());
 
 		try {
