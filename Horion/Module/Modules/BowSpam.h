@@ -5,7 +5,7 @@
 class BowSpam : public IModule {
 private:
 	int tick = 0;
-	int delay = 0;
+	int delay = 4;
 public:
 	BowSpam();
 	~BowSpam();
