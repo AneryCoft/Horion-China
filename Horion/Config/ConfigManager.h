@@ -21,7 +21,7 @@ private:
 	std::wstring roamingFolder;
 	static std::wstring GetRoamingFolderPath();
 	json currentConfigObj;
-
+	static std::wstring GetRoamingFolderPathNew() ;
 public:
 	ConfigManager();
 	~ConfigManager();
