@@ -5,8 +5,8 @@ Aimbot::Aimbot() : IModule(0, Category::COMBAT, "Automatically aims at the neare
 	registerBoolSetting("Require Click", &click, click);
 	registerBoolSetting("Only Swords/Axes", &sword, sword);
 	registerBoolSetting("Vertical", &vertical, vertical);
-	registerFloatSetting("Horizontal Speed", &horizontalspeed, horizontalspeed, 10.f, 90.f);
-	registerFloatSetting("Vertical Speed", &verticalspeed, verticalspeed, 10.f, 90.f);
+	registerFloatSetting("Horizontal Speed", &horizontalspeed, horizontalspeed, 30.f, 100.f);
+	registerFloatSetting("Vertical Speed", &verticalspeed, verticalspeed, 30.f, 100.f);
 	registerFloatSetting("Horizontal Range", &horizontalrange, horizontalrange, 20.f, 180.f);
 	registerFloatSetting("Vertical Range", &verticalrange, verticalrange, 20.f, 180.f);
 	registerBoolSetting("Aimlock", &lock, lock);
@@ -28,24 +28,19 @@ struct CompareTargetEnArray {
 
 void Aimbot::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
-	if (localPlayer == nullptr)
-		return;
-	C_EntityList* entList = g_Data.getEntityList();
-	if (entList == nullptr)
-		return;
-	size_t listSize = entList->getListSize();
+	if (!localPlayer) return;
 
-	if (listSize > 1000) {
-		return;
-	}
+	std::vector<C_Entity*> allEntities;
+	g_Data.forEachEntity([&](C_Entity* e, bool) -> void {
+		allEntities.push_back(e);
+	});
 
 	vec3_t origin = g_Data.getClientInstance()->levelRenderer->getOrigin();
 
 	//Loop through all our players and retrieve their information
-	static std::vector<C_Entity*> targetList;
 	targetList.clear();
-	for (size_t i = 0; i < listSize; i++) {
-		C_Entity* currentEntity = entList->get(i);
+	for (size_t i = 0; i < allEntities.size(); i++) {
+		C_Entity* currentEntity = allEntities.at(i);
 
 		if (!Target::isValidTarget(currentEntity))
 			continue;
@@ -64,7 +59,7 @@ void Aimbot::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		if ((appl.x < verticalrange && appl.x > -verticalrange) && (appl.y < horizontalrange && appl.y > -horizontalrange) && GameData::canUseMoveKeys()) {
 			C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
 			C_ItemStack* item = supplies->inventory->getItemStack(supplies->selectedHotbarSlot);
-			if (sword && !item->isWeapon())
+			if (sword && !(item->getItem()->isWeapon()))
 				return;
 
 			if (click && !g_Data.isLeftClickDown())
