@@ -146,12 +146,12 @@ BOOL __stdcall DllMain(HMODULE hModule,
 					   LPVOID) {
 	switch (ul_reason_for_call) {
 	case DLL_PROCESS_ATTACH: {
+		Utils::makeRoamingFoldr("Horion-China");
 		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)start, hModule, NULL, NULL);
 		DisableThreadLibraryCalls(hModule);
 	} break;
 	case DLL_PROCESS_DETACH:
 		isRunning = false;
-		Utils::makeRoamingFoldr("Horion-China");
 		scriptMgr.unloadAllScripts();
 		configMgr->saveConfig();
 		moduleMgr->disable();
