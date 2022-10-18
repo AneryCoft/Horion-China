@@ -141,12 +141,20 @@ DWORD WINAPI start(LPVOID lpParam) {
 	ExitThread(0);
 }
 
+static void makeRoamingFoldr(std::string file) {
+	using std::operator""s;
+	std::string path = getenv("APPDATA") + "\\..\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\RoamingState\\"s + std::string(file);
+	// Creating File
+	//mkdir(path.c_str());
+	mkdir(path.c_str());
+}
+
 BOOL __stdcall DllMain(HMODULE hModule,
 					   DWORD ul_reason_for_call,
 					   LPVOID) {
 	switch (ul_reason_for_call) {
 	case DLL_PROCESS_ATTACH: {
-		Utils::makeRoamingFoldr("Horion-China");
+		makeRoamingFoldr("Horion-China");
 		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)start, hModule, NULL, NULL);
 		DisableThreadLibraryCalls(hModule);
 	} break;

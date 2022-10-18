@@ -30,14 +30,16 @@ std::wstring ConfigManager::GetRoamingFolderPath() {
 
 	uint32_t pathLength;
 	auto roamingPathCStr = roamingPathHString.GetRawBuffer(&pathLength);
-	return std::wstring(roamingPathCStr, pathLength);
+	return std::wstring(roamingPathCStr, pathLength) + L"\\Horion-China";
 }
+/*
 std::wstring ConfigManager::GetRoamingFolderPathNew() {
 	std::string roamingPathCStr = (getenv("AppData") + (std::string) "\\..\\Local\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\RoamingState\\Horion-China");
 	return Utils::stringToWstring(roamingPathCStr);
 }
+*/
 ConfigManager::ConfigManager() {
-	roamingFolder = GetRoamingFolderPathNew();
+	roamingFolder = GetRoamingFolderPath();
 }
 
 ConfigManager::~ConfigManager() {
