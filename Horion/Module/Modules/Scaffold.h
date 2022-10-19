@@ -35,5 +35,5 @@ public:
 	virtual void onSendPacket(C_Packet* packet, bool&) override;
 	virtual void onEnable() override;
 	virtual void onGetPickRange() override;
-	virtual void onPostRender(C_MinecraftUIRenderContext* renderCtx) override;
+	virtual void onPreRender(C_MinecraftUIRenderContext* renderCtx) override;
 };

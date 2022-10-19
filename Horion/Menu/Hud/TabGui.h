@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "../DrawUtils.h"
-#include "../Module/ModuleManager.h"
+#include "../../DrawUtils.h"
+#include "../../Module/ModuleManager.h"
 
 class TabGui {
 private:
@@ -12,6 +12,6 @@ private:
 
 public:
 	static void init();
-	static void render();
+	static void renderTabGui();
 	static void onKeyUpdate(int key, bool isDown);
 };

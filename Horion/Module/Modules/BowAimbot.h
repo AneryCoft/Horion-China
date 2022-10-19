@@ -13,7 +13,7 @@ public:
 	BowAimbot();
 	~BowAimbot();
 
-	virtual void onPostRender(C_MinecraftUIRenderContext* renderCtx) override;
+	virtual void onPreRender(C_MinecraftUIRenderContext* renderCtx) override;
 	virtual void onSendPacket(C_Packet* packet, bool& cancelSend) override;
 
 	// Inherited via IModule

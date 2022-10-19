@@ -1,7 +1,7 @@
 #include "TabGui.h"
 
 #include <Windows.h>
-#include "../Scripting/ScriptManager.h"
+#include "../../Scripting/ScriptManager.h"
 
 struct SelectedItemInformation {
 	int selectedItemId = 0;
@@ -59,7 +59,7 @@ void TabGui::renderLabel(const char* text, std::shared_ptr<IModule> mod) {
 
 void TabGui::renderLevel() {
 	static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-	auto hudModule = moduleMgr->getModule<HudModule>();
+	static auto hudModule = moduleMgr->getModule<HudModule>();
 
 	// Parameters
 	float textSize = hudModule->scale;
@@ -170,7 +170,7 @@ void TabGui::renderLevel() {
 		yOffset = selectedYOffset;
 		renderedLevel++;
 	};
-void TabGui::render() {
+void TabGui::renderTabGui() {
 	if (!moduleMgr->isInitialized())
 		return;
 	if (!GameData::canUseMoveKeys())

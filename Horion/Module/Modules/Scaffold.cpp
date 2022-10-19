@@ -420,7 +420,7 @@ void Scaffold::onSendPacket(C_Packet* packet, bool&) {
 	}
 }
 
-void Scaffold::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
+void Scaffold::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	if (g_Data.canUseMoveKeys()) {
 		if (showBlockCount) {
 			vec2_t windowSize = g_Data.getClientInstance()->getGuiData()->windowSize;

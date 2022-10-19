@@ -270,7 +270,10 @@
     <ClCompile Include="Horion\ImmediateGui.cpp" />
     <ClCompile Include="Horion\Loader.cpp" />
     <ClCompile Include="Horion\Menu\ClickGui.cpp" />
-    <ClCompile Include="Horion\Menu\TabGui.cpp" />
+    <ClCompile Include="Horion\Menu\Hud\ArrayList.cpp" />
+    <ClCompile Include="Horion\Menu\Hud\Notifications.cpp" />
+    <ClCompile Include="Horion\Menu\Hud\TabGui.cpp" />
+    <ClCompile Include="Horion\Menu\Hud\Watermark.cpp" />
     <ClCompile Include="Horion\Module\ModuleManager.cpp" />
     <ClCompile Include="Horion\Module\Modules\Aimbot.cpp" />
     <ClCompile Include="Horion\Module\Modules\AirJump.cpp" />
@@ -465,7 +468,10 @@
     <ClInclude Include="Horion\ImmediateGui.h" />
     <ClInclude Include="Horion\Loader.h" />
     <ClInclude Include="Horion\Menu\ClickGui.h" />
-    <ClInclude Include="Horion\Menu\TabGui.h" />
+    <ClInclude Include="Horion\Menu\Hud\ArrayList.h" />
+    <ClInclude Include="Horion\Menu\Hud\Notifications.h" />
+    <ClInclude Include="Horion\Menu\Hud\TabGui.h" />
+    <ClInclude Include="Horion\Menu\Hud\Watermark.h" />
     <ClInclude Include="Horion\Module\ModuleManager.h" />
     <ClInclude Include="Horion\Module\Modules\Aimbot.h" />
     <ClInclude Include="Horion\Module\Modules\AirJump.h" />

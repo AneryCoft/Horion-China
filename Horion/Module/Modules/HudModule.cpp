@@ -1,6 +1,9 @@
 #include "HudModule.h"
 #include "../../DrawUtils.h"
 #include "../../Scripting/ScriptManager.h"
+#include "../../Menu/Hud/TabGui.h"
+#include "../../Menu/Hud/ArrayList.h"
+#include "../../Menu/Hud/Watermark.h"
 
 HudModule::HudModule() : IModule(0, Category::CLIENT, "Displays things like the ArrayList/TabGUI.") {
 	registerBoolSetting("TabGui", &tabgui, tabgui);
@@ -285,5 +288,15 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			HudModule::drawLeftMouseKeystroke(vec2_t(10.f, windowSize.y - 25));
 			HudModule::drawRightMouseKeystroke(vec2_t(43.f, windowSize.y - 25));
 		}
+	}
+
+	if (tabgui) {
+		TabGui::renderTabGui();
+	}
+	if (arraylist) {
+		ArrayList::renderArrayList();
+	}
+	if (watermark) {
+		Watermark::renderWatermark();
 	}
 }

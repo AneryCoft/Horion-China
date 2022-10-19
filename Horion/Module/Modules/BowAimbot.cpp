@@ -36,7 +36,7 @@ void findTargets(C_Entity* currentEntity, bool isRegularEntitie) {
 	}
 }
 
-void BowAimbot::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
+void BowAimbot::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	targetList.clear();
 
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();

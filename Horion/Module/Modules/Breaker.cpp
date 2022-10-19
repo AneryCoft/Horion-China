@@ -24,7 +24,7 @@ const char* Breaker::getModuleName() {
 	return ("Breaker");
 }
 
-void Breaker::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
+void Breaker::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	if (g_Data.getLocalPlayer() == nullptr || !GameData::canUseMoveKeys())
 		return;
 
