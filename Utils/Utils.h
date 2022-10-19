@@ -593,52 +593,61 @@ public:
 	}
 
 	template <size_t Size>
-	_NODISCARD static uintptr_t FindSignatureModuleNew(const _STD array<uint16_t, Size> szSignature) {  // Find the 'times' occurrence in memory
-
-
+	_NODISCARD static uintptr_t FindSignatureModuleNew(const std::array<uint16_t, Size> szSignature) noexcept {  // Find the 'times' occurrence in memory
 		//======================
 		// GetModuleHandleA
-
 		static const auto rangeStart = (uintptr_t)GetModuleHandleA("Minecraft.Windows.exe");
 		static MODULEINFO miModInfo;
 		static bool init = false;
-		if (!init) {
+		if (!init) [[unlikely]] {
 			init = true;
 			GetModuleInformation(GetCurrentProcess(), (HMODULE)rangeStart, &miModInfo, sizeof(MODULEINFO));
 		}
 		static const uintptr_t rangeEnd = rangeStart + miModInfo.SizeOfImage;
 		//======================
 
-		const auto Table = Pretreatment(szSignature);  // Pretreatment Table
+		if (Size >= rangeEnd - rangeStart + 1) [[unlikely]]
+			return 0;
 
-		size_t t = 0;
-		for (uintptr_t i = rangeStart; i < rangeEnd;) {
+		const auto Table = Pretreatment<Size>(szSignature);  // Pretreatment Table
+
+		for (uintptr_t i = rangeStart; i <= rangeEnd;) {
+			size_t move_back_size = 0;
 			if (*reinterpret_cast<uint8_t*>(i) == szSignature.front()) {
 				size_t fallbackSize = 1;
-				for (size_t f_i = 1; f_i < Size && i + f_i <= rangeEnd; ++f_i) {
-					if (szSignature[f_i] == 0xffffui16 || *reinterpret_cast<uint8_t*>(i + f_i) == szSignature[f_i]) {
-						++fallbackSize;
-					}
-					else
+				uint8_t last_char = 0ui8;
+				for (; fallbackSize < Size && i + fallbackSize <= rangeEnd; ++fallbackSize) {
+					if (szSignature[fallbackSize] != 0xffffui16 && *reinterpret_cast<uint8_t*>(i + fallbackSize) != szSignature[fallbackSize]) {  // '?' or the same
+						last_char = szSignature[fallbackSize];
 						break;
+					}
 				}
-				if (fallbackSize == Size)  // Match All
+				if (fallbackSize == Size) [[unlikely]]  // Match All
 					return i;
-			}
-			if (i + Size <= rangeEnd) {
-				if (const auto str = *reinterpret_cast<uint8_t*>(i + Size); Table[str] != 0) {  // Fallback
-					i += Table[str];
+				else [[likely]] {  // KMP
+					for (uintptr_t i2 = i + fallbackSize + 1; i2 <= rangeEnd; ++i2) {
+						if (*reinterpret_cast<uint8_t*>(i2) == last_char) [[unlikely]] { // Find the closest character alignment
+							move_back_size = i2 - (i + fallbackSize);
+							break;
+						}
+						if (i2 == rangeEnd) [[unlikely]]
+							return 0;
+					}
 				}
-				else {
-					i += Size + 1;  // alignment
-				}
 			}
-			else
+			if (i + Size <= rangeEnd) [[likely]] { // Sunday
+				// The maximum number of displacements required for a char after the end of the comparison
+				if (const auto str = *reinterpret_cast<uint8_t*>(i + Size); Table[str] != 0) [[likely]] {  // Fallback
+					if (move_back_size < Table[str]) // Take maximum alignment
+						move_back_size = Table[str];
+				} else [[unlikely]] {
+					if (move_back_size < Size + 1) // Take maximum alignment
+						move_back_size = Size + 1;  
+				}
+			} else [[unlikely]]
 				return 0;
+			i += move_back_size;
 		}
-
-		// thread
-
 		return 0;
 	}
 	
