@@ -1,6 +1,7 @@
 #include "Scaffold.h"
 
 //#include "../../../Utils/Logger.h"
+static auto renderItemSign = FindSignatureAsync("10 48 8B 01 FF 50 28 48 8B F8 EB 07 48 8D 3D 1B 58 0C 03 48 8B 8B 60 01 00 00 48 8B 01 FF 90 C0 00 00 00 BA 01 00 00 00 48 8B 88 80 06 00 00 48 8B 01 FF 50 28 48 8B 8B 60 01");
 
 Scaffold::Scaffold() : IModule(VK_NUMPAD1, Category::WORLD, "Automatically build blocks beneath you.") {
 	mode = SettingEnum(this)
@@ -21,6 +22,8 @@ Scaffold::Scaffold() : IModule(VK_NUMPAD1, Category::WORLD, "Automatically build
 	registerBoolSetting("blockCount", &showBlockCount, showBlockCount);
 	//registerBoolSetting("Rotation", &this->rotation, this->rotation);
 	registerBoolSetting("Render", &render, render);
+	registerBoolSetting("Lock rendered item", &renderItemBefore, renderItemBefore);
+
 }
 
 Scaffold::~Scaffold() {
@@ -307,6 +310,10 @@ void Scaffold::onGetPickRange() {
 }
 
 void Scaffold::onDisable() {
+	if (renderItem != nullptr && *renderItem == 0x14ui8) {
+		*renderItem = 0x10ui8;
+		VirtualProtect(renderItem, sizeof(uint8_t), oldProtect, &oldProtect);
+	}
 	if (g_Data.getLocalPlayer() == nullptr)
 		return;
 
@@ -325,6 +332,16 @@ void Scaffold::onEnable() {
 	prevSlot = g_Data.getLocalPlayer()->getSupplies()->selectedHotbarSlot;
 
 	needRender = false;
+	
+	if (renderItem == nullptr) {
+		renderItem = reinterpret_cast<uint8_t*>(renderItemSign.get());
+	}
+	if (renderItem != nullptr && renderItemBefore) {
+		VirtualProtect(renderItem, sizeof(uint8_t), PAGE_EXECUTE_READWRITE, &oldProtect);
+		*renderItem = 0x14ui8;
+		auto supply = g_Data.getLocalPlayer()->getSupplies();
+		supply->render = supply->selectedHotbarSlot;
+	}
 }
 
 void Scaffold::onPlayerTick(C_Player* player) {
