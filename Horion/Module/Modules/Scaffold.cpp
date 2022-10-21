@@ -141,6 +141,8 @@ int Scaffold::calcCount() {
 void Scaffold::onGetPickRange() {
 	if (g_Data.getLocalPlayer() == nullptr)
 		return;
+	else if (renderItem != nullptr && renderItemBefore && *renderItem == 0x10ui8)
+		return;
 	/*if (!g_Data.canUseMoveKeys())
 		return;*/
 
@@ -342,6 +344,10 @@ void Scaffold::onEnable() {
 }
 
 void Scaffold::onPlayerTick(C_Player* player) {
+	if (g_Data.getLocalPlayer() == nullptr)
+		return;
+	else if (renderItem != nullptr && renderItemBefore && *renderItem == 0x10ui8)
+		return;
 	if (rotations.selected != 0 && needRender) {
 		switch (rotations.selected) {
 		case 1: {
