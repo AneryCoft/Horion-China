@@ -16,7 +16,9 @@ private:
 	vec3_t blockPos;
 	bool needRender = false;
 	vec2_t angle;
-
+	bool renderItemBefore = false;
+	uint8_t* renderItem = nullptr;
+	unsigned long oldProtect = 0;
 public:
 	SettingEnum mode;
 	SettingEnum rotations;
