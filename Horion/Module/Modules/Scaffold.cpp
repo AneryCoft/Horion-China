@@ -1,7 +1,7 @@
 #include "Scaffold.h"
 
 //#include "../../../Utils/Logger.h"
-static auto renderItemSign = FindSignatureAsync("10 48 8B 01 FF 50 28 48 8B F8 EB 07 48 8D 3D 1B 58 0C 03 48 8B 8B 60 01 00 00 48 8B 01 FF 90 C0 00 00 00 BA 01 00 00 00 48 8B 88 80 06 00 00 48 8B 01 FF 50 28 48 8B 8B 60 01");
+uint8_t* Scaffold::renderItem = reinterpret_cast<uint8_t*>(FindSignature("10 48 8B 01 FF 50 28 48 8B F8 EB 07 48 8D 3D 1B 58 0C 03 48 8B 8B 60 01 00 00 48 8B 01 FF 90 C0 00 00 00 BA 01 00 00 00 48 8B 88 80 06 00 00 48 8B 01 FF 50 28 48 8B 8B 60 01"));
 
 Scaffold::Scaffold() : IModule(VK_NUMPAD1, Category::WORLD, "Automatically build blocks beneath you.") {
 	mode = SettingEnum(this)
@@ -333,9 +333,6 @@ void Scaffold::onEnable() {
 
 	needRender = false;
 	
-	if (renderItem == nullptr) {
-		renderItem = reinterpret_cast<uint8_t*>(renderItemSign.get());
-	}
 	if (renderItem != nullptr && renderItemBefore) {
 		VirtualProtect(renderItem, sizeof(uint8_t), PAGE_EXECUTE_READWRITE, &oldProtect);
 		*renderItem = 0x14ui8;
