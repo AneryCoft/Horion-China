@@ -17,7 +17,7 @@ private:
 	bool needRender = false;
 	vec2_t angle;
 	bool renderItemBefore = false;
-	uint8_t* renderItem = nullptr;
+	static uint8_t* renderItem ;
 	unsigned long oldProtect = 0;
 public:
 	SettingEnum mode;
