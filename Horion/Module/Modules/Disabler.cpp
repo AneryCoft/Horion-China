@@ -3,9 +3,10 @@
 Disabler::Disabler() : IModule(0, Category::MISC, "Makes some Anti-Cheats unworkable") {
 	mode = SettingEnum(this)
 		.addEntry(EnumEntry("Velocity Spoof", 0))
-		.addEntry(EnumEntry("0 CPS", 1))
+		.addEntry(EnumEntry("CPS Cancel", 1))
 		.addEntry(EnumEntry("Mineplex", 2))
-		.addEntry(EnumEntry("CubeCraft", 3));
+		.addEntry(EnumEntry("CubeCraft", 3))
+		.addEntry(EnumEntry("The Hive", 4));
 	registerEnumSetting("Mode", &mode, 0);
 }
 
@@ -20,6 +21,12 @@ void Disabler::onTick(C_GameMode* gm) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	vec3_t* localPlayerPos = localPlayer->getPos();
 
+	if (localPlayer == nullptr) {
+		return;
+	}
+
+	++tick;
+
 	if (mode.selected == 2) {
 		C_MovePlayerPacket movePacket;
 
@@ -30,6 +37,11 @@ void Disabler::onTick(C_GameMode* gm) {
 			C_MovePlayerPacket movePacket(localPlayer, *localPlayerPos);
 			movePacket.onGround = false;
 			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
+		}
+	}
+	else if (mode.selected == 4) {
+		if(attackTime.hasTimedElapsed(1000.f / 7.f, true)) {
+			g_Data.getCGameMode()->attack(localPlayer);
 		}
 	}
 }

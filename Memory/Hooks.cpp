@@ -9,6 +9,7 @@
 #include <glm/trigonometric.hpp>  // radians
 #include <shared_mutex>
 #include "../SDK/Tag.h"
+#include "../../../Utils/TimerUtil.h"
 
 Hooks g_Hooks;
 bool isTicked = false;
@@ -510,15 +511,13 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 			disabledRcolors[3] = 1;
 		}
 
-		bool shouldPostRender = true;
-
 		if (clickGuiModule->isEnabled()) {
 			ClickGui::render();
-			shouldPostRender = false;
+		}
+		else {
+			moduleMgr->onPostRender(renderCtx);
 		}
 
-		if (shouldPostRender)
-			moduleMgr->onPostRender(renderCtx);
 		HImGui.endFrame();
 		DrawUtils::flush();
 
@@ -777,10 +776,12 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 	//static auto autoSneakMod = moduleMgr->getModule<AutoSneak>();
 	//static auto freecamMod = moduleMgr->getModule<Freecam>();
 	static auto blinkMod = moduleMgr->getModule<Blink>();
-	static auto noPacketMod = moduleMgr->getModule<NoPacket>();
+	//static auto noPacketMod = moduleMgr->getModule<NoPacket>();
+	static auto disablerMod = moduleMgr->getModule<Disabler>();
+	static TimerUtil sendTime;
 
-	if (noPacketMod->isEnabled() && g_Data.isInGame())
-		return;
+	/*if (noPacketMod->isEnabled() && g_Data.isInGame())
+		return;*/
 
 	if (blinkMod->isEnabled()) {
 		if (packet->isInstanceOf<C_MovePlayerPacket>()) {
@@ -814,6 +815,25 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 			return;
 		}
 	}
+
+	if (disablerMod->isEnabled() && (disablerMod->mode.selected == 3 || disablerMod->mode.selected == 4)) {
+		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
+			NetworkLatencyPacket* packets = reinterpret_cast<NetworkLatencyPacket*>(packet);
+			disablerMod->NetworkLatencyPacketHolder.push_back(new NetworkLatencyPacket(*packets));
+			return;
+		}
+		if (!disablerMod->NetworkLatencyPacketHolder.empty()) {
+			if (sendTime.hasTimedElapsed(800.f, true)) {
+				for (auto packet : disablerMod->NetworkLatencyPacketHolder) {
+					oFunc(a, (packet));
+					delete packet;
+					packet = nullptr;
+				}
+				disablerMod->NetworkLatencyPacketHolder.clear();
+			}
+		}
+	}
+
 
 	/*
 	if (autoSneakMod->isEnabled() && g_Data.getLocalPlayer() != nullptr && autoSneakMod->doSilent && packet->isInstanceOf<C_PlayerActionPacket>()) {
@@ -1604,12 +1624,12 @@ float Hooks::getDestroySpeed(C_Player* _this, C_Block& block) {
 
 void Hooks::setPos(C_Entity* ent, vec3_t& pos) {
 	auto func = g_Hooks.setPosHook->GetFastcall<void, C_Entity*, vec3_t&>();
-	static auto antiVoidmode = moduleMgr->getModule<AntiVoid>();
+	//static auto antiVoidmode = moduleMgr->getModule<AntiVoid>();
 
-	if (g_Data.getLocalPlayer() != nullptr && ent == g_Data.getLocalPlayer()) {
+	/*if (g_Data.getLocalPlayer() != nullptr && ent == g_Data.getLocalPlayer()) {
 		if (antiVoidmode->isEnabled() && antiVoidmode->mode.selected == 1 && antiVoidmode->lagBack) {
 			pos = antiVoidmode->savePos;
 		}
-	}
+	}*/
 	func(ent, pos);
 }

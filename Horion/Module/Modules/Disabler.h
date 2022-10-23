@@ -1,12 +1,18 @@
 #pragma once
 #include "Module.h"
+#include "../ModuleManager.h"
+#include "../../../Utils/TimerUtil.h"
 
 class Disabler : public IModule {
+private:
+	int tick = 0;
+	TimerUtil attackTime;
 public:
+	SettingEnum mode;
+	std::vector<NetworkLatencyPacket*> NetworkLatencyPacketHolder = {};
+
 	Disabler();
 	~Disabler();
-
-	SettingEnum mode;
 
 	// Inherited via IModule
 	virtual const char* getModuleName() override;
