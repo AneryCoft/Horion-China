@@ -30,7 +30,7 @@ bool isVoid() {
 	return true;
 } //该函数用于判断玩家脚下是否为虚空
 
-static std::vector<C_MovePlayerPacket> packetList;
+static std::vector<C_MovePlayerPacket> packetList = {};
 
 void AntiVoid::onTick(C_GameMode* gm) {
 	C_LocalPlayer* player = g_Data.getLocalPlayer();
@@ -54,10 +54,12 @@ void AntiVoid::onTick(C_GameMode* gm) {
 			player->setPos(savePos);
 		}
 		else if (mode.selected == 1) {
+			player->onGround = true;
 			for (int i = packetList.size() - 1; i > -1; i--) {
 				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packetList[i]);
 			}
 			player->setPos(savePos);
+			packetList.clear();
 		}
 		//else if (mode.selected == 2) {
 		//	player->tryTeleportTo(savePos.add(20.f), true, true, 1, 1); //利用服务器的拉回
