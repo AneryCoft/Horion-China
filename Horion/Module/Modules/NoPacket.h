@@ -11,4 +11,5 @@ public:
 	virtual const char* getModuleName() override;
 	bool allowAutoStart() override;
 	void onEnable() override;
+	virtual void onSendPacket(C_Packet* packet, bool& cancelSend) override;
 };

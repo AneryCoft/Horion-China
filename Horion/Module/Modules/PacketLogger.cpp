@@ -18,13 +18,13 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 		if (showAuth) {
 			auto packets = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-			g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s Pos(X=%f Y=%f Z=%f) pitch=%f yaw=%f yawUnused=%f velocity(x=%f y=%f z=%f)", packetName, packets->pos.x, packets->pos.y, packets->pos.z, packets->pitch, packets->yaw, packets->yawUnused, packets->velocity.x, packets->velocity.y, packets->velocity.z);
+			g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s Pos(X=%f Y=%f Z=%f) pitch=%f yaw=%f yawUnused=%f velocity(x=%f y=%f)", packetName, packets->pos.x, packets->pos.y, packets->pos.z, packets->pitch, packets->yaw, packets->yawUnused, packets->velocity.x, packets->velocity.y);
 		}
 		return;
 	}
 	if (packet->isInstanceOf<C_MovePlayerPacket>()) {
 		auto packets = reinterpret_cast<C_MovePlayerPacket*>(packet);
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s Pos(X=%f Y=%f Z=%f) onGround=%i pitch=%f yaw=%f headYaw=%f", packetName, packets->Position.x, packets->Position.y, packets->Position.z, (int)packets->onGround, packets->pitch, packets->yaw, packets->headYaw);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s Pos(X=%f Y=%f Z=%f) onGround=%i pitch=%f yaw=%f headYaw=%f mode=%i", packetName, packets->Position.x, packets->Position.y, packets->Position.z, (int)packets->onGround, packets->pitch, packets->yaw, packets->headYaw, packets->mode);
 		return;
 	}
 	if (packet->isInstanceOf<C_PlayerActionPacket>()) {

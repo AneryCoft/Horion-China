@@ -373,8 +373,6 @@ void IModule::onMove(C_MoveInputHandler*) {
 }
 void IModule::onLevelRender() {
 }
-//void IModule::onUpdate() {
-//}
 void IModule::clientMessageF(const char* fmt, ...) {
 	va_list arg;
 	va_start(arg, fmt);

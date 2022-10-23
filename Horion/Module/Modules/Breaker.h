@@ -2,6 +2,7 @@
 
 #include "Module.h"
 #include "../ModuleManager.h"
+#include "../../../SDK/CAttribute.h"
 
 class Breaker : public IModule {
 private:

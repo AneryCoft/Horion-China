@@ -171,7 +171,7 @@ void Breaker::onTick(C_GameMode* gm) {
 		//解决浮点数不精确的问题
 
 		if (g_Data.getLocalPlayer()->getPos()->dist(*ent->getPos()) <= range) {
-			if ((name.find("Treasure") != std::string::npos && treasures) ||
+			if ((ent->getEntityTypeId() == 256 && treasures) ||
 				(name.find("'s Bed") != std::string::npos && lifeboatBeds) ||
 				((ent->height > 1.24f && ent->height < 1.26f) && (ent->width > 0.3 && ent->width < 0.5))/* ||
 				(name.find("Core") != std::string::npos && core)*/) { //Core上面的字是另一个实体的

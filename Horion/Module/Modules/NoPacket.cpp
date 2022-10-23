@@ -16,3 +16,8 @@ void NoPacket::onEnable() {
 	if(!g_Data.isInGame())
 		setEnabled(false);
 }
+
+void NoPacket::onSendPacket(C_Packet* packet, bool& cancelSend) {
+	if (g_Data.isInGame())
+		cancelSend = true;
+}

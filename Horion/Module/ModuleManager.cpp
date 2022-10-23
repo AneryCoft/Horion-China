@@ -91,7 +91,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new Zoom()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Teams()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Nbt()));
-		//moduleList.push_back(std::shared_ptr<IModule>(new Godmode()));
+		moduleList.push_back(std::shared_ptr<IModule>(new Godmode()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Freelook()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoSneak()));
 		moduleList.push_back(std::shared_ptr<IModule>(new NoHurtcam()));
@@ -309,16 +309,5 @@ void ModuleManager::onGetPickRange() {
 			it->onGetPickRange();
 	}
 }
-/*
-void ModuleManager::onUpdate() {
-	if (!isInitialized())
-		return;
-	auto lock = lockModuleList();
-	for (auto& it : moduleList) {
-		auto look = std::shared_lock(it->iModuleLook);
-		if (it->isEnabled() || it->callWhenDisabled())
-			it->onUpdate();
-	}
-}
-*/
+
 ModuleManager* moduleMgr = new ModuleManager(&g_Data);

@@ -8,7 +8,7 @@ private:
 	float verticalSpeed = 0.5;
 	bool groundSpoof = false;
 	bool elytraSpoof = false;
-	bool damage = false;
+	//bool damage = false;
 	//int hiveSpeedIndex = 0;
 	//int hiveVelocity = 0;
 	//int enabledTick = 0;

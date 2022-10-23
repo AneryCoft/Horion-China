@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Module.h"
-#include "../ModuleManager.h"
+#include "../../../Utils/Target.h"
+#include "../../../Utils/TimerUtil.h"
 
 class TriggerBot : public IModule {
 private:
-	int delay = 0;
-	int Odelay = 0;
-	bool sword = true;
+	int CPS = 20;
+	TimerUtil CPSTime;
 
 public:
 	TriggerBot();

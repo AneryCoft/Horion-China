@@ -68,8 +68,9 @@ private:
 	char pad_0x0000[0x10];  //0x0000
 public:
 	int selectedHotbarSlot;  //0x0010
+	int render;
 private:
-	char pad_0x0014[0x9C];  //0x0014
+	char pad_0x0014[0x98];  //0x0014
 public:
 	C_Inventory* inventory;  //0x00B0
 };

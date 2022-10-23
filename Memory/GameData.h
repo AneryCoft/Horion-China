@@ -167,13 +167,13 @@ public:
 	inline auto getCustomTextureOverride() {
 		return std::make_tuple(customTextureActive, customTexture);
 	}
-	void sendPacketToInjector(HorionDataPacket horionDataPack);
+	/*void sendPacketToInjector(HorionDataPacket horionDataPack);
 	inline int addInjectorResponseCallback(std::function<void(std::shared_ptr<HorionDataPacket>)> callback) {
 		lastRequestId++;
 		injectorToHorionResponseCallbacks[lastRequestId] = callback;
 		return lastRequestId;
 	}
-	void callInjectorResponseCallback(int id, std::shared_ptr<HorionDataPacket> packet);
+	void callInjectorResponseCallback(int id, std::shared_ptr<HorionDataPacket> packet);*/
 	inline bool allowWIPFeatures() {
 #ifdef _DEBUG
 		return true;
@@ -182,7 +182,7 @@ public:
 #endif
 	}
 	inline void setAllowWIPFeatures(bool enable = false) { isAllowingWIPFeatures = enable; };
-	inline bool isInjectorConnectionActive() { return injectorConnectionActive; };
+	/*inline bool isInjectorConnectionActive() { return injectorConnectionActive; };
 	inline void setInjectorConnectionActive(bool isActive) {
 		if (injectorConnectionActive && !isActive) {
 			std::queue<HorionDataPacket> empty;
@@ -197,7 +197,7 @@ public:
 		HorionDataPacket pk = horionToInjectorQueue.front();
 		horionToInjectorQueue.pop();
 		return pk;
-	};
+	};*/
 	inline void* getDllModule() { return hDllInst; };
 	inline C_ClientInstance* getClientInstance() { return clientInstance; };
 	inline C_GuiData* getGuiData() { return clientInstance->getGuiData(); };

@@ -30,6 +30,9 @@ const char* Fly::getModuleName() {
 void Fly::onEnable() {
 	if (g_Data.getLocalPlayer() == nullptr)
 		return;
+
+	gameTick = 0;
+
 	/*if (damage) {
 		C_MovePlayerPacket packet;
 		packet.onGround = false;
@@ -58,8 +61,6 @@ void Fly::onEnable() {
 void Fly::onDisable() {
 	if (g_Data.getLocalPlayer() == nullptr)
 		return;
-
-	gameTick = 0;
 
 	g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
 
