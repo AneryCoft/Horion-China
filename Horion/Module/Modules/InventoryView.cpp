@@ -1,6 +1,6 @@
 #include "InventoryView.h"
 
-InventoryView::InventoryView() : IModule(0, Category::VISUAL, "renders inventory on screen") {
+InventoryView::InventoryView() : IModule(0, Category::CLIENT, "renders inventory on screen") {
 	registerFloatSetting("ViewPosX", &invX, invX, 0.f, g_Data.getClientInstance()->getGuiData()->windowSize.x);
 	registerFloatSetting("ViewPosY", &invY, invY, 0.f, g_Data.getClientInstance()->getGuiData()->windowSize.y);
 	registerFloatSetting("Scale", &scale, scale, 0.5f, 1.5f);

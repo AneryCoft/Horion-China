@@ -1,9 +1,6 @@
 #include "ArrayList.h"
 
 void ArrayList::renderArrayList() {
-	if (!moduleMgr->isInitialized())
-		return;
-
 	static auto hudModule = moduleMgr->getModule<HudModule>();
 	static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
 

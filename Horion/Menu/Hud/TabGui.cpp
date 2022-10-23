@@ -171,8 +171,6 @@ void TabGui::renderLevel() {
 		renderedLevel++;
 	};
 void TabGui::renderTabGui() {
-	if (!moduleMgr->isInitialized())
-		return;
 	if (!GameData::canUseMoveKeys())
 		level = -1;
 	renderedLevel = 0;

@@ -8,7 +8,7 @@ AntiBot::AntiBot() : IModule(0, Category::PLAYER, "Enable this module to filter 
 	registerBoolSetting("EntityID Check", &entityIdCheck, entityIdCheck);
 	registerBoolSetting("Move Check", &moveCheck, moveCheck);
 	registerBoolSetting("GameMode Check", &modeCheck, modeCheck);
-	registerBoolSetting("Advance Check", &advanceCheck, advanceCheck);
+	//registerBoolSetting("Advance Check", &advanceCheck, advanceCheck);
 }
 
 AntiBot::~AntiBot() {
@@ -18,6 +18,7 @@ const char* AntiBot::getModuleName() {
 	return ("AntiBot");
 }
 
+/*
 struct advancecheck {
 	int tpsCheck = 0; //速度检测
 	uint8_t onGroundCheck = 0;  //0 not on ground, 1 on ground, 2 change
@@ -132,7 +133,7 @@ void AntiBot::onWorldTick(C_GameMode* gm) {
 					break;
 				}
 
-				if (acl.tpsCheck >= 300 /*(hall ? 650 : 450)*/) {
+				if (acl.tpsCheck >= 300 ) {
 					acl.isbot++;
 					acl.tpsCheck = 0;
 				} else if (acl.tpsCheck < 0) {
@@ -231,4 +232,4 @@ void AntiBot::onWorldTick(C_GameMode* gm) {
 			}
 		});
 	}
-}
+}*/

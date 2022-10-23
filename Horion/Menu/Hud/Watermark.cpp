@@ -1,4 +1,4 @@
-#include"Watermark.h"
+#include "Watermark.h"
 
 void Watermark::renderWatermark() {
 	static auto ClientThemes = moduleMgr->getModule<ClientTheme>();

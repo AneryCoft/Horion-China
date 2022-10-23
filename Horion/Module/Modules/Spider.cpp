@@ -20,8 +20,8 @@ void Spider::onMove(C_MoveInputHandler* input) {
 	if (player->isInLava() || player->isInWater())
 		return;
 
-	if (player->isSneaking())
-		return;
+	/*if (player->isSneaking())
+		return;*/
 	
 	std::vector<vec3_ti> sideBlocks;
 	sideBlocks.reserve(8);

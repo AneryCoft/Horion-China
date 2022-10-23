@@ -3,6 +3,7 @@
 #include "../../Scripting/ScriptManager.h"
 #include "../../Menu/Hud/TabGui.h"
 #include "../../Menu/Hud/ArrayList.h"
+#include "../../Menu/Hud/Notifications.h"
 #include "../../Menu/Hud/Watermark.h"
 
 HudModule::HudModule() : IModule(0, Category::CLIENT, "Displays things like the ArrayList/TabGUI.") {
@@ -290,13 +291,18 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		}
 	}
 
-	if (tabgui) {
-		TabGui::renderTabGui();
-	}
-	if (arraylist) {
-		ArrayList::renderArrayList();
-	}
-	if (watermark) {
-		Watermark::renderWatermark();
+	if (moduleMgr->isInitialized()) {
+		if (tabgui) {
+			TabGui::renderTabGui();
+		}
+		if (arraylist) {
+			ArrayList::renderArrayList();
+		}
+		if (notifications) {
+			Notifications::renderNotifications();
+		}
+		if (watermark) {
+			Watermark::renderWatermark();
+		}
 	}
 }

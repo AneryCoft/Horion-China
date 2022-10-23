@@ -88,7 +88,7 @@ void DrawUtils::setCtx(C_MinecraftUIRenderContext* ctx, C_GuiData* gui) {
 		int offset = *reinterpret_cast<int*>(sigOffset + 3);
 		uiMaterial = reinterpret_cast<MaterialPtr*>(sigOffset + offset + 7);
 	}
-	if(entityFlatStaticMaterial == nullptr && g_Data.isInGame()){
+	if(entityFlatStaticMaterial == nullptr && g_Data.isInGame() && g_Data.getLocalPlayer() != nullptr){
 		entityFlatStaticMaterial = reinterpret_cast<MaterialPtr*>(g_Data.getClientInstance()->itemInHandRenderer->entityLineMaterial.materialPtr);
 	}
 }
