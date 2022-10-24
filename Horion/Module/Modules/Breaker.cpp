@@ -173,7 +173,7 @@ void Breaker::onTick(C_GameMode* gm) {
 		if (g_Data.getLocalPlayer()->getPos()->dist(*ent->getPos()) <= range) {
 			if ((ent->getEntityTypeId() == 256 && treasures) ||
 				(name.find("'s Bed") != std::string::npos && lifeboatBeds) ||
-				((ent->height > 1.24f && ent->height < 1.26f) && (ent->width > 0.3 && ent->width < 0.5))/* ||
+				((ent->height > 1.24f && ent->height < 1.26f) && (ent->width > 0.3 && ent->width < 0.5) && core)/* ||
 				(name.find("Core") != std::string::npos && core)*/) { //Core上面的字是另一个实体的
 				/*
 				EntityTypeId=256
