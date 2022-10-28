@@ -457,7 +457,7 @@ __int64 Hooks::UIScene_render(C_UIScene* uiscene, __int64 screencontext) {
 	if (alloc.getTextLength() < 100) {
 		strcpy_s(g_Hooks.currentScreenName, alloc.getText());
 	}
-
+	
 	if (!g_Hooks.shouldRender) {
 		g_Hooks.shouldRender = (strcmp(alloc.getText(), "start_screen") == 0 || strcmp(alloc.getText(), "hud_screen") == 0 || strcmp(alloc.getText(), "inventory_screen") == 0);
 	}

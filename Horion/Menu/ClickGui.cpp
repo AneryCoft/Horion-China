@@ -1,7 +1,7 @@
 #include "ClickGui.h"
 
 #include "../Scripting/ScriptManager.h"
-#include "../Module/Modules/ClickGuiMod.h"
+#include "../Module/Modules/Client/ClickGuiMod.h"
 
 #include "../../Utils/Logger.h"
 #include <Windows.h>

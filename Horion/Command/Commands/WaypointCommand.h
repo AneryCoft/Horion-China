@@ -2,7 +2,7 @@
 
 #include "ICommand.h"
 #include "../../Module/ModuleManager.h"
-#include "../../Module/Modules/Waypoints.h"
+#include "../../Module/Modules/Visual/Waypoints.h"
 
 class WaypointCommand : public IMCCommand {
 public:
