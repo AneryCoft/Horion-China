@@ -1,13 +1,14 @@
 #pragma once
 
-#include "../../ModuleManager.h"
 #include "../Module.h"
+#include "../../../../Utils/TimerUtil.h"
 
 class ChestAura : public IModule {
 private:
 	int range = 3;
 	bool enderchests = false;
-
+	float delay = 100.f;
+	TimerUtil delayTime;
 public:
 	//C_MoveInputHandler* inputHandler = nullptr;
 	ChestAura();

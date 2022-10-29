@@ -2,6 +2,7 @@
 
 ChestAura::ChestAura() : IModule(0, Category::PLAYER, "Aura but for opening chests.") {
 	registerIntSetting("Range", &range, range, 1, 10);
+	registerFloatSetting("Delay", &delay, delay, 0.f, 1000.f);
 	registerBoolSetting("EnderChests", &enderchests, enderchests);
 }
 
@@ -27,13 +28,15 @@ void ChestAura::onTick(C_GameMode* gm) {
 					bool open = false;
 					if (id == 54) open = true;                  // Chests
 					if (id == 130 && enderchests) open = true;  // EnderCheats
-					if (open)
+					if (open) {
 						if (!(std::find(chestlist.begin(), chestlist.end(), pos) != chestlist.end())) {
-							bool idk = true;
-							gm->buildBlock(&pos, 0, idk);
-							chestlist.push_back(pos);
-							return;
+							if (delayTime.hasTimedElapsed(delay, true)) {
+								gm->buildBlock(&pos, 1, true);
+								chestlist.push_back(pos);
+								return;
+							}
 						}
+					}
 				}
 			}
 		}

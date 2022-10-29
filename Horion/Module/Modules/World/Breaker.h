@@ -30,7 +30,7 @@ private:
 	bool shouldRotation = false;
 	vec3_ti renderPos;
 	vec2_t angle;
-	C_Entity* target;
+	C_Entity* target = nullptr;
 	void selectPickaxe();
 	bool shouldRenderEntity = false;
 

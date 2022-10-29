@@ -54,14 +54,15 @@ void Breaker::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 			DrawUtils::drawBox(renderPos.toVec3t(), vec3_t(renderPos.toVec3t()).add(1), (float)thick / (float)1.f, false);
 		}
 		if (shouldRenderEntity) {
-			if (targetEsp)
+			if (target != nullptr) {
 				DrawUtils::drawEntityBox(target, (float)fmax(thick, 1 / (float)fmax(1, g_Data.getLocalPlayer()->getPos()->dist(*target->getPos()))));
+			}
 		}
 	}
 }
 
 void Breaker::onTick(C_GameMode* gm) {
-	if (std::time(nullptr) < g_Hooks.connecttime + 1)
+	if (g_Data.getLocalPlayer() == nullptr)
 		return;
 
 	bool destroy = false;
@@ -99,6 +100,11 @@ void Breaker::onTick(C_GameMode* gm) {
 
 	++tick;
 	if (!blockList.empty()) {
+		std::sort(blockList.begin(), blockList.end(), [](const vec3_ti lhs, const vec3_ti rhs) {
+			vec3_t localPos = *g_Data.getLocalPlayer()->getPos();
+			return localPos.dist(lhs.toFloatVector()) < localPos.dist(rhs.toFloatVector());
+			}); //距离优先
+
 		//for (vec3_ti i : blockList) {
 		int id = gm->player->region->getBlock(blockList[0])->toLegacy()->blockId;
 
@@ -166,21 +172,12 @@ void Breaker::onTick(C_GameMode* gm) {
 
 	g_Data.forEachEntity([this](C_Entity* ent, bool b) {
 		std::string name = ent->getNameTag()->getText();
-		//int height = ent->height * 100; //1.25f * 100
-		//int width = ent->width * 10; //0.4f * 10
-		//解决浮点数不精确的问题
 
 		if (g_Data.getLocalPlayer()->getPos()->dist(*ent->getPos()) <= range) {
 			if ((ent->getEntityTypeId() == 256 && treasures) ||
 				(name.find("'s Bed") != std::string::npos && lifeboatBeds) ||
 				((ent->height > 1.24f && ent->height < 1.26f) && (ent->width > 0.3 && ent->width < 0.5) && core)/* ||
 				(name.find("Core") != std::string::npos && core)*/) { //Core上面的字是另一个实体的
-				/*
-				EntityTypeId=256
-				Height=0.005000,Width=0.005000
-				NameTag=§l §r§aCore
-§a▌▌▌▌▌▌▌▌▌▌§7
-				*/
 
 				if (rotations) {
 					angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*ent->getPos());
