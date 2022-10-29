@@ -1,28 +1,19 @@
 #pragma once
 
-#include "../../ModuleManager.h"
 #include "../Module.h"
+#include "../../../../Utils/TimerUtil.h"
 
 class AutoClicker : public IModule {
 private:
-	int maxcps = 20;
-	int mincps = 20;
-	//bool cpspertick = false;
+	TimerUtil CPSTime;
+	int maxCPS = 20;
+	int minCPS = 20;
+	bool leftClick = true;
+	bool rightClick = true;
 	bool weapons = false;
-	bool breakBlocks = false;
-	SettingEnum LRclick = 0;
-	bool playsound = true;
-	bool fastplace = false;
-	bool useitem = false;
-
-private:
-	float L_Odelay = 0.f;
-	float R_Odelay = 0.f;
-	int oldcps;
-	int lcm;
-	int clock_temp_R;
-	int clock_temp_L;
-	// float ftemp1;
+	bool hold = true;
+	//bool breakBlocks = false;
+	bool useItem = true;
 
 public:
 	AutoClicker();
@@ -31,13 +22,4 @@ public:
 	// Inherited via IModule
 	virtual const char* getModuleName() override;
 	virtual void onTick(C_GameMode* gm) override;
-	virtual void onLevelRender() override;
-
-	//virtual void onSendPacket(C_Packet* packet);
-	virtual void onEnable() override;
-	virtual void onDisable() override;
-
-	// private:
-	//	void LC_func();
-	//	void RC_func();
 };
