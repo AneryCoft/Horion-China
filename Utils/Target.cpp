@@ -2,6 +2,7 @@
 #include <regex>
 #include "../Horion/Module/ModuleManager.h"
 #include "../Memory/Hooks.h"
+#include "../../../SDK/Tag.h"
 
 C_LocalPlayer** localPlayer;
 
@@ -151,6 +152,18 @@ bool Target::isValidTarget(C_Entity* ent) {
 					}
 				}
 			}break;
+			case 2: {
+				C_ItemStack* localHelmet = localPlayer->getArmor(0); //本地头盔
+				C_ItemStack* targetHelmet = ent->getArmor(0); //目标头盔
+				
+				if (localHelmet->isValid() && targetHelmet->isValid()) {
+					if (localHelmet->tag != nullptr && targetHelmet->tag != nullptr) {
+						if (targetHelmet->tag->equals(*localHelmet->tag)) //直接比较了NBT
+							return false;
+					}
+					
+				}
+			}
 			/*case 2: {
 				if (localPlayer->getArmorColorInSlot(0, 0) == ent->getArmorColorInSlot(0, 0))
 					return false;
