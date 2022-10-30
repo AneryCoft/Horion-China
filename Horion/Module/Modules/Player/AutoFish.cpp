@@ -19,8 +19,11 @@ void findFishingHook(C_Entity* entity, bool isRegularEntity) {
 }
 
 void AutoFish::onTick(C_GameMode* gm) {
-	C_ItemStack* item = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(g_Data.getLocalPlayer()->getSupplies()->selectedHotbarSlot);
-	if ((*item->item)->itemId != 392)
+	if (g_Data.getLocalPlayer() == nullptr)
+		return;
+
+	C_ItemStack* selectedItem = g_Data.getLocalPlayer()->getSelectedItem();
+	if (selectedItem->item == nullptr || (*selectedItem->item)->itemId != 392)
 		return; //判断手里是否有鱼竿
 
 	fishingHook.clear();
@@ -30,8 +33,8 @@ void AutoFish::onTick(C_GameMode* gm) {
 	if (startDelay)
 		++delay;
 
-	if (delay == 5) { //延时0.25s
-		gm->useItem(*item); //再次放出鱼钩
+	if (delay == 10) { //延时0.5s
+		gm->useItem(*selectedItem); //再次放出鱼钩
 		delay = 0;
 		startDelay = false;
 	}
@@ -45,7 +48,7 @@ void AutoFish::onTick(C_GameMode* gm) {
 		fishingHook[0]->velocity.y < -0.4f &&
 		fishingHook[0]->velocity.y > -0.6f && //-0.496594,-0.499711,-0.496522,-0.500461
 		fishingHook[0]->velocity.z == 0.f) {
-		gm->useItem(*item);
+		gm->useItem(*selectedItem);
 		startDelay = true;
 	}
 }
