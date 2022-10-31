@@ -2,6 +2,7 @@
 
 InventoryCleaner::InventoryCleaner() : IModule(0, Category::PLAYER, "Automatically throws not needed stuff out of your inventory.") {
 	registerFloatSetting("Delay", &delay, delay, 0.f, 1000.f);
+	registerBoolSetting("No Delay", &noDelay, noDelay);
 	registerBoolSetting("KeepWeapons", &keepWeapons, keepWeapons);
 	registerBoolSetting("KeepTools", &keepTools, keepTools);
 	registerBoolSetting("KeepArmor", &keepArmor, keepArmor);
@@ -28,13 +29,17 @@ void InventoryCleaner::onTick(C_GameMode* gm) {
 		i = 0;
 
 	if (!dropSlots.empty()) {
-		if (dropTime.hasTimedElapsed(delay, true)) {
-			g_Data.getLocalPlayer()->getSupplies()->inventory->dropSlot(dropSlots[i]);
-			++i;
+		if (noDelay) {
+			for (int i : dropSlots) {
+				g_Data.getLocalPlayer()->getSupplies()->inventory->dropSlot(i);
+			}
 		}
-		/*for (int i : dropSlots) {
-			g_Data.getLocalPlayer()->getSupplies()->inventory->dropSlot(i);
-		}*/
+		else {
+			if (dropTime.hasTimedElapsed(delay, true)) {
+				g_Data.getLocalPlayer()->getSupplies()->inventory->dropSlot(dropSlots[i]);
+				++i;
+			}
+		}
 	} //丢弃无用物品
 	else {
 		dropTime.resetTime();

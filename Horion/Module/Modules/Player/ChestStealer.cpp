@@ -1,10 +1,10 @@
 #include "ChestStealer.h"
-#include "../../ModuleManager.h"
 
 ChestStealer::ChestStealer() : IModule(0, Category::PLAYER, "Automatically takes all items out of a chest.") {
-	registerIntSetting("Delay", &takeOfDelay, takeOfDelay, 0, 20);
-	registerIntSetting("Closing Delay", &setDelay, setDelay, 0, 20);
+	registerFloatSetting("Delay", &delay, delay, 0.f, 1000.f);
+	registerFloatSetting("Open Delay", &openDelay, openDelay, 0.f, 1000.f);
 	registerBoolSetting("Only Useful", &enhanced, enhanced);
+	registerBoolSetting("No Delay", &noDelay, noDelay);
 }
 
 ChestStealer::~ChestStealer() {
@@ -16,31 +16,37 @@ const char* ChestStealer::getModuleName() {
 
 void ChestStealer::chestScreenController_tick(C_ChestScreenController* c) {
 	if (c != nullptr && !g_Data.getLocalPlayer()->canOpenContainerScreen()) {
-		std::vector<int> items = {};
-		auto invcleanerMod = moduleMgr->getModule<InventoryCleaner>();
-		for (int i = 0; i < 54; i++) {
-			C_ItemStack* stack = c->_getItemStack(TextHolder("container_items"), i);
-			if (stack != nullptr && stack->item != NULL)
-				if (!enhanced || invcleanerMod->stackIsUseful(stack))
-					items.push_back(i);
+		if (canReset && !noDelay) {
+			openDelayTime.resetTime();
+			canReset = false;
 		}
-		if (!items.empty()) {
-			delay2++;
-			if (delay2 > takeOfDelay) {
-				c->handleAutoPlace(0x7FFFFFFF, "container_items", items[0]);
-				delay2 = 0;
+		if (openDelayTime.hasTimedElapsed(openDelay, false)) {
+			std::vector<int> items = {};
+			static auto invcleanerMod = moduleMgr->getModule<InventoryCleaner>();
+			for (int i = 0; i < 54; i++) {
+				C_ItemStack* stack = c->_getItemStack(TextHolder("container_items"), i);
+				if (stack != nullptr && stack->item != NULL)
+					if (!enhanced || invcleanerMod->stackIsUseful(stack))
+						items.push_back(i);
 			}
-			
-			/*
-			for (int i : items) {
-				_sleep(takeOfDelay);
-				c->handleAutoPlace(0x7FFFFFFF, "container_items", i);
-			}*/
-		} else  {
-			delay++;
-			if (delay > setDelay) {
+			if (!items.empty()) {
+				if (noDelay) {
+					for (int i : items) {
+						c->handleAutoPlace(0x7FFFFFFF, "container_items", i);
+					}
+					c->tryExit();
+					canReset = true;
+					return;
+				}
+				else {
+					if (delayTime.hasTimedElapsed(delay, true)) {
+						c->handleAutoPlace(0x7FFFFFFF, "container_items", items[0]);
+					}
+				}
+			}
+			else {
 				c->tryExit();
-				delay = 0;
+				canReset = true;
 			}
 		}
 	}

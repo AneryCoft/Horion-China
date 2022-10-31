@@ -21,6 +21,7 @@ private:
 	bool openInv = true;
 	bool autoSort = false;
 	float delay = 0.f;
+	bool noDelay = false;
 
 	TimerUtil dropTime;
 

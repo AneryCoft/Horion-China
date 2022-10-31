@@ -1,14 +1,18 @@
 #pragma once
 
 #include "../Module.h"
+#include "../../ModuleManager.h"
+#include "../../../../Utils/TimerUtil.h"
 
 class ChestStealer : public IModule {
 private:
-	int delay = 0;
-	int setDelay = 7;
-	int takeOfDelay = 0;
+	float delay = 0.f;
+	TimerUtil delayTime;
+	float openDelay = 0.f;
+	TimerUtil openDelayTime;
 	bool enhanced = true;
-	int delay2 = 0;
+	bool noDelay = false; 
+	bool canReset = true;
 
 public:
 	ChestStealer();
