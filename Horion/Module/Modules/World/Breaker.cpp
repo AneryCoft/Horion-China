@@ -30,32 +30,32 @@ void Breaker::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 
 	if (targetEsp) {
 		if (bedsRender) {
-			DrawUtils::setColor(133 / 255.0f, 16 / 255.0f, 14 / 255.0f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), vec3_t(renderPos.toVec3t()).add(1), (float)thick / (float)1.f, false);
+			DrawUtils::setColor(133 / 255.f, 16 / 255.f, 14 / 255.f, 1);
+			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
 		}
 		if (eggsRender) {
-			DrawUtils::setColor(45 / 255.0f, 1 / 255.0f, 51 / 255.0f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), vec3_t(renderPos.toVec3t()).add(1), (float)thick / (float)1.f, false);
+			DrawUtils::setColor(45 / 255.f, 1 / 255.f, 51 / 255.f, 1);
+			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
 		}
 		if (cakesRender) {
-			DrawUtils::setColor(199 / 255.0f, 97 / 255.0f, 36 / 255.0f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), vec3_t(renderPos.toVec3t()).add(1), (float)thick / (float)1.f, false);
+			DrawUtils::setColor(199 / 255.f, 97 / 255.f, 36 / 255.f, 1);
+			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
 		}
 		if (chestsRender) {
-			DrawUtils::setColor(164 / 255.0f, 114 / 255.0f, 39 / 255.0f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), vec3_t(renderPos.toVec3t()).add(1), (float)thick / (float)1.f, false);
+			DrawUtils::setColor(164 / 255.f, 114 / 255.f, 39 / 255.f, 1);
+			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
 		}
 		if (barrelsRender) {
-			DrawUtils::setColor(85 / 255.0f, 58 / 255.0f, 31 / 255.0f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), vec3_t(renderPos.toVec3t()).add(1), (float)thick / (float)1.f, false);
+			DrawUtils::setColor(85 / 255.f, 58 / 255.f, 31 / 255.f, 1);
+			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
 		}
 		if (redStoneRender) {
-			DrawUtils::setColor(255 / 255.0f, 0 / 255.0f, 0 / 255.0f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), vec3_t(renderPos.toVec3t()).add(1), (float)thick / (float)1.f, false);
+			DrawUtils::setColor(255 / 255.f, 0 / 255.f, 0 / 255.f, 1);
+			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
 		}
 		if (shouldRenderEntity) {
 			if (target != nullptr) {
-				DrawUtils::drawEntityBox(target, (float)fmax(thick, 1 / (float)fmax(1, g_Data.getLocalPlayer()->getPos()->dist(*target->getPos()))));
+				DrawUtils::drawEntityBox(target, fmax(thick, 1 / fmax(1, g_Data.getLocalPlayer()->getPos()->dist(*target->getPos()))));
 			}
 		}
 	}
