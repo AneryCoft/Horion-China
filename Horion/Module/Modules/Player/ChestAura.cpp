@@ -4,6 +4,8 @@ ChestAura::ChestAura() : IModule(0, Category::PLAYER, "Aura but for opening ches
 	registerIntSetting("Range", &range, range, 1, 10);
 	registerFloatSetting("Delay", &delay, delay, 0.f, 1000.f);
 	registerBoolSetting("EnderChests", &enderchests, enderchests);
+	registerBoolSetting("ShulkerBoxes", &shulkerBoxes, shulkerBoxes);
+	registerBoolSetting("Gravestores", &gravestores, gravestores); //CubeCraft死去玩家背包中的物品
 }
 
 ChestAura::~ChestAura() {
@@ -26,11 +28,13 @@ void ChestAura::onTick(C_GameMode* gm) {
 			for (int y = (int)pos->y - range; y < pos->y + range; y++) {
 				vec3_ti pos = vec3_ti(x, y, z);
 				C_Block* block = gm->player->region->getBlock(pos);
-				if (block != nullptr && g_Data.canUseMoveKeys()) {
+				if (block != nullptr/* && g_Data.canUseMoveKeys()*/) {
 					auto id = gm->player->region->getBlock(pos)->toLegacy()->blockId;
 					bool open = false;
-					if (id == 54) open = true;                  // Chests
-					if (id == 130 && enderchests) open = true;  // EnderCheats
+					if (id == 54) open = true;                  // 箱子
+					if (id == 130 && enderchests) open = true;  // 末影箱
+					if ((id == 205 || id == 218) && shulkerBoxes) open = true;  // 潜影盒
+					if (id == 70 && gravestores) open = true;  // 石头压力板
 					if (open) {
 						if (!(std::find(chestlist.begin(), chestlist.end(), pos) != chestlist.end())) {
 							if (delayTime.hasTimedElapsed(delay, true)) {

@@ -7,7 +7,9 @@ class ChestAura : public IModule {
 private:
 	int range = 3;
 	bool enderchests = false;
-	float delay = 100.f;
+	bool shulkerBoxes = false;
+	bool gravestores = false;
+	float delay = 0.f;
 	TimerUtil delayTime;
 public:
 	//C_MoveInputHandler* inputHandler = nullptr;
