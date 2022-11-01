@@ -23,6 +23,7 @@
 #include "Modules/Combat/TPAura.h"
 #include "Modules/Combat/TriggerBot.h"
 
+#include "Modules/Visual/BlockOutline.h"
 //#include "Modules/Visual/Breadcrumbs.h"
 #include "Modules/Visual/ESP.h"
 #include "Modules/Visual/Freelook.h"
