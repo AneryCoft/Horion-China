@@ -163,6 +163,6 @@ public:
 	}
 
 	void getScreenName(TextHolder* txt) {
-		Utils::CallVFunc<67, void, TextHolder*>(this, txt);
+		Utils::CallVFunc<66, void, TextHolder*>(this, txt);
 	}
 };
