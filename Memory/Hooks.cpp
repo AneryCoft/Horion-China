@@ -17,15 +17,6 @@ bool overrideStyledReturn = false;
 TextHolder styledReturnText;
 //#define TEST_DEBUG
 
-//FluxSwing FakeBlock
-void blockRotate(glm::mat4& matrix, float upper) {
-	float floatY = -1.30F;
-	matrix = glm::translate<float>(matrix, glm::vec3(-0.24F, upper, -0.20F));
-	matrix = glm::rotate<float>(matrix, -1.98F, glm::vec3(0.0F, 1.0F, 0.0F));
-	matrix = glm::rotate<float>(matrix, -floatY, glm::vec3(4.0F, 0.0F, 0.0F));
-	matrix = glm::rotate<float>(matrix, 60.0F, glm::vec3(0.0F, 1.0F, 0.0F));
-}
-
 void Hooks::Init() {
 	logF("Setting up Hooks...");
 	// clang-format off
@@ -286,15 +277,11 @@ void Hooks::Init() {
 			static auto origFunc = g_Hooks.lambdaHooks.at(lambda_counter)->GetFastcall<void, __int64, glm::mat4&, float>();
 			static auto swingMod = moduleMgr->getModule<Swing>();
 			static auto viewModelMod = moduleMgr->getModule<ViewModel>();
-			auto p = g_Data.getLocalPlayer();
+			/*auto p = g_Data.getLocalPlayer();
 			float degrees = fmodf(p->getPosOld()->lerp(p->getPos(), lerpT).x, 5) - 2.5f;
-			degrees *= 180 / 2.5f;
+			degrees *= 180 / 2.5f;*/
 
-			auto pos = g_Data.getClientInstance()->levelRenderer->getOrigin();
-
-			glm::mat4 View = matrix;
-
-			matrix = View;
+			//auto pos = g_Data.getClientInstance()->levelRenderer->getOrigin();
 
 			if (viewModelMod->isEnabled()) {
 				if (viewModelMod->doTranslate)
@@ -304,13 +291,29 @@ void Hooks::Init() {
 					matrix = glm::scale<float>(matrix, glm::vec3(viewModelMod->xMod, viewModelMod->yMod, viewModelMod->zMod));
 			}
 
-			// Blocking Animation
+			//格挡动画
 			if (swingMod->isEnabled()) {
-				if (swingMod->fakeBlock && swingMod->shouldBlock && g_Data.canUseMoveKeys() && g_Data.isInGame()) {
+				if (swingMod->blockMode.selected != 0 && swingMod->shouldBlock && g_Data.canUseMoveKeys() && g_Data.getLocalPlayer() != nullptr) {
 					lerpT = 0.f;
-					matrix = glm::translate<float>(matrix, glm::vec3(0.42222223281, 0.0, -0.16666666269302368));
-					matrix = glm::translate<float>(matrix, glm::vec3(-0.18f, 0.14f, -0.38f));
-					blockRotate(matrix, 0.25f);
+
+					if (swingMod->blockMode.selected == 1) {
+						matrix = glm::translate<float>(matrix, glm::vec3(0.42f, 0.f, -0.17f));
+						matrix = glm::translate<float>(matrix, glm::vec3(-0.18f, 0.14f, -0.38f));
+
+						matrix = glm::translate<float>(matrix, glm::vec3(-0.24f, 0.25f, -0.2f));
+						matrix = glm::rotate<float>(matrix, -1.98f, glm::vec3(0.f, 1.f, 0.f));
+						matrix = glm::rotate<float>(matrix, 1.3f, glm::vec3(4.0F, 0.f, 0.f));
+						matrix = glm::rotate<float>(matrix, 60.f, glm::vec3(0.f, 1.f, 0.f));
+					}
+					else {
+						matrix = glm::translate<float>(matrix, glm::vec3(0.56f, -0.52f, -0.71999997f));
+						matrix = glm::translate<float>(matrix, glm::vec3(0.f, 0.4f, 0.f));
+
+						matrix = glm::translate<float>(matrix, glm::vec3(-0.5f, 0.2f, 0.f));
+						matrix = glm::rotate<float>(matrix, 30.f, glm::vec3(0.f, 1.f, 0.f));
+						matrix = glm::rotate<float>(matrix, -80.f, glm::vec3(1.f, 0.f, 0.f));
+						matrix = glm::rotate<float>(matrix, 60.f, glm::vec3(0.f, 1.f, 0.f));
+					}
 				}
 			}
 			return origFunc(_this, matrix, lerpT);
@@ -457,7 +460,7 @@ __int64 Hooks::UIScene_render(C_UIScene* uiscene, __int64 screencontext) {
 	if (alloc.getTextLength() < 100) {
 		strcpy_s(g_Hooks.currentScreenName, alloc.getText());
 	}
-	
+
 	if (!g_Hooks.shouldRender) {
 		g_Hooks.shouldRender = (strcmp(alloc.getText(), "start_screen") == 0 || strcmp(alloc.getText(), "hud_screen") == 0 || strcmp(alloc.getText(), "inventory_screen") == 0);
 	}
@@ -1155,15 +1158,15 @@ void Hooks::Actor_swing(C_Entity* _this) {
 	static auto swingMod = moduleMgr->getModule<Swing>();
 
 	if (swingMod->isEnabled()) {
-		if (swingMod->mode.selected == 0 || swingMod->mode.selected == 1) {
-			if (swingMod->mode.selected == 1) {
-				C_AnimatePacket packet;
-				packet.entityRuntimeId = g_Data.getLocalPlayer()->entityRuntimeId;
-				packet.action = 1;
-				packet.rowingTime = 8.376486f;
-				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
-				return;
-			}
+		if (swingMod->swingMode.selected == 1) {
+			return;
+		}
+		else if (swingMod->swingMode.selected == 2) {
+			C_AnimatePacket packet;
+			packet.entityRuntimeId = g_Data.getLocalPlayer()->entityRuntimeId;
+			packet.action = 1;
+			packet.rowingTime = 8.376486f;
+			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
 			return;
 		}
 	}

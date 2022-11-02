@@ -3,12 +3,17 @@
 void* SmoothSwing = (void*)FindSignature("0F 84 ? ? ? ? 48 8B 56 ? 48 85 D2 74 ? 48 8B 02");
 
 Swing::Swing() : IModule(0, Category::PLAYER, "Change swing") {
-	mode = SettingEnum(this)
+	swingMode = SettingEnum(this)
+		.addEntry(EnumEntry("Vanilla", 0))
+		.addEntry(EnumEntry("None", 1))
+		.addEntry(EnumEntry("Packet", 2))
+		.addEntry(EnumEntry("Smooth", 3));
+	registerEnumSetting("SwingMode", &swingMode, 3);
+	blockMode = SettingEnum(this)
 		.addEntry(EnumEntry("None", 0))
-		.addEntry(EnumEntry("Packet", 1))
-		.addEntry(EnumEntry("Smooth", 2));
-	registerEnumSetting("Mode", &mode, 2);
-	registerBoolSetting("FakeBlock", &fakeBlock, fakeBlock);
+		.addEntry(EnumEntry("Block1", 1))
+		.addEntry(EnumEntry("Block2", 2));
+	registerEnumSetting("BlockMode", &blockMode, 1);
 }
 
 const char* Swing::getModuleName() {
@@ -21,31 +26,28 @@ void Swing::onTick(C_GameMode* gm) {
 		return;*/
 
 	auto hotbarStack = player->getSupplies()->inventory->getItemStack(player->getSupplies()->selectedHotbarSlot);
-	shouldBlock = hotbarStack != nullptr && hotbarStack->item != nullptr && hotbarStack->getItem()->isSword() && g_Data.isRightClickDown();
-	isAttacking = g_Data.isLeftClickDown();
+	shouldBlock = hotbarStack->isValid() && hotbarStack->getItem()->isSword() && g_Data.isRightClickDown();
 
-	if (mode.selected == 2) {
-		if (hotbarStack->item != nullptr && (
-			(*hotbarStack->item)->isFood() ||
-			(*hotbarStack->item)->itemId == 426 || //药水
-			(*hotbarStack->item)->itemId == 561 || //喷溅药水
-			(*hotbarStack->item)->itemId == 562 || //滞留药水
-			(*hotbarStack->item)->itemId == 360 ||
-			(*hotbarStack->item)->itemId == 361 ||
-			(*hotbarStack->item)->itemId == 362 ||
-			(*hotbarStack->item)->itemId == 363 ||
-			(*hotbarStack->item)->itemId == 364 ||
-			(*hotbarStack->item)->itemId == 365 ||
-			(*hotbarStack->item)->itemId == 366 ||
-			(*hotbarStack->item)->itemId == 367 ||
-			(*hotbarStack->item)->itemId == 368 ||
-			(*hotbarStack->item)->itemId == 369 //各种桶
-			)) {
-			Utils::patchBytes((unsigned char*)((uintptr_t)SmoothSwing), (unsigned char*)"\x0F\x84\x95\x02\x00\x00", 6);
-		}
-		else {
-			Utils::nopBytes((unsigned char*)SmoothSwing, 6);
-		}
+	if (swingMode.selected == 3 && (hotbarStack->isValid() && !(
+		(*hotbarStack->item)->isFood() ||
+		(*hotbarStack->item)->itemId == 426 || //药水
+		(*hotbarStack->item)->itemId == 561 || //喷溅药水
+		(*hotbarStack->item)->itemId == 562 || //滞留药水
+		(*hotbarStack->item)->itemId == 360 ||
+		(*hotbarStack->item)->itemId == 361 ||
+		(*hotbarStack->item)->itemId == 362 ||
+		(*hotbarStack->item)->itemId == 363 ||
+		(*hotbarStack->item)->itemId == 364 ||
+		(*hotbarStack->item)->itemId == 365 ||
+		(*hotbarStack->item)->itemId == 366 ||
+		(*hotbarStack->item)->itemId == 367 ||
+		(*hotbarStack->item)->itemId == 368 ||
+		(*hotbarStack->item)->itemId == 369 //各种桶
+		))) {
+		Utils::nopBytes((unsigned char*)SmoothSwing, 6);
+	}
+	else {
+		Utils::patchBytes((unsigned char*)((uintptr_t)SmoothSwing), (unsigned char*)"\x0F\x84\x95\x02\x00\x00", 6);
 	}
 }
 
