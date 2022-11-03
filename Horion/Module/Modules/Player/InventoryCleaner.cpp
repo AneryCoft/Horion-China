@@ -8,7 +8,7 @@ InventoryCleaner::InventoryCleaner() : IModule(0, Category::PLAYER, "Automatical
 	registerBoolSetting("KeepArmor", &keepArmor, keepArmor);
 	registerBoolSetting("KeepFood", &keepFood, keepFood);
 	registerBoolSetting("KeepBlocks", &keepBlocks, keepBlocks);
-	registerBoolSetting("OpenInv", &openInv, openInv);
+	registerBoolSetting("OnlyInv", &openInv, openInv);
 	registerBoolSetting("AutoSort", &autoSort, autoSort);
 }
 
@@ -20,7 +20,9 @@ const char* InventoryCleaner::getModuleName() {
 }
 
 void InventoryCleaner::onTick(C_GameMode* gm) {
-	if (g_Data.getLocalPlayer()->canOpenContainerScreen() && openInv)
+	//if (g_Data.getLocalPlayer()->canOpenContainerScreen() && openInv)
+	//	return;
+	if (strcmp(g_Data.getScreenName.c_str(), "inventory_screen") != 0 && openInv)
 		return;
 
 	std::vector<int> dropSlots = findUselessItems();

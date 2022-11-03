@@ -244,6 +244,7 @@ public:
 	int getFPS() { return fps; };
 	int getLeftCPS() { return cpsLeft; };
 	int getRightCPS() { return cpsRight; };
+	std::string getScreenName = {};
 };
 
 extern GameData g_Data;

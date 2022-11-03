@@ -16,6 +16,9 @@ void InventoryMove::onTick(C_GameMode* gm) {
 	if (g_Data.canUseMoveKeys() || g_Data.getLocalPlayer() == nullptr)
 		return;
 
+	if (strcmp(g_Data.getScreenName.c_str(), "chat_screen") == 0)
+		return;
+
 	C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
 
 	if (input == nullptr)

@@ -1,6 +1,15 @@
 #include "AutoArmor.h"
-#include "../../../../Utils/Utils.h"
-#include "../../../../Utils/Logger.h"
+
+AutoArmor::AutoArmor() : IModule(0, Category::PLAYER, "Automatically equips the best armor.") {
+	registerBoolSetting("OnlyInv", &onlyInv, onlyInv);
+}
+
+AutoArmor::~AutoArmor() {
+}
+
+const char* AutoArmor::getModuleName() {
+	return ("AutoArmor");
+}
 
 class ArmorStruct {
 public:
@@ -24,17 +33,10 @@ public:
 	int m_slot = 0;
 };
 
-AutoArmor::AutoArmor() : IModule(0, Category::PLAYER, "Automatically equips the best armor.") {
-}
-
-AutoArmor::~AutoArmor() {
-}
-
-const char* AutoArmor::getModuleName() {
-	return ("AutoArmor");
-}
-
 void AutoArmor::onTick(C_GameMode* gm) {
+	if (strcmp(g_Data.getScreenName.c_str(), "inventory_screen") != 0 && onlyInv)
+		return;
+
 	C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
 	C_Inventory* inv = supplies->inventory;
 	C_InventoryTransactionManager* manager = g_Data.getLocalPlayer()->getTransactionManager();

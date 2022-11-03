@@ -479,8 +479,6 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 		if (GameData::shouldHide() || !moduleMgr->isInitialized())
 			return oText(a1, renderCtx);
 
-		static auto clickGuiModule = moduleMgr->getModule<ClickGuiMod>();
-
 		HImGui.startFrame();
 		g_Data.frameCount++;
 
@@ -494,13 +492,26 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 			count = 0;
 		} //防止多次渲染 同时解决了渲染闪烁的问题
 
-		auto wid = g_Data.getClientInstance()->getGuiData()->windowSize;
+		g_Data.getScreenName = g_Hooks.currentScreenName;
 
 		// Call PreRender() functions
 		moduleMgr->onPreRender(renderCtx);
 		DrawUtils::flush();
 
 		__int64 retval = oText(a1, renderCtx);
+
+		static auto clickGuiModule = moduleMgr->getModule<ClickGuiMod>();
+		if (clickGuiModule->isEnabled()) {
+			ClickGui::render();
+		}
+		else {
+			moduleMgr->onPostRender(renderCtx);
+		}
+
+		HImGui.endFrame();
+		DrawUtils::flush();
+
+		auto wid = g_Data.getClientInstance()->getGuiData()->windowSize;
 
 		static float rcolors[4];          // Rainbow color array RGBA
 		static float disabledRcolors[4];  // Rainbow Colors, but for disabled modules
@@ -513,16 +524,6 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 			disabledRcolors[2] = std::min(1.f, rcolors[2] * 0.4f + 0.2f);
 			disabledRcolors[3] = 1;
 		}
-
-		if (clickGuiModule->isEnabled()) {
-			ClickGui::render();
-		}
-		else {
-			moduleMgr->onPostRender(renderCtx);
-		}
-
-		HImGui.endFrame();
-		DrawUtils::flush();
 
 		// Draw Info / Alert Boxes
 		{

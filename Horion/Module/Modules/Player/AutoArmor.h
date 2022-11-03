@@ -3,6 +3,9 @@
 #include "../Module.h"
 
 class AutoArmor : public IModule {
+private:
+	bool onlyInv = false;
+
 public:
 	C_CraftingScreenController* inventoryScreen = nullptr;
 	AutoArmor();
