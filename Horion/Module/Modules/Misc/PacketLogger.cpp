@@ -1,4 +1,5 @@
 #include "PacketLogger.h"
+#include "../../../../Utils/Logger.h"
 
 PacketLogger::PacketLogger() : IModule(0, Category::MISC, "Logging Packets!") {
 	registerBoolSetting("ShowAuth", &showAuth, showAuth);
@@ -39,7 +40,7 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	}
 	if (packet->isInstanceOf<C_AnimatePacket>()) {
 		auto packets = reinterpret_cast<C_AnimatePacket*>(packet);
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s action=%i rowingTime=%f entityId=%i", packetName, (int)packets->action, packets->rowingTime,packets->entityRuntimeId);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s action=%i rowingTime=%f entityId=%i", packetName, (int)packets->action, packets->rowingTime, packets->entityRuntimeId);
 		return;
 	}
 	if (packet->isInstanceOf<NetworkLatencyPacket>()) {
@@ -49,7 +50,7 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	}
 	if (packet->isInstanceOf<C_InteractPacket>()) {
 		auto packets = reinterpret_cast<C_InteractPacket*>(packet);
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s action=%i", packetName, packets->action);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s action=%i mousePos(X=%f,Y=%f,Z=%f)", packetName, packets->action, packets->mousePosition.x, packets->mousePosition.y, packets->mousePosition.z);
 		return;
 	}
 	if (packet->isInstanceOf<C_MobEquipmentPacket>()) {
@@ -66,12 +67,12 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	}
 	if (packet->isInstanceOf<CommandRequestPacket>()) {
 		auto packets = reinterpret_cast<CommandRequestPacket*>(packet);
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s command=%c", packetName, packets->payload.getText());
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s command=%s type=%i", packetName, packets->command.getText(), packets->type);
 		return;
 	}
 	if (packet->isInstanceOf<ActorEventPacket>()) {
 		auto packets = reinterpret_cast<ActorEventPacket*>(packet);
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s eventId=%i itemId=%i", packetName, packets->eventId,packets->itemId);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s eventId=%i itemId=%i", packetName, packets->eventId, packets->itemId);
 		return;
 	}
 

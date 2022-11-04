@@ -294,7 +294,7 @@ CommandRequestPacket::CommandRequestPacket() {
 C_InteractPacket::C_InteractPacket(/*enum InteractPacket::Action, class ActorRuntimeID, vec3_t const&*/) {
 	static uintptr_t** interactPacketVtable = 0x0;
 	if (interactPacketVtable == 0x0) {
-		uintptr_t sigOffset = FindSignature("48 8D 15 ? ? ? ? C7 40 ? ? ? ? ? 33 C9 C7 40 ? ? ? ? ? 48 89 48 28 48 89 48 30 89 48 38 88 48 40 48 89 48 48 48 89 48 50");
+		uintptr_t sigOffset = FindSignature("48 8D 0D ? ? ? ? 48 89 8D ? ? ? ? ? ? ? ? ? ? ? 48 89 95 ? ? ? ? F2 0F ? 40 2C");
 		int offset = *reinterpret_cast<int*>(sigOffset + 3);
 		interactPacketVtable = reinterpret_cast<uintptr_t**>(sigOffset + offset + /*length of instruction*/ 7);
 #ifdef _DEBUG

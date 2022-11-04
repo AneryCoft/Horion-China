@@ -135,6 +135,7 @@ class CommandRequestPacket : public C_Packet {
 	char pad_0x8[0x28];  //0x8
 public:
 	// 从1.16的pdb复制来的 1.18未测试
+	// 已测试 可以使用
 	TextHolder command;
 	uint8_t type;
 private:
@@ -155,6 +156,7 @@ private:
 public:
 	int action;
 	long runtimeEntityId;
+	vec3_t mousePosition;
 };
 
 class ActorEventPacket : public C_Packet {

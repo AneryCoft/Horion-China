@@ -666,6 +666,10 @@
     <ClInclude Include="Utils\VoxelIntersector.h" />
     <ClInclude Include="Utils\xorstr.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="resources\tip.mp3" />
+    <Media Include="resources\tip_disable.mp3" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\Microsoft.XAudio2.Redist.1.2.0\build\native\Microsoft.XAudio2.Redist.targets" Condition="Exists('packages\Microsoft.XAudio2.Redist.1.2.0\build\native\Microsoft.XAudio2.Redist.targets')" />

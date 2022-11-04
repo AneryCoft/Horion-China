@@ -65,6 +65,7 @@
 #include "Modules/Player/AntiBot.h"
 #include "Modules/Player/AutoArmor.h"
 #include "Modules/Player/AutoFish.h"
+#include "Modules/Player/AutoLeave.h"
 #include "Modules/Player/AutoTotem.h"
 #include "Modules/Player/BlockReach.h"
 #include "Modules/Player/ChestStealer.h"
