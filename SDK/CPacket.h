@@ -109,7 +109,7 @@ public:
 	__int64 Unknown0;      //Test
 	std::string Unknown1;  //Test
 	__int64 Unknown2;      //Test
-}; //NPCÇëÇó°ü ½öÔÚ½ÌÓı°æÓĞÓÃ
+}; //NPCÃ‡Ã«Ã‡Ã³Â°Ã¼ Â½Ã¶Ã”ÃšÂ½ÃŒÃ“Ã½Â°Ã¦Ã“ÃÃ“Ãƒ
 
 class PlayerSkinPacket : public C_Packet {
 public:
@@ -132,16 +132,19 @@ public:
 };
 
 class CommandRequestPacket : public C_Packet {
+	char pad_0x8[0x28];  //0x8
 public:
-	uint64_t VTable;  //0x0000
-	int two;
-	int one;
-	uint64_t zeroes[4];
-	TextHolder payload;
-	uint64_t thingy[6];
+	// ä»1.16çš„pdbå¤åˆ¶æ¥çš„ 1.18æœªæµ‹è¯•
+	TextHolder command;
+	uint8_t type;
+private:
+	uint64_t unk[2];
+	TextHolder text;
+	__int64 id;
+	uint16_t pad;
+public:
 
 	CommandRequestPacket();
-	CommandRequestPacket(std::string cmd);
 };
 
 class C_InteractPacket : public C_Packet {
