@@ -492,7 +492,8 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 			count = 0;
 		} //防止多次渲染 同时解决了渲染闪烁的问题
 
-		g_Data.getScreenName = g_Hooks.currentScreenName;
+		if (strcmp(g_Hooks.currentScreenName, "toast_screen") != 0 && strcmp(g_Hooks.currentScreenName, "debug_screen"))
+			g_Data.getScreenName = g_Hooks.currentScreenName;
 
 		// Call PreRender() functions
 		moduleMgr->onPreRender(renderCtx);
