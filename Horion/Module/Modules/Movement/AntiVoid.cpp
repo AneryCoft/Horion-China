@@ -17,7 +17,7 @@ const char* AntiVoid::getModuleName() {
 	return ("AntiVoid");
 }
 
-bool isVoid() {
+bool AntiVoid::isVoid() {
 	C_LocalPlayer* player = g_Data.getLocalPlayer();
 	vec3_t* playerPos = player->getPos();
 

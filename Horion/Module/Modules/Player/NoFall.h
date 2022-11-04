@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Module.h"
+#include "../../ModuleManager.h"
 
 class NoFall : public IModule {
 private:

@@ -89,9 +89,10 @@ case 0:{
 		}
 	} break;
 	case 2: {
-		if (localPlayer->fallDistance > 2.5f) {
+		static auto antiVoidMod = moduleMgr->getModule<AntiVoid>();
+		if (localPlayer->fallDistance > 2.5f && !antiVoidMod->isVoid()) {
 			localPlayer->velocity.y = 0.f;
-			localPlayer->setPos(localPlayerPos->add(0.1f));
+			//localPlayer->setPos(localPlayerPos->add(0.1f));
 		}
 	}break;
 	case 3: {

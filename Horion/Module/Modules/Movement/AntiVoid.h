@@ -11,6 +11,7 @@ private:
 public:
 	SettingEnum mode;
 	vec3_t savePos;
+	bool isVoid();
 
 	AntiVoid();
 	~AntiVoid();
