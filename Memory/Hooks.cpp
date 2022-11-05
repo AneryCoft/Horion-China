@@ -782,8 +782,8 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 	//static auto freecamMod = moduleMgr->getModule<Freecam>();
 	static auto blinkMod = moduleMgr->getModule<Blink>();
 	//static auto noPacketMod = moduleMgr->getModule<NoPacket>();
-	static auto disablerMod = moduleMgr->getModule<Disabler>();
-	static TimerUtil sendTime;
+	//static auto disablerMod = moduleMgr->getModule<Disabler>();
+	//static TimerUtil sendTime;
 
 	/*if (noPacketMod->isEnabled() && g_Data.isInGame())
 		return;*/
@@ -821,7 +821,7 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 		}
 	}
 
-	if (disablerMod->isEnabled() && (disablerMod->mode.selected == 3 || disablerMod->mode.selected == 4)) {
+	/*if (disablerMod->isEnabled() && (disablerMod->mode.selected == 3 || disablerMod->mode.selected == 4)) {
 		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
 			NetworkLatencyPacket* packets = reinterpret_cast<NetworkLatencyPacket*>(packet);
 			disablerMod->NetworkLatencyPacketHolder.push_back(new NetworkLatencyPacket(*packets));
@@ -837,7 +837,7 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 				disablerMod->NetworkLatencyPacketHolder.clear();
 			}
 		}
-	}
+	}*/
 
 
 	/*
