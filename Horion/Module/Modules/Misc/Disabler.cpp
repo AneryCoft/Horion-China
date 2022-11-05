@@ -66,7 +66,7 @@ void Disabler::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	else if (mode.selected == 3 || mode.selected == 4) {
 		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
 			NetworkLatencyPacket* networkLatencyPacket = reinterpret_cast<NetworkLatencyPacket*>(packet);
-			networkLatencyPacket->timeStamp += 10000000;
+			networkLatencyPacket->timeStamp -= 10000000;
 			//std::chrono::system_clock::now().time_since_epoch().count() 1s的间隔约为10000000
 		}
 	}
