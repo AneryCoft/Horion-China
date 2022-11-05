@@ -2,17 +2,18 @@
 
 #include "../Module.h"
 #include "../../ModuleManager.h"
+#include "../../../DrawUtils.h"
 
 class Tower : public IModule {
 private:
-	float motion = 0.5f;
-	bool tryTower(vec3_t blockBelow);
+	float motion = 0.32f;
 	bool rotations = false;
-	int timer = 50;
+	float timer = 50.f;
 	bool needRotations = false;
 	bool autoBlock = false;
-public:
 	SettingEnum mode;
+public:
+	
 	Tower();
 	~Tower();
 
@@ -22,4 +23,5 @@ public:
 	virtual void onPlayerTick(C_Player* player) override;
 	virtual void onSendPacket(C_Packet* packet, bool& cancelSend) override;
 	virtual void onDisable() override;
+	virtual void onTick(C_GameMode* gm) override;
 };

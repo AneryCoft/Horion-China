@@ -1,15 +1,15 @@
 #include "Tower.h"
 
-#include "../../../DrawUtils.h"
-
 Tower::Tower() : IModule(0, Category::WORLD, "Like scaffold, but vertically and a lot faster.") {
 	mode = SettingEnum(this)
 		.addEntry(EnumEntry("Motion", 0))
-		.addEntry(EnumEntry("Timer", 1));
+		.addEntry(EnumEntry("Timer", 1))
+		.addEntry(EnumEntry("Jump", 2))
+		.addEntry(EnumEntry("Teleport", 3));
 	registerEnumSetting("Mode", &mode, 0);
 	registerFloatSetting("Motion", &motion, motion, 0.3f, 1.f);
-	registerIntSetting("Timer", &timer, timer, 20, 100);
-	registerBoolSetting("AutoBlock", &autoBlock, autoBlock);
+	registerFloatSetting("Timer", &timer, timer, 20.f, 100.f);
+	registerBoolSetting("AutoBlocks", &autoBlock, autoBlock);
 	registerBoolSetting("Rotations", &rotations, rotations);
 }
 
@@ -20,79 +20,17 @@ const char* Tower::getModuleName() {
 	return ("Tower");
 }
 
-bool Tower::tryTower(vec3_t blockBelow) {
-	C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
-
-	if (input == nullptr)
-		return false;
-
-	blockBelow = blockBelow.floor();
-
-	DrawUtils::drawBox(blockBelow, vec3_t(blockBelow).add(1), 0.4f);
-
-	C_Block* block = g_Data.getLocalPlayer()->region->getBlock(vec3_ti(blockBelow));
-	C_BlockLegacy* blockLegacy = (block->blockLegacy);
-	if (blockLegacy->material->isReplaceable) {
-		vec3_ti blok(blockBelow);
-
-		// Find neighbour
-		static std::vector<vec3_ti*> checklist;
-		if (checklist.empty()) {
-			checklist.push_back(new vec3_ti(0, -1, 0));
-			checklist.push_back(new vec3_ti(0, 1, 0));
-
-			checklist.push_back(new vec3_ti(0, 0, -1));
-			checklist.push_back(new vec3_ti(0, 0, 1));
-
-			checklist.push_back(new vec3_ti(-1, 0, 0));
-			checklist.push_back(new vec3_ti(1, 0, 0));
-		}
-		bool foundCandidate = false;
-		int i = 0;
-		for (auto current : checklist) {
-			vec3_ti calc = blok.sub(*current);
-			if (!((g_Data.getLocalPlayer()->region->getBlock(calc)->blockLegacy))->material->isReplaceable) {
-				// Found a solid block to click
-				foundCandidate = true;
-				blok = calc;
-				break;
-			}
-			i++;
-		}
-		if (foundCandidate) {
-			if (GameData::isKeyDown(*input->spaceBarKey)) {
-				needRotations = true;
-				if (mode.selected == 0) {
-					vec3_t moveVec;
-					moveVec.x = g_Data.getLocalPlayer()->velocity.x;
-					moveVec.y = motion;
-					moveVec.z = g_Data.getLocalPlayer()->velocity.z;
-					g_Data.getLocalPlayer()->lerpMotion(moveVec);
-					bool idk = true;
-					g_Data.getCGameMode()->buildBlock(&blok, i, idk);
-
-					return true;
-				}
-				else if (mode.selected == 1) {
-					g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
-					bool idk = true;
-					g_Data.getCGameMode()->buildBlock(&blok, i, idk);
-				}
-			}
-		}
-		else
-			needRotations = false;
-	}
-	return false;
+void Tower::onDisable() {
+	g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
 }
 
-void Tower::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
-	if (g_Data.getLocalPlayer() == nullptr)
+void Tower::onTick(C_GameMode* gm) {
+	auto localPlayer = g_Data.getLocalPlayer();
+	if (localPlayer == nullptr)
 		return;
-	/*if (!g_Data.canUseMoveKeys())
-		return;*/
+
 	static auto scaffoldMod = moduleMgr->getModule<Scaffold>();
-	auto selectedItem = g_Data.getLocalPlayer()->getSelectedItem();
+	auto selectedItem = localPlayer->getSelectedItem();
 	if (!selectedItem->isValid() || !(*selectedItem->item)->isBlock()) {
 		if (scaffoldMod->calcCount() == 0)
 			return;
@@ -103,30 +41,70 @@ void Tower::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 		else {
 			return;
 		}
-	} // Block in hand?
+	} //手中是否有方块
 
-	vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;  // Block below the player
-	blockBelow.y -= g_Data.getLocalPlayer()->height;
+	C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
+
+	if (input == nullptr)
+		return;
+
+	vec3_t blockBelow = *localPlayer->getPos();
+	blockBelow.y -= localPlayer->height;
 	blockBelow.y -= 0.5f;
+	//玩家脚下的方块
 
-	// Adjustment by velocity
-	float speed = g_Data.getLocalPlayer()->velocity.magnitudexy();
-	vec3_t vel = g_Data.getLocalPlayer()->velocity;
-	vel.normalize();  // Only use values from 0 - 1
+	blockBelow = blockBelow.floor();
 
-	if (!tryTower(blockBelow)) {
-		if (speed > 0.05f) {
-			blockBelow.z -= vel.z * 0.4f;
-			if (!tryTower(blockBelow)) {
-				blockBelow.x -= vel.x * 0.4f;
-				if (!tryTower(blockBelow) && g_Data.getLocalPlayer()->isSprinting()) {
-					blockBelow.z += vel.z;
-					blockBelow.x += vel.x;
-					tryTower(blockBelow);
+	C_BlockLegacy* blockLegacy = localPlayer->region->getBlock(vec3_ti(blockBelow))->blockLegacy;
+
+	if (blockLegacy->material->isReplaceable) {
+		vec3_ti block(blockBelow);
+		block = block.sub(vec3_ti(0, 1, 0));
+		C_BlockLegacy* blockLegacy = localPlayer->region->getBlock(block)->blockLegacy;
+		if (!blockLegacy->material->isReplaceable) {
+			if (GameData::isKeyDown(*input->spaceBarKey)) {
+				needRotations = true;
+
+				switch (mode.selected) {
+				case 0:
+				{
+					vec3_t moveVec;
+					moveVec.x = localPlayer->velocity.x;
+					moveVec.y = motion;
+					moveVec.z = localPlayer->velocity.z;
+					g_Data.getLocalPlayer()->lerpMotion(moveVec);
 				}
+				break;
+				case 1:
+					g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
+					break;
+				case 2:
+					localPlayer->jumpFromGround();
+					break;
+				case 3:
+					localPlayer->setPos(localPlayer->getPos()->add(0, 1, 0));
+				}
+
+				g_Data.getCGameMode()->buildBlock(&block, 1, true);
+			}
+			else {
+				needRotations = false;
 			}
 		}
 	}
+}
+
+void Tower::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
+	if (g_Data.getLocalPlayer() == nullptr || !g_Data.canUseMoveKeys())
+		return;
+
+	vec3_t blockBelow = *g_Data.getLocalPlayer()->getPos();
+	blockBelow.y -= g_Data.getLocalPlayer()->height;
+	blockBelow.y -= 0.5f;
+
+	blockBelow = blockBelow.floor();
+
+	DrawUtils::drawBox(blockBelow, vec3_t(blockBelow).add(1), 0.4f);
 }
 
 void Tower::onPlayerTick(C_Player* player) {
@@ -141,13 +119,5 @@ void Tower::onSendPacket(C_Packet* packet, bool& cancelSend) {
 			C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
 			movePacket->pitch = 89.f;
 		}
-		/*if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
-			PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-			authInputPacket->pitch = 89.f;
-		}*/
 	}
-}
-
-void Tower::onDisable() {
-	g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
 }
