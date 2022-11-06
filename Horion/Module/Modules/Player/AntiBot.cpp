@@ -3,7 +3,7 @@
 AntiBot::AntiBot() : IModule(0, Category::PLAYER, "Enable this module to filter out bots!") {
 	registerBoolSetting("Hitbox Check", &hitboxCheck, hitboxCheck);
 	registerBoolSetting("Name Check", &nameCheck, nameCheck);
-	registerBoolSetting("Name Check+", &nameCheckPlus, nameCheckPlus);
+	//registerBoolSetting("Name Check+", &nameCheckPlus, nameCheckPlus);
 	registerBoolSetting("Invisible Check", &invisibleCheck, invisibleCheck);
 	registerBoolSetting("EntityID Check", &entityIdCheck, entityIdCheck);
 	registerBoolSetting("Move Check", &moveCheck, moveCheck);
