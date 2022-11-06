@@ -145,8 +145,10 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	float startY = tabgui ? 6 * f : 0.f;
 	if (tabgui && scriptMgr.getNumEnabledScripts() > 0)
 		startY += f;
-	{  // FPS
-		if (!(g_Data.getLocalPlayer() == nullptr || !fps)) {
+
+	if (g_Data.getLocalPlayer() != nullptr) {
+		// FPS
+		if (fps) {
 			std::string fpsText = "FPS: " + std::to_string(g_Data.getFPS());
 			vec4_t rectPos = vec4_t(2.5f, startY + 5.f * scale, len, startY + 15.f * scale);
 			vec2_t textPos = vec2_t(rectPos.x + 1.5f, rectPos.y + 1.f);
@@ -160,9 +162,9 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 
 			startY += f;
 		}
-	}
-	{  // CPS
-		if (!(g_Data.getLocalPlayer() == nullptr || !cps)) {
+
+		// CPS
+		if (cps) {
 			std::string cpsText = "CPS: " + std::to_string(g_Data.getLeftCPS()) + " - " + std::to_string(g_Data.getRightCPS());
 			vec4_t rectPos = vec4_t(2.5f, startY + 5.f * scale, len, startY + 15.f * scale);
 			vec2_t textPos = vec2_t(rectPos.x + 1.5f, rectPos.y + 1.f);
@@ -176,9 +178,9 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 
 			startY += f;
 		}
-	}
-	{  // Speed
-		if (!(g_Data.getLocalPlayer() == nullptr || !speed)) {
+
+		// Speed
+		if (speed) {
 			char str[16];
 			sprintf_s(str, 16, "%.1f", g_Data.getLocalPlayer()->getBlocksPerSecond()); //仅保留一位小数
 			std::string speedText = "Speed: " + std::string(str);
@@ -195,9 +197,10 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 
 			startY += f;
 		}
-	}
-	{  // Angle
-		if (!(g_Data.getLocalPlayer() == nullptr || !angle)) {
+
+		// Angle
+#ifdef _DEBUG
+		if (angle) {
 			std::string coordsPitch = "Pitch: " + std::to_string((int)floorf(g_Data.getLocalPlayer()->pitch));
 			std::string coordsYaw = "Yaw: " + std::to_string((int)floorf(g_Data.getLocalPlayer()->yaw));
 			vec4_t rectPos = vec4_t(2.5f, startY + 5.f * scale, len, startY + 25.f * scale);
@@ -214,9 +217,10 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			textPos.y += f;
 			startY += 2 * f;
 		}
-	}
-	{  // Coordinates
-		if (!(g_Data.getLocalPlayer() == nullptr || !coordinates)) {
+#endif
+
+		// Coordinates
+		if (coordinates) {
 			vec3_t* pos = g_Data.getLocalPlayer()->getPos();
 
 			std::string coordsX = "X: " + std::to_string((int)floorf(pos->x));
@@ -236,10 +240,9 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			textPos.y += f;
 			DrawUtils::drawText(textPos, &coordsZ, MC_Color(200, 200, 200), scale);
 		}
-	}
-	{  // ArmorHUD
 
-		if (!(g_Data.getLocalPlayer() == nullptr || !displayArmor || !GameData::canUseMoveKeys())) {
+		// ArmorHUD
+		if (displayArmor && GameData::canUseMoveKeys()) {
 			static float constexpr scale = 1.f;
 			static float constexpr opacity = 0.25f;
 			static float constexpr spacing = scale + 15.f;
@@ -277,9 +280,9 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 				DrawUtils::drawItem(stack, vec2_t(x, y), opacity, scale, stack->isEnchanted());
 			}
 		}
-	}
-	{  // Keystrokes
-		if (!(g_Data.getLocalPlayer() == nullptr || !keystrokes || !GameData::canUseMoveKeys())) {
+
+		// Keystrokes
+		if (keystrokes && GameData::canUseMoveKeys()) {
 			C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
 			HudModule::drawKeystroke(*input->forwardKey, vec2_t(32.f, windowSize.y - 84));
 			HudModule::drawKeystroke(*input->leftKey, vec2_t(10.f, windowSize.y - 62));
