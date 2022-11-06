@@ -35,7 +35,7 @@ meshHelper_renderImm_t meshHelper_renderImm;
 
 bool hasInitializedSigs = false;
 void initializeSigs() {
-	
+
 	tess_vertex = reinterpret_cast<tess_vertex_t>(FindSignature("40 57 48 83 EC ? 0F 29 74 24 ? 0F 29 7C 24"));
 	meshHelper_renderImm = reinterpret_cast<meshHelper_renderImm_t>(FindSignature("40 53 56 57 48 81 EC ?? ?? ?? ?? 49 8B F0 48 8B DA"));
 	//mce__VertexFormat__disableHalfFloats = reinterpret_cast<mce__VertexFormat__disableHalfFloats_t>(FindSignature("40 53 48 83 EC ?? 48 8B D9 C7 81 ?? ?? ?? ?? 00 00 00 00 C6 81 ?? ?? ?? ?? 00"));
@@ -54,10 +54,10 @@ void DrawUtils::setCtx(C_MinecraftUIRenderContext* ctx, C_GuiData* gui) {
 
 	ElapsedMicroseconds.QuadPart *= 1000000;
 	int ticksPerSecond = 20;
-	if(g_Data.getClientInstance()->minecraft)
+	if (g_Data.getClientInstance()->minecraft)
 		if (g_Data.getClientInstance()->minecraft->timer != nullptr)
 			ticksPerSecond = (int)*g_Data.getClientInstance()->minecraft->timer;
-	if(ticksPerSecond < 1)
+	if (ticksPerSecond < 1)
 		ticksPerSecond = 1;
 	ElapsedMicroseconds.QuadPart /= Frequency.QuadPart / ticksPerSecond;
 	lerpT = (ElapsedMicroseconds.QuadPart / 1000000.f);
@@ -88,7 +88,7 @@ void DrawUtils::setCtx(C_MinecraftUIRenderContext* ctx, C_GuiData* gui) {
 		int offset = *reinterpret_cast<int*>(sigOffset + 3);
 		uiMaterial = reinterpret_cast<MaterialPtr*>(sigOffset + offset + 7);
 	}
-	if(entityFlatStaticMaterial == nullptr && g_Data.isInGame() && g_Data.getLocalPlayer() != nullptr){
+	if (entityFlatStaticMaterial == nullptr && g_Data.isInGame() && g_Data.getClientInstance() != nullptr) {
 		entityFlatStaticMaterial = reinterpret_cast<MaterialPtr*>(g_Data.getClientInstance()->itemInHandRenderer->entityLineMaterial.materialPtr);
 	}
 }
@@ -164,7 +164,7 @@ void DrawUtils::flush() {
 }
 
 void DrawUtils::drawTriangle(const vec2_t& p1, const vec2_t& p2, const vec2_t& p3) {
-	
+
 	DrawUtils::tess__begin(tesselator, 3, 3);
 
 	tess_vertex(tesselator, p1.x, p1.y, 0);
@@ -230,7 +230,7 @@ void DrawUtils::drawText(const vec2_t& pos, std::string* textStr, const MC_Color
 }
 
 void DrawUtils::drawBox(const vec3_t& lower, const vec3_t& upper, float lineWidth, bool outline) {
-	
+
 	vec3_t diff;
 	diff.x = upper.x - lower.x;
 	diff.y = upper.y - lower.y;
@@ -251,7 +251,7 @@ void DrawUtils::drawBox(const vec3_t& lower, const vec3_t& upper, float lineWidt
 	for (int i = 0; i < 8; i++) {
 		vec2_t screen;
 		if (refdef->OWorldToScreen(origin, vertices[i], screen, fov, screenSize)) {
-			screenCords.emplace_back(outline ? (int) screenCords.size() : i, screen);
+			screenCords.emplace_back(outline ? (int)screenCords.size() : i, screen);
 		}
 	}
 	if (screenCords.size() < 2)
@@ -267,12 +267,12 @@ void DrawUtils::drawBox(const vec3_t& lower, const vec3_t& upper, float lineWidt
 
 				bool shouldDraw = false;
 				// X direction
-				shouldDraw |= fromOrig.y == toOrig.y && fromOrig.z == toOrig.z && fromOrig.x < toOrig.x; 
+				shouldDraw |= fromOrig.y == toOrig.y && fromOrig.z == toOrig.z && fromOrig.x < toOrig.x;
 				// Y direction
-				shouldDraw |= fromOrig.x == toOrig.x && fromOrig.z == toOrig.z && fromOrig.y < toOrig.y; 
+				shouldDraw |= fromOrig.x == toOrig.x && fromOrig.z == toOrig.z && fromOrig.y < toOrig.y;
 				// Z direction
-				shouldDraw |= fromOrig.x == toOrig.x && fromOrig.y == toOrig.y && fromOrig.z < toOrig.z; 
-				
+				shouldDraw |= fromOrig.x == toOrig.x && fromOrig.y == toOrig.y && fromOrig.z < toOrig.z;
+
 				if (shouldDraw)
 					drawLine(std::get<1>(from), std::get<1>(to), lineWidth);
 			}
@@ -311,7 +311,8 @@ void DrawUtils::drawBox(const vec3_t& lower, const vec3_t& upper, float lineWidt
 			float angle = atan2(dir.y, dir.x) - lastDirAtan2;
 			if (angle > PI) {
 				angle -= 2 * PI;
-			} else if (angle <= -PI) {
+			}
+			else if (angle <= -PI) {
 				angle += 2 * PI;
 			}
 			if (angle >= 0 && angle < smallestAngle) {
@@ -326,7 +327,7 @@ void DrawUtils::drawBox(const vec3_t& lower, const vec3_t& upper, float lineWidt
 	} while (std::get<0>(current) != std::get<0>(start) && indices.size() < 8);
 
 	// draw
-	
+
 	vec2_t lastVertex;
 	bool hasLastVertex = false;
 	for (auto& indice : indices) {
@@ -336,7 +337,7 @@ void DrawUtils::drawBox(const vec3_t& lower, const vec3_t& upper, float lineWidt
 			lastVertex = curVertex;
 			continue;
 		}
-		
+
 		drawLine(lastVertex, curVertex, lineWidth);
 		lastVertex = curVertex;
 	}
@@ -361,21 +362,23 @@ void DrawUtils::drawImage(std::string FilePath, vec2_t& imagePos, vec2_t& ImageD
 }
 
 void DrawUtils::drawNameTags(C_Entity* ent, float textSize, bool drawHealth, bool useUnicodeFont) {
+	static auto nameTagsMod = moduleMgr->getModule<NameTags>();
 
-	if (std::time(nullptr) < g_Hooks.connecttime + 1)
-		return;
-
-	if (!ent->checkNameTagFunc())
-		return;
+	std::string text;
+	if (nameTagsMod->displayDistance) {
+		float distance = ent->getPos()->dist(*g_Data.getLocalPlayer()->getPos());
+		text = ent->getNameTag()->getText() + std::string("[") + std::to_string((int)distance) + std::string("blocks") + std::string("]");
+	}
+	else {
+		text = ent->getNameTag()->getText();
+	}
 
 	vec2_t textPos;
 	vec4_t rectPos;
-	std::string text = ent->getNameTag()->getText();
 	text = Utils::sanitize(text);
 
 	float textWidth = getTextWidth(&text, textSize);
 	float textHeight = DrawUtils::getFont(Fonts::SMOOTH)->getLineHeight() * textSize;
-
 	if (refdef->OWorldToScreen(origin, ent->eyePos0.add(0, 0.5f, 0), textPos, fov, screenSize)) {
 		textPos.y -= textHeight;
 		textPos.x -= textWidth / 2.f;
@@ -385,48 +388,48 @@ void DrawUtils::drawNameTags(C_Entity* ent, float textSize, bool drawHealth, boo
 		rectPos.w = textPos.y + textHeight + 2.f * textSize;
 		vec4_t subRectPos = rectPos;
 		subRectPos.y = subRectPos.w - 1.f * textSize;
-		static auto nametagsMod = moduleMgr->getModule<NameTags>();
+
 		static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
 		if (ClientThemes->Theme.selected == 1) {
-			fillRectangle(rectPos, MC_Color(13, 29, 48), nametagsMod->opacity);
-			if (nametagsMod->underline) {
-				fillRectangle(subRectPos, MC_Color(30, 110, 20), 0.9f);
-			} else {
-				fillRectangle(rectPos, MC_Color(12, 12, 12), nametagsMod->opacity);
-				if (nametagsMod->underline) {
-					fillRectangle(subRectPos, MC_Color(85, 85, 85), 0.9f);
+			fillRectangle(rectPos, MC_Color(13, 29, 48), nameTagsMod->opacity);
+			if (nameTagsMod->underline) {
+				fillRectangle(subRectPos, MC_Color(28, 107, 201), 0.9f);
+			}
+			drawText(textPos, &text, MC_Color(255, 255, 255), textSize);
+		}
+		else {
+			fillRectangle(rectPos, MC_Color(12, 12, 12), nameTagsMod->opacity);
+			if (nameTagsMod->underline) {
+				fillRectangle(subRectPos, MC_Color(85, 85, 85), 0.9f);
+			}
+			drawText(textPos, &text, MC_Color(255, 255, 255), textSize);
+		}
+
+		if (ent->getEntityTypeId() == 319 && nameTagsMod->displayArmor) {  // is player, show armor
+			auto* player = reinterpret_cast<C_Player*>(ent);
+			float scale = textSize * 0.6f;
+			float spacing = scale + 15.f;
+			float x = rectPos.x + 1.f * textSize;
+			float y = rectPos.y - 20.f * scale;
+			// armor
+			for (int i = 0; i < 4; i++) {
+				C_ItemStack* stack = player->getArmor(i);
+				if (stack->item != nullptr) {
+					DrawUtils::drawItem(stack, vec2_t(x, y), 1.f, scale, stack->isEnchanted());
+					x += scale * spacing;
 				}
-				drawText(textPos, &text, MC_Color(255, 255, 255), textSize);
-
-				static auto nameTagsMod = moduleMgr->getModule<NameTags>();
-
-				if (ent->getEntityTypeId() == 319 && nameTagsMod->displayArmor) {  // is player, show armor
-					auto* player = reinterpret_cast<C_Player*>(ent);
-					float scale = textSize * 0.6f;
-					float spacing = scale + 15.f;
-					float x = rectPos.x + 1.f * textSize;
-					float y = rectPos.y - 20.f * scale;
-					// armor
-					for (int i = 0; i < 4; i++) {
-						C_ItemStack* stack = player->getArmor(i);
-						if (stack->item != nullptr) {
-							DrawUtils::drawItem(stack, vec2_t(x, y), 1.f, scale, stack->isEnchanted());
-							x += scale * spacing;
-						}
-					}
-					// item
-					{
-						C_ItemStack* stack = player->getSelectedItem();
-						if (stack->item != nullptr) {
-							DrawUtils::drawItem(stack, vec2_t(rectPos.z - 1.f - 15.f * scale, y), 1.f, scale, stack->isEnchanted());
-						}
-					}
+			}
+			// item
+			{
+				C_ItemStack* stack = player->getSelectedItem();
+				if (stack->item != nullptr) {
+					DrawUtils::drawItem(stack, vec2_t(rectPos.z - 1.f - 15.f * scale, y), 1.f, scale, stack->isEnchanted());
 				}
 			}
 		}
 	}
 }
-	void DrawUtils::drawEntityBox(C_Entity* ent, float lineWidth) {
+void DrawUtils::drawEntityBox(C_Entity* ent, float lineWidth) {
 	vec3_t end = ent->eyePos0;
 	AABB render(end, ent->width, ent->height, end.y - ent->aabb.lower.y);
 	render.upper.y += 0.1f;
@@ -480,12 +483,12 @@ void DrawUtils::drawItem(C_ItemStack* item, const vec2_t& itemPos, float opacity
 }
 
 vec2_t DrawUtils::worldToScreen(const vec3_t& world) {
-	vec2_t ret{-1, -1};
+	vec2_t ret{ -1, -1 };
 	refdef->OWorldToScreen(origin, world, ret, fov, screenSize);
 	return ret;
 }
 void DrawUtils::drawLine3d(const vec3_t& start, const vec3_t& end) {
-	if(game3dContext == 0 || entityFlatStaticMaterial == 0)
+	if (game3dContext == 0 || entityFlatStaticMaterial == 0)
 		return;
 
 	auto myTess = DrawUtils::get3dTessellator();
@@ -526,10 +529,10 @@ void DrawUtils::drawBox3d(const vec3_t& lower, const vec3_t& upper) {
 	vertices[6] = vec3_t(newLower.x, newLower.y + diff.y, newLower.z + diff.z);
 	vertices[7] = vec3_t(newLower.x + diff.x, newLower.y + diff.y, newLower.z + diff.z);
 
-	#define line(m, n) tess_vertex(myTess, m.x, m.y, m.z); \
+#define line(m, n) tess_vertex(myTess, m.x, m.y, m.z); \
 		tess_vertex(myTess, n.x, n.y, n.z);
-	
-	#define li(m, n) line(vertices[m], vertices[n]);
+
+#define li(m, n) line(vertices[m], vertices[n]);
 
 	li(0, 1);
 	li(1, 3);
@@ -546,14 +549,14 @@ void DrawUtils::drawBox3d(const vec3_t& lower, const vec3_t& upper) {
 	li(2, 6);
 	li(3, 7);
 
-	#undef li
-	#undef line
-	
+#undef li
+#undef line
+
 	meshHelper_renderImm(game3dContext, myTess, entityFlatStaticMaterial);
 }
 void DrawUtils::fillRectangle(const vec4_t& pos, const MC_Color& col, float alpha) {
 	DrawUtils::setColor(col.r, col.g, col.b, alpha);
-	DrawUtils::drawQuad({pos.x, pos.w}, {pos.z, pos.w}, {pos.z, pos.y}, {pos.x, pos.y});
+	DrawUtils::drawQuad({ pos.x, pos.w }, { pos.z, pos.w }, { pos.z, pos.y }, { pos.x, pos.y });
 }
 inline void DrawUtils::tess__begin(Tessellator* tess, int vertexFormat, int numVerticesReserved) {
 	__int64 tesselator = reinterpret_cast<__int64>(tess);
@@ -567,7 +570,7 @@ void DrawUtils::setGameRenderContext(__int64 ctx) {
 	if (g_Data.getClientInstance()->levelRenderer != nullptr)
 		origin = g_Data.getClientInstance()->levelRenderer->getOrigin();
 
-	if(ctx){
+	if (ctx) {
 		LARGE_INTEGER EndingTime, ElapsedMicroseconds;
 		LARGE_INTEGER Frequency;
 		QueryPerformanceFrequency(&Frequency);
@@ -576,9 +579,9 @@ void DrawUtils::setGameRenderContext(__int64 ctx) {
 
 		ElapsedMicroseconds.QuadPart *= 1000000;
 		int ticksPerSecond = 20;
-		if(g_Data.getClientInstance()->minecraft)
+		if (g_Data.getClientInstance()->minecraft)
 			ticksPerSecond = (int)*g_Data.getClientInstance()->minecraft->timer;
-		if(ticksPerSecond < 1)
+		if (ticksPerSecond < 1)
 			ticksPerSecond = 1;
 		ElapsedMicroseconds.QuadPart /= Frequency.QuadPart / ticksPerSecond;
 		lerpT = (ElapsedMicroseconds.QuadPart / 1000000.f);
@@ -595,7 +598,7 @@ vec3_t DrawUtils::getOrigin() {
 	return origin;
 }
 void DrawUtils::drawLinestrip3d(const std::vector<vec3_t>& points) {
-	if(game3dContext == 0 || entityFlatStaticMaterial == 0)
+	if (game3dContext == 0 || entityFlatStaticMaterial == 0)
 		return;
 
 	auto myTess = DrawUtils::get3dTessellator();
@@ -610,11 +613,11 @@ void DrawUtils::drawLinestrip3d(const std::vector<vec3_t>& points) {
 	 * 5: line strip (7)
 	 */
 
-	for(const auto& p : points){
+	for (const auto& p : points) {
 		auto pD = p.sub(origin);
 		tess_vertex(myTess, pD.x, pD.y, pD.z);
 	}
-	
+
 
 	meshHelper_renderImm(game3dContext, myTess, entityFlatStaticMaterial);
 }

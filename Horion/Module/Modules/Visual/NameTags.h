@@ -2,13 +2,17 @@
 
 #include "../Module.h"
 #include <set>
+#include "../../ModuleManager.h"
+#include "../../../../Memory/Hooks.h"
 
 class NameTags : public IModule {
 public:
 	std::set<std::string> nameTags;
 	bool displayArmor = true;
-	bool underline = true;
-	float opacity = 0.2f;
+	bool displayDistance = true;
+	bool underline = false;
+	float opacity = 0.7f;
+
 	NameTags();
 	~NameTags();
 

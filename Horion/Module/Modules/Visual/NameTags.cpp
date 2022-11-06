@@ -1,12 +1,9 @@
 #include "NameTags.h"
 
-#include "../../../../Utils/Target.h"
-#include "../../ModuleManager.h"
-#include "../../../../Memory/Hooks.h"
-
 NameTags::NameTags() : IModule(0, Category::VISUAL, "Shows better nametags.") {
 	registerBoolSetting("Underline", &underline, underline);
 	registerBoolSetting("Armor", &displayArmor, displayArmor);
+	registerBoolSetting("Distance", &displayDistance, displayDistance);
 	registerFloatSetting("Opacity", &opacity, opacity, 0.f, 1.f);
 }
 
@@ -18,22 +15,17 @@ const char* NameTags::getModuleName() {
 }
 
 void drawNameTags(C_Entity* ent, bool) {
-	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	static auto nameTagsMod = moduleMgr->getModule<NameTags>();
 
-	if (ent != localPlayer) {
-		if (ent->timeSinceDeath > 0)
-			return;
-		if (!ent->checkNameTagFunc())
-			return;
-		if (ent->getNameTag()->getTextLength() < 1)
-			return;
-		if (Target::isValidTarget(ent) && nameTagsMod != nullptr) {
-			nameTagsMod->nameTags.insert(Utils::sanitize(ent->getNameTag()->getText()));
-			float dist = ent->getPos()->dist(*g_Data.getLocalPlayer()->getPos());
-			DrawUtils::drawNameTags(ent, fmax(0.6f, 3.f / dist));
-			DrawUtils::flush();
-		}
+	if (!ent->checkNameTagFunc())
+		return;
+	if (ent->getNameTag()->getTextLength() < 1)
+		return;
+	if (Target::isValidTarget(ent)) {
+		nameTagsMod->nameTags.insert(Utils::sanitize(ent->getNameTag()->getText()));
+		float dist = ent->getPos()->dist(*g_Data.getLocalPlayer()->getPos());
+		DrawUtils::drawNameTags(ent, fmax(0.6f, 3.f / dist));
+		DrawUtils::flush();
 	}
 }
 
@@ -50,10 +42,11 @@ void NameTags::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 			lastSetting = *ingameNametagSetting;
 			gotPrevSetting = true;
 			*ingameNametagSetting = false;
-		} else
+		}
+		else
 			*ingameNametagSetting = false;  //disable other ppl's nametags
 
-	g_Data.forEachEntity(drawNameTags);
+	g_Data.forEachValidEntity(drawNameTags);
 }
 
 void NameTags::onDisable() {
