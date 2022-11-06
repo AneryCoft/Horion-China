@@ -1,6 +1,9 @@
 #include "Tracer.h"
 
 Tracer::Tracer() : IModule('R', Category::VISUAL, "Draws lines to ESP highlighted entities.") {
+	registerIntSetting("Red", &red, red, 0, 255);
+	registerIntSetting("Green", &green, green, 0, 255);
+	registerIntSetting("Blue", &blue, blue, 0, 255);
 	//registerBoolSetting("3D Tracers", &old, old);
 }
 
@@ -37,7 +40,7 @@ void Tracer::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 			refdef2->OWorldToScreen(g_Data.getClientInstance()->levelRenderer->getOrigin(), ent->eyePos0, target, g_Data.getClientInstance()->getFov(), screenSize);
 			vec2_t mid((screenSize.x / 2), (screenSize.y / 2));
 			if (target != vec2_t(0, 0)) {
-				DrawUtils::setColor(255, 255, 255, 1);
+				DrawUtils::setColor(red / 255.f, green / 255.f, blue / 255.f, 1);
 				DrawUtils::drawLine(mid, target, 0.2f);
 			}
 		}

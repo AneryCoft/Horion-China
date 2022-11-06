@@ -10,6 +10,7 @@ Tower::Tower() : IModule(0, Category::WORLD, "Like scaffold, but vertically and 
 	registerFloatSetting("Motion", &motion, motion, 0.3f, 1.f);
 	registerFloatSetting("Timer", &timer, timer, 20.f, 100.f);
 	registerBoolSetting("AutoBlocks", &autoBlock, autoBlock);
+	registerBoolSetting("RenderBlocks", &renderBlocks, renderBlocks);
 	registerBoolSetting("Rotations", &rotations, rotations);
 }
 
@@ -98,13 +99,16 @@ void Tower::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	if (g_Data.getLocalPlayer() == nullptr || !g_Data.canUseMoveKeys())
 		return;
 
-	vec3_t blockBelow = *g_Data.getLocalPlayer()->getPos();
-	blockBelow.y -= g_Data.getLocalPlayer()->height;
-	blockBelow.y -= 0.5f;
+	if (renderBlocks) {
+		vec3_t blockBelow = *g_Data.getLocalPlayer()->getPos();
+		blockBelow.y -= g_Data.getLocalPlayer()->height;
+		blockBelow.y -= 0.5f;
 
-	blockBelow = blockBelow.floor();
+		blockBelow = blockBelow.floor();
 
-	DrawUtils::drawBox(blockBelow, vec3_t(blockBelow).add(1), 0.4f);
+		DrawUtils::setColor(0.f, 0.3705f, 1.f, 1.f);
+		DrawUtils::drawBox(blockBelow, vec3_t(blockBelow).add(1), 0.4f);
+	}
 }
 
 void Tower::onPlayerTick(C_Player* player) {

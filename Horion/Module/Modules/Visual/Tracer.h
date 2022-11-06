@@ -4,6 +4,10 @@
 #include "../../../DrawUtils.h"
 
 class Tracer : public IModule {
+private:
+	int red = 255;
+	int green = 255;
+	int blue = 255;
 public:
 	Tracer();
 	~Tracer();

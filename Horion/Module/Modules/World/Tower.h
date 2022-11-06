@@ -11,6 +11,7 @@ private:
 	float timer = 50.f;
 	bool needRotations = false;
 	bool autoBlock = false;
+	bool renderBlocks = false;
 	SettingEnum mode;
 public:
 	
