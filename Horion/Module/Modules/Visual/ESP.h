@@ -6,9 +6,9 @@
 class ESP : public IModule {
 public:
 	SettingEnum target;
+	SettingEnum renderMode;
 	
 	bool doRainbow = true;
-	bool is2d = false;
 	ESP();
 	~ESP();
 
