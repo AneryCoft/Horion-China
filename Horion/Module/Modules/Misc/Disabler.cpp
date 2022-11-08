@@ -63,6 +63,7 @@ void Disabler::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				cancelSend = true;
 		} //绕过EaseCation服务器CPS检测 
 	}
+	/*
 	else if (mode.selected == 3 || mode.selected == 4) {
 		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
 			NetworkLatencyPacket* networkLatencyPacket = reinterpret_cast<NetworkLatencyPacket*>(packet);
@@ -70,4 +71,5 @@ void Disabler::onSendPacket(C_Packet* packet, bool& cancelSend) {
 			//std::chrono::system_clock::now().time_since_epoch().count() 1s的间隔约为10000000
 		}
 	}
+	*/
 }

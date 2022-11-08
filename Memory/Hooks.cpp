@@ -10,6 +10,7 @@
 #include <shared_mutex>
 #include "../SDK/Tag.h"
 #include "../../../Utils/TimerUtil.h"
+#include <chrono>
 
 Hooks g_Hooks;
 bool isTicked = false;
@@ -782,8 +783,8 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 	//static auto freecamMod = moduleMgr->getModule<Freecam>();
 	static auto blinkMod = moduleMgr->getModule<Blink>();
 	//static auto noPacketMod = moduleMgr->getModule<NoPacket>();
-	//static auto disablerMod = moduleMgr->getModule<Disabler>();
-	//static TimerUtil sendTime;
+	static auto disablerMod = moduleMgr->getModule<Disabler>();
+	static TimerUtil sendTime;
 
 	/*if (noPacketMod->isEnabled() && g_Data.isInGame())
 		return;*/
@@ -821,15 +822,16 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 		}
 	}
 
-	/*if (disablerMod->isEnabled() && (disablerMod->mode.selected == 3 || disablerMod->mode.selected == 4)) {
+	if (disablerMod->isEnabled() && (disablerMod->mode.selected == 3 || disablerMod->mode.selected == 4)) {
 		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
 			NetworkLatencyPacket* packets = reinterpret_cast<NetworkLatencyPacket*>(packet);
 			disablerMod->NetworkLatencyPacketHolder.push_back(new NetworkLatencyPacket(*packets));
 			return;
 		}
 		if (!disablerMod->NetworkLatencyPacketHolder.empty()) {
-			if (sendTime.hasTimedElapsed(800.f, true)) {
+			if (sendTime.hasTimedElapsed(1000.f, true)) {
 				for (auto packet : disablerMod->NetworkLatencyPacketHolder) {
+					packet->timeStamp = std::chrono::system_clock::now().time_since_epoch().count();
 					oFunc(a, (packet));
 					delete packet;
 					packet = nullptr;
@@ -837,7 +839,7 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 				disablerMod->NetworkLatencyPacketHolder.clear();
 			}
 		}
-	}*/
+	}
 
 
 	/*
