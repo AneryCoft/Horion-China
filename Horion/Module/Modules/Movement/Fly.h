@@ -15,6 +15,7 @@ private:
 	float timer = 20.f;
 
 	int gameTick = 0;
+	float y = 0.f;
 
 public:
 	Fly();

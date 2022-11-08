@@ -10,7 +10,8 @@ Fly::Fly() : IModule('F', Category::MOVEMENT, "Fly to the sky") {
 		.addEntry(EnumEntry("NoClip", 5))
 		.addEntry(EnumEntry("Lifeboat", 6))
 		//.addEntry(EnumEntry("The Hive", 7));
-		.addEntry(EnumEntry("CubeCraft", 7));
+		.addEntry(EnumEntry("CubeCraft", 7))
+		.addEntry(EnumEntry("Jump", 8));
 	registerEnumSetting("Mode", &mode, 4);
 	registerFloatSetting("Horizontal Speed", &horizontalSpeed, horizontalSpeed, 0.1f, 10.f);
 	registerFloatSetting("Vertical Speed", &verticalSpeed, verticalSpeed, 0.1f, 10.f);
@@ -43,6 +44,8 @@ void Fly::onEnable() {
 	case 1:
 		g_Data.getLocalPlayer()->setPos((*g_Data.getLocalPlayer()->getPos()).add(vec3_t(0, 1, 0)));
 		break;
+	case 8:
+		y = g_Data.getLocalPlayer()->aabb.lower.y;
 		/*case 7:
 			hiveSpeedIndex = 0;
 			hiveVelocity = 0;
@@ -138,8 +141,6 @@ void Fly::onTick(C_GameMode* gm) {
 	case 6: {
 		float calcYaw = (gm->player->yaw + 90) * (PI / 180);
 
-		gameTick++;
-
 		vec3_t pos = *g_Data.getLocalPlayer()->getPos();
 		pos.y += 1.3f;
 		C_MovePlayerPacket a(g_Data.getLocalPlayer(), pos);
@@ -191,6 +192,8 @@ void Fly::onMove(C_MoveInputHandler* input) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	if (localPlayer == nullptr)
 		return;
+
+	g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
 
 	switch (mode.selected) {
 	case 4:
@@ -303,8 +306,12 @@ void Fly::onMove(C_MoveInputHandler* input) {
 		}
 
 		//if (pressed)
-			localPlayer->lerpMotion(moveVec);
-	}
+		localPlayer->lerpMotion(moveVec);
+	}break;
+	case 8:
+		if (g_Data.getLocalPlayer()->aabb.lower.y < y) {
+			localPlayer->jumpFromGround();
+		}
 	}
 }
 
