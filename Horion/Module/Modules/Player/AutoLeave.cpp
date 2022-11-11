@@ -9,7 +9,6 @@ AutoLeave::~AutoLeave() {
 
 const char* AutoLeave::getModuleName() {
 	return ("AutoLeave");
-
 }
 
 void AutoLeave::onTick(C_GameMode* gm) {
@@ -24,9 +23,11 @@ void AutoLeave::onTick(C_GameMode* gm) {
 	float loaclPlayerHealth = localPlayer->getAttribute(&HealthAttribute())->currentValue;
 
 	if (loaclPlayerHealth < health) {
-		CommandRequestPacket packet;
-		TextHolder cmd = "/hub";
-		packet.command = cmd;
-		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
+		if (sendTime.hasTimedElapsed(1000.f, true)) {
+			CommandRequestPacket packet;
+			TextHolder cmd = "/hub";
+			packet.command = cmd;
+			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
+		}
 	}
 }
