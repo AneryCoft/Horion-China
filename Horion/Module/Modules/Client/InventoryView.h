@@ -1,20 +1,20 @@
 #pragma once
 #include "../Module.h"
 #include "../../../DrawUtils.h"
+#include "../../ModuleManager.h"
 
 class InventoryView : public IModule {
 public:
-
-	float rtext = 1.f;
-	float gtext = 1.f;
-	float btext = 1.f;
+	int red = 255;
+	int green = 255;
+	int blue = 255;
 
 	float xVal = 28.f;
 	float invX = 0.f;
 	float invY = 100.f;
 	float opacity = 1.f;
-	float scale = 0.75f;
-	bool RGB = false;
+	bool rainbow = false;
+	float backGround = 0.5f;
 
 	InventoryView();
 	~InventoryView();
