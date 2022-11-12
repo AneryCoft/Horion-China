@@ -10,6 +10,7 @@ private:
 	int blue = 200;
 	float opacity = 1.f;
 	float lineWidth = 0.5f;
+	bool outline = true;
 
 public:
 	BlockOutline();

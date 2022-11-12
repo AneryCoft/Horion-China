@@ -1,25 +1,30 @@
 #include "ViewModel.h"
 
-
 ViewModel::ViewModel() : IModule(0, Category::VISUAL, "Custom item view model.") {
 	registerBoolSetting("Reset", &Reset, Reset);
 	registerBoolSetting("Translate", &doTranslate, doTranslate);
 	registerBoolSetting("Scale", &doScale, doScale);
+	registerBoolSetting("Rotate", &doRotate, doRotate);
 
-	registerFloatSetting("TranslateX", &xTrans, 0.f, -2.f, 2.f);
-	registerFloatSetting("TranslateY", &yTrans, 0.f, -2.f, 2.f);
-	registerFloatSetting("TranslateZ", &zTrans, 0.f, -2.f, 2.f);
+	registerFloatSetting("TranslateX", &xTrans, xTrans, -2.f, 2.f);
+	registerFloatSetting("TranslateY", &yTrans, yTrans, -2.f, 2.f);
+	registerFloatSetting("TranslateZ", &zTrans, zTrans, -2.f, 2.f);
 
-	registerFloatSetting("ScaleX", &xMod, 1.f, 0.f, 2.f);
-	registerFloatSetting("ScaleY", &yMod, 1.f, 0.f, 2.f);
-	registerFloatSetting("ScaleZ", &zMod, 1.f, 0.f, 2.f);
+	registerFloatSetting("ScaleX", &xScale, xScale, 0.f, 2.f);
+	registerFloatSetting("ScaleY", &yScale, yScale, 0.f, 2.f);
+	registerFloatSetting("ScaleZ", &zScale, zScale, 0.f, 2.f);
+
+	registerFloatSetting("Rotate Angle", &rotateAngle, rotateAngle, 0.f, 6.3f);
+	registerFloatSetting("RotateX", &xRotate, xRotate, 0.f, 2.f);
+	registerFloatSetting("RotateY", &yRotate, yRotate, 0.f, 2.f);
+	registerFloatSetting("RotateZ", &zRotate, zRotate, 0.f, 2.f);
 }
 
 ViewModel::~ViewModel() {
 }
 
 const char* ViewModel::getModuleName() {
-	return "ViewModel";
+	return ("ViewModel");
 }
 
 void ViewModel::onTick(C_GameMode* gm) {
@@ -31,9 +36,14 @@ void ViewModel::onTick(C_GameMode* gm) {
 		yTrans = 0.f;
 		zTrans = 0.f;
 
-		xMod = 1.f;
-		yMod = 1.f;
-		zMod = 1.f;
+		xScale = 1.f;
+		yScale = 1.f;
+		zScale = 1.f;
+
+		xRotate = 1.f;
+		yRotate = 1.f;
+		zRotate = 1.f;
+
 		Reset = false;
 	}
 }

@@ -784,7 +784,7 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 	static auto blinkMod = moduleMgr->getModule<Blink>();
 	//static auto noPacketMod = moduleMgr->getModule<NoPacket>();
 	static auto disablerMod = moduleMgr->getModule<Disabler>();
-	static TimerUtil sendTime;
+	//static TimerUtil sendTime;
 
 	/*if (noPacketMod->isEnabled() && g_Data.isInGame())
 		return;*/
@@ -823,20 +823,27 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 	}
 
 	if (disablerMod->isEnabled() && (disablerMod->mode.selected == 3 || disablerMod->mode.selected == 4)) {
+		static auto packetHolder = disablerMod->NetworkLatencyPacketHolder;
+
 		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
 			NetworkLatencyPacket* packets = reinterpret_cast<NetworkLatencyPacket*>(packet);
-			disablerMod->NetworkLatencyPacketHolder.push_back(new NetworkLatencyPacket(*packets));
+			//packetHolder.push_back(new NetworkLatencyPacket(*packets));
+			packetHolder[packets] = new TimerUtil;
+			logF("A");
 			return;
 		}
-		if (!disablerMod->NetworkLatencyPacketHolder.empty()) {
-			if (sendTime.hasTimedElapsed(1000.f, true)) {
-				for (auto packet : disablerMod->NetworkLatencyPacketHolder) {
-					packet->timeStamp = std::chrono::system_clock::now().time_since_epoch().count();
-					oFunc(a, (packet));
-					delete packet;
-					packet = nullptr;
+		if (!packetHolder.empty()) {
+			for (auto packet : packetHolder) {
+				//unsigned long nowTimeStamp = std::chrono::system_clock::now().time_since_epoch().count();
+				//if (packet->timeStamp <= nowTimeStamp - 10000000) {
+				
+				if(packet.second->elapsed(1000.f)){
+					logF("packet");
+					packet.first->timeStamp = std::chrono::system_clock::now().time_since_epoch().count();
+					oFunc(a, (packet.first));
+					delete packet.first;
+					packetHolder.erase(packetHolder.begin()); //不出意外的话，发送出去的是第一个包
 				}
-				disablerMod->NetworkLatencyPacketHolder.clear();
 			}
 		}
 	}

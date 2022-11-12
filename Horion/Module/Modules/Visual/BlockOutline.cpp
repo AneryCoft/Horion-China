@@ -6,6 +6,7 @@ BlockOutline::BlockOutline() : IModule(0, Category::VISUAL, "Render the block yo
 	registerIntSetting("Blue", &blue, blue, 0, 255);
 	registerFloatSetting("Opacity", &opacity, opacity, 0.f, 1.f);
 	registerFloatSetting("lineWidth", &lineWidth, lineWidth, 0.1f, 1.f);
+	registerBoolSetting("Outline", &outline, outline);
 }
 
 BlockOutline::~BlockOutline() {
@@ -23,6 +24,6 @@ void BlockOutline::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 
 	if (g_Data.getLocalPlayer()->region->getBlock(level->block)->toLegacy()->blockId != 0) {
 		DrawUtils::setColor(red / 255.f, green / 255.f, blue / 255.f, opacity);
-		DrawUtils::drawBox(level->block.toVec3t(), level->block.add(1).toVec3t(), 0.5f, true);
+		DrawUtils::drawBox(level->block.toVec3t(), level->block.add(1).toVec3t(), 0.5f, outline);
 	}
 }

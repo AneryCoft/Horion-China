@@ -33,6 +33,7 @@
 #include "Modules/Visual/NoHurtcam.h"
 #include "Modules/Visual/RainbowSky.h"
 #include "Modules/Visual/StorageESP.h"
+#include "Modules/Visual/Swing.h"
 #include "Modules/Visual/TargetHud.h"
 #include "Modules/Visual/TimeChanger.h"
 #include "Modules/Visual/Tracer.h"
@@ -78,7 +79,6 @@
 #include "Modules/Player/NoFall.h"
 #include "Modules/Player/NoFriends.h"
 #include "Modules/Player/StackableItem.h"
-#include "Modules/Player/Swing.h"
 #include "Modules/Player/Teams.h"
 
 #include "Modules/World/Breaker.h"

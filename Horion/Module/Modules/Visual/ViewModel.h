@@ -3,22 +3,24 @@
 #include "../Module.h"
 
 class ViewModel : public IModule {
-private:
-	int delay = 0;
-
 public:
 	bool Reset = false;
 	bool doTranslate = true;
 	bool doScale = true;
+	bool doRotate = true;
 
-	float float1 = 0;
-	float xMod = 1.f;
-	float yMod = 1.f;
-	float zMod = 1.f;
+	float xScale = 1.f;
+	float yScale = 1.f;
+	float zScale = 1.f;
 
 	float xTrans = 0.f;
 	float yTrans = 0.f;
 	float zTrans = 0.f;
+
+	float rotateAngle = 0.f;
+	float xRotate = 1.f;
+	float yRotate = 1.f;
+	float zRotate = 1.f;
 
 	ViewModel();
 	~ViewModel();
