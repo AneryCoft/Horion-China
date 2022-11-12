@@ -289,7 +289,11 @@ void Hooks::Init() {
 					matrix = glm::translate<float>(matrix, glm::vec3(viewModelMod->xTrans, viewModelMod->yTrans, viewModelMod->zTrans));
 
 				if (viewModelMod->doScale)
-					matrix = glm::scale<float>(matrix, glm::vec3(viewModelMod->xMod, viewModelMod->yMod, viewModelMod->zMod));
+					matrix = glm::scale<float>(matrix, glm::vec3(viewModelMod->xScale, viewModelMod->yScale, viewModelMod->zScale));
+
+				if (viewModelMod->doRotate) {
+					matrix = glm::rotate<float>(matrix, viewModelMod->rotateAngle, glm::vec3(viewModelMod->xRotate, viewModelMod->yRotate, viewModelMod->zRotate));
+				}
 			}
 
 			//格挡动画
