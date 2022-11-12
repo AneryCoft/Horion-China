@@ -37,7 +37,7 @@ void HudModule::drawKeystroke(char key, const vec2_t& pos) {
 	static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
 	std::string keyString = Utils::getKeybindName(key);
 	C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
-	if (key == *input->forwardKey) {
+	/*if (key == *input->forwardKey) {
 		vec4_t rectPos(
 			pos.x,
 			pos.y,
@@ -47,13 +47,13 @@ void HudModule::drawKeystroke(char key, const vec2_t& pos) {
 			(rectPos.x + (rectPos.z - rectPos.x) / 2) - (DrawUtils::getTextWidth(&keyString) / 2.f) + 0.2f,
 			rectPos.y + 10.f - DrawUtils::getFont(Fonts::SMOOTH)->getLineHeight() / 2.f);
 		if (ClientThemes->Theme.selected == 1) {
-			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), 1.f);
+			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), 0.5f);
 		}
 		else {
-			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), 1.f);
+			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), 0.5f);
 		}
 		DrawUtils::drawText(textPos, &keyString, MC_Color(255, 255, 255), 1.f, 1.f);
-	}
+	}*/
 	if (key == *input->spaceBarKey) {
 		if (key == *input->spaceBarKey) keyString = "-";
 		vec4_t rectPos(
@@ -66,10 +66,10 @@ void HudModule::drawKeystroke(char key, const vec2_t& pos) {
 			rectPos.y + 7.f - DrawUtils::getFont(Fonts::SMOOTH)->getLineHeight() / 2.f);
 
 		if (ClientThemes->Theme.selected == 1) {
-			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), 1.f);
+			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), GameData::isKeyDown(key) ? 0.9f : 0.5f);
 		}
 		else {
-			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), 1.f);
+			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), GameData::isKeyDown(key) ? 0.9f : 0.5f);
 		}
 		DrawUtils::drawText(textPos, &keyString, MC_Color(255, 255, 255), 1.f, 1.f);
 	}
@@ -84,10 +84,10 @@ void HudModule::drawKeystroke(char key, const vec2_t& pos) {
 			rectPos.y + 10.f - DrawUtils::getFont(Fonts::SMOOTH)->getLineHeight() / 2.f);
 
 		if (ClientThemes->Theme.selected == 1) {
-			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), 1.f);
+			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), GameData::isKeyDown(key) ? 0.9f : 0.5f);
 		}
 		else {
-			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), 1.f);
+			DrawUtils::fillRectangle(rectPos, GameData::isKeyDown(key) ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), GameData::isKeyDown(key) ? 0.9f : 0.5f);
 		}
 		DrawUtils::drawText(textPos, &keyString, MC_Color(255, 255, 255), 1.f, 1.f);
 	}
@@ -103,10 +103,10 @@ void HudModule::drawLeftMouseKeystroke(vec2_t pos) {
 		pos.x + 31.f,
 		pos.y + 22.f);
 	if (ClientThemes->Theme.selected == 1) {
-		DrawUtils::fillRectangle(rectPos, GameData::GameData::isLeftClickDown() ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), 1.f);
+		DrawUtils::fillRectangle(rectPos, GameData::isLeftClickDown() ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), GameData::isLeftClickDown() ? 0.9f : 0.5f);
 	}
 	else {
-		DrawUtils::fillRectangle(rectPos, GameData::GameData::isLeftClickDown() ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), 1.f);
+		DrawUtils::fillRectangle(rectPos, GameData::isLeftClickDown() ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), GameData::isLeftClickDown() ? 0.9f : 0.5f);
 	}
 	vec2_t textPos(
 		(rectPos.x + (rectPos.z - rectPos.x) / 2) - (DrawUtils::getTextWidth(&keyString) / 2.f),
@@ -124,10 +124,10 @@ void HudModule::drawRightMouseKeystroke(vec2_t pos) {
 		pos.x + 31.f,
 		pos.y + 22.f);
 	if (ClientThemes->Theme.selected == 1) {
-		DrawUtils::fillRectangle(rectPos, GameData::GameData::isRightClickDown() ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), 1.f);
+		DrawUtils::fillRectangle(rectPos, GameData::isRightClickDown() ? MC_Color(28, 50, 77) : MC_Color(13, 29, 48), GameData::isRightClickDown() ? 0.9f : 0.5f);
 	}
 	else {
-		DrawUtils::fillRectangle(rectPos, GameData::GameData::isRightClickDown() ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), 1.f);
+		DrawUtils::fillRectangle(rectPos, GameData::isRightClickDown() ? MC_Color(85, 85, 85) : MC_Color(12, 12, 12), GameData::isRightClickDown() ? 0.9f : 0.5f);
 	}
 	vec2_t textPos(
 		(rectPos.x + (rectPos.z - rectPos.x) / 2) - (DrawUtils::getTextWidth(&keyString) / 2.f),
