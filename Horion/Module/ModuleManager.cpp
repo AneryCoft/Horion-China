@@ -27,7 +27,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new TriggerBot()));
 		moduleList.push_back(std::shared_ptr<IModule>(new StorageESP()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Velocity()));
-		moduleList.push_back(std::shared_ptr<IModule>(new RainbowSky()));
+		//moduleList.push_back(std::shared_ptr<IModule>(new RainbowSky()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AirJump()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Step()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Glide()));
@@ -84,8 +84,8 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new Crasher()));
 		moduleList.push_back(std::shared_ptr<IModule>(new CrystalAura()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Timer()));
-		moduleList.push_back(std::shared_ptr<IModule>(new NightMode()));
-//		moduleList.push_back(std::shared_ptr<IModule>(new NoSwing()));
+		//moduleList.push_back(std::shared_ptr<IModule>(new NightMode()));
+		//moduleList.push_back(std::shared_ptr<IModule>(new NoSwing()));
 		//moduleList.push_back(std::shared_ptr<IModule>(new CubeGlide()));
 		//moduleList.push_back(std::shared_ptr<IModule>(new AirStuck()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Zoom()));
@@ -122,6 +122,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new TargetHud()));
 		moduleList.push_back(std::shared_ptr<IModule>(new BlockOutline()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoLeave()));
+		moduleList.push_back(std::shared_ptr<IModule>(new CustomSky()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));

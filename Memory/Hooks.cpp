@@ -585,36 +585,49 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 float* Hooks::Dimension_getFogColor(__int64 _this, float* color, __int64 a3, float a4) {
 	static auto oGetFogColor = g_Hooks.Dimension_getFogColorHook->GetFastcall<float*, __int64, float*, __int64, float>();
 
-	static float rcolors[4];
+	static auto customSkyMod = moduleMgr->getModule<CustomSky>();
+	if (customSkyMod->isEnabled()) {
+		switch (customSkyMod->color.selected) {
+		case 0:
+		{
+			static float rcolors[4];
 
-	static auto nightMod = moduleMgr->getModule<NightMode>();
-	if (nightMod->isEnabled()) {
-		color[0] = 0.f;
-		color[1] = 0.f;
-		color[2] = 0.2f;
-		color[3] = 1;
-		return color;
-	}
+			if (rcolors[3] < 1) {
+				rcolors[0] = 1;
+				rcolors[1] = 0.2f;
+				rcolors[2] = 0.2f;
+				rcolors[3] = 1;
+			}
 
-	static auto rainbowSkyMod = moduleMgr->getModule<RainbowSky>();
-	if (rainbowSkyMod->isEnabled()) {
-		if (rcolors[3] < 1) {
-			rcolors[0] = 1;
-			rcolors[1] = 0.2f;
-			rcolors[2] = 0.2f;
-			rcolors[3] = 1;
+			Utils::ColorConvertRGBtoHSV(rcolors[0], rcolors[1], rcolors[2], rcolors[0], rcolors[1], rcolors[2]);  // perfect code, dont question this
+
+			rcolors[0] += 0.001f;
+			if (rcolors[0] >= 1)
+				rcolors[0] = 0;
+
+			Utils::ColorConvertHSVtoRGB(rcolors[0], rcolors[1], rcolors[2], rcolors[0], rcolors[1], rcolors[2]);
+
+			return rcolors;
+		}break;
+		case 1:
+		{
+			color[0] = 0.f;
+			color[1] = 0.f;
+			color[2] = 0.2f;
+			color[3] = 1;
+			return color;
+		}break;
+		case 2:
+		{
+			color[0] = customSkyMod->red / 255.f;
+			color[1] = customSkyMod->green / 255.f;
+			color[2] = customSkyMod->blue / 255.f;
+			color[3] = 1;
+			return color;
 		}
-
-		Utils::ColorConvertRGBtoHSV(rcolors[0], rcolors[1], rcolors[2], rcolors[0], rcolors[1], rcolors[2]);  // perfect code, dont question this
-
-		rcolors[0] += 0.001f;
-		if (rcolors[0] >= 1)
-			rcolors[0] = 0;
-
-		Utils::ColorConvertHSVtoRGB(rcolors[0], rcolors[1], rcolors[2], rcolors[0], rcolors[1], rcolors[2]);
-
-		return rcolors;
+		}
 	}
+
 	return oGetFogColor(_this, color, a3, a4);
 }
 
@@ -632,8 +645,8 @@ float Hooks::Dimension_getTimeOfDay(__int64 _this, int a2, float a3) {
 float Hooks::Dimension_getSunIntensity(__int64 a1, float a2, vec3_t* a3, float a4) {
 	static auto oGetSunIntensity = g_Hooks.Dimension_getSunIntensityHook->GetFastcall<float, __int64, float, vec3_t*, float>();
 
-	static auto nightMod = moduleMgr->getModule<NightMode>();
-	if (nightMod->isEnabled()) {
+	static auto customSkyMod = moduleMgr->getModule<CustomSky>();
+	if (customSkyMod->isEnabled() && customSkyMod->color.selected == 1) {
 		return -0.5f;
 	}
 

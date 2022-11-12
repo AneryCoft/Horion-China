@@ -301,7 +301,8 @@
     <ClCompile Include="Horion\Module\Modules\Movement\FastStop.cpp" />
     <ClCompile Include="Horion\Module\Modules\Misc\Godmode.cpp" />
     <ClCompile Include="Horion\Module\Modules\Misc\HackerDetector.cpp" />
-    <ClCompile Include="Horion\Module\Modules\Player\Swing.cpp" />
+    <ClCompile Include="Horion\Module\Modules\Visual\CustomSky.cpp" />
+    <ClCompile Include="Horion\Module\Modules\Visual\Swing.cpp" />
     <ClCompile Include="Horion\Module\Modules\Combat\InfiniteAura.cpp" />
     <ClCompile Include="Horion\Module\Modules\Client\InventoryView.cpp" />
     <ClCompile Include="Horion\Module\Modules\Misc\RandomDeviceId.cpp" />
@@ -341,7 +342,6 @@
     <ClCompile Include="Horion\Module\Modules\Module.cpp" />
     <ClCompile Include="Horion\Module\Modules\Visual\NameTags.cpp" />
     <ClCompile Include="Horion\Module\Modules\Player\Nbt.cpp" />
-    <ClCompile Include="Horion\Module\Modules\Visual\NightMode.cpp" />
     <ClCompile Include="Horion\Module\Modules\Player\NoFall.cpp" />
     <ClCompile Include="Horion\Module\Modules\Player\NoFriends.cpp" />
     <ClCompile Include="Horion\Module\Modules\Visual\NoHurtcam.cpp" />
@@ -353,7 +353,6 @@
     <ClCompile Include="Horion\Module\Modules\Misc\PacketLogger.cpp" />
     <ClCompile Include="Horion\Module\Modules\Movement\Phase.cpp" />
     <ClCompile Include="Horion\Module\Modules\Client\Radar.cpp" />
-    <ClCompile Include="Horion\Module\Modules\Visual\RainbowSky.cpp" />
     <ClCompile Include="Horion\Module\Modules\Combat\Reach.cpp" />
     <ClCompile Include="Horion\Module\Modules\World\Scaffold.cpp" />
     <ClCompile Include="Horion\Module\Modules\Misc\Spammer.cpp" />
@@ -509,6 +508,7 @@
     <ClInclude Include="Horion\Module\Modules\Misc\Disabler.h" />
     <ClInclude Include="Horion\Module\Modules\Misc\EditionFaker.h" />
     <ClInclude Include="Horion\Module\Modules\Visual\BlockOutline.h" />
+    <ClInclude Include="Horion\Module\Modules\Visual\CustomSky.h" />
     <ClInclude Include="Horion\Module\Modules\Visual\ESP.h" />
     <ClInclude Include="Horion\Module\Modules\Player\FastDig.h" />
     <ClInclude Include="Horion\Module\Modules\Player\FastEat.h" />
@@ -517,7 +517,7 @@
     <ClInclude Include="Horion\Module\Modules\Movement\FastStop.h" />
     <ClInclude Include="Horion\Module\Modules\Misc\Godmode.h" />
     <ClInclude Include="Horion\Module\Modules\Misc\HackerDetector.h" />
-    <ClInclude Include="Horion\Module\Modules\Player\Swing.h" />
+    <ClInclude Include="Horion\Module\Modules\Visual\Swing.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\Fly.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\FollowPathModule.h" />
     <ClInclude Include="Horion\Module\Modules\Client\FontChanger.h" />
@@ -543,7 +543,6 @@
     <ClInclude Include="Horion\Module\Modules\Module.h" />
     <ClInclude Include="Horion\Module\Modules\Visual\NameTags.h" />
     <ClInclude Include="Horion\Module\Modules\Player\Nbt.h" />
-    <ClInclude Include="Horion\Module\Modules\Visual\NightMode.h" />
     <ClInclude Include="Horion\Module\Modules\Player\NoFall.h" />
     <ClInclude Include="Horion\Module\Modules\Player\NoFriends.h" />
     <ClInclude Include="Horion\Module\Modules\Visual\NoHurtcam.h" />
@@ -555,7 +554,6 @@
     <ClInclude Include="Horion\Module\Modules\Misc\PacketLogger.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\Phase.h" />
     <ClInclude Include="Horion\Module\Modules\Client\Radar.h" />
-    <ClInclude Include="Horion\Module\Modules\Visual\RainbowSky.h" />
     <ClInclude Include="Horion\Module\Modules\Misc\RandomDeviceId.h" />
     <ClInclude Include="Horion\Module\Modules\Combat\Reach.h" />
     <ClInclude Include="Horion\Module\Modules\World\Scaffold.h" />
