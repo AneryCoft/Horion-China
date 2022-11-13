@@ -8,6 +8,7 @@ private:
 	bool itemInfo = false;
 	bool entityInfo = false;
 	bool localInfo = false;
+	bool blockInfo = false;
 public:
 	float float1 = 0;
 	int int1 = 0;

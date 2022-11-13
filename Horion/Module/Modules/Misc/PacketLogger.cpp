@@ -45,7 +45,7 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	}
 	if (packet->isInstanceOf<NetworkLatencyPacket>()) {
 		auto packets = reinterpret_cast<NetworkLatencyPacket*>(packet);
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s timeStamp=%f sendBack=%i", packetName, packets->timeStamp, (int)packets->sendBack);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s timeStamp=%i sendBack=%i", packetName, (int)packets->timeStamp, (int)packets->sendBack);
 		return;
 	}
 	if (packet->isInstanceOf<C_InteractPacket>()) {
@@ -73,6 +73,11 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (packet->isInstanceOf<ActorEventPacket>()) {
 		auto packets = reinterpret_cast<ActorEventPacket*>(packet);
 		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s eventId=%i itemId=%i", packetName, packets->eventId, packets->itemId);
+		return;
+	}
+	if (packet->isInstanceOf<C_TextPacket>()) {
+		auto packets = reinterpret_cast<C_TextPacket*>(packet);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s xboxUserId=%s messageType=%i", packetName, packets->xboxUserId.getText(), packets->messageType);
 		return;
 	}
 
