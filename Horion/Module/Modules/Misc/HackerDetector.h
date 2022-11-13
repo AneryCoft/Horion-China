@@ -10,7 +10,7 @@ private:
 	TimerUtil flyTime;
 	bool speed = true;
 	bool fly = true;
-	bool velocity = true;
+	bool velocity = false;
 public:
 	HackerDetector();
 	~HackerDetector();

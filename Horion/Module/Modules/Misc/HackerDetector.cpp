@@ -27,10 +27,8 @@ void HackerDetector::onTick(C_GameMode* gm) {
 	g_Data.forEachValidEntity(findPlayer);
 
 	for (auto player : playerList) {
-		std::string playerName = player->getNameTag()->getText();
-		if (auto i = playerName.find("\n"); i != std::string::npos) {
-			playerName.erase(playerName.begin() + i, playerName.end());
-		} //删除其他行的字符串
+		std::string playerName = Utils::onlyOneLine(player->getNameTag()->getText());
+		//playerName = Utils::sanitize(playerName); //编码限制
 
 		float BPS = player->getBlocksPerSecond();
 
@@ -43,15 +41,17 @@ void HackerDetector::onTick(C_GameMode* gm) {
 		if (speed) {
 			if (!isHurting) {
 				if (abs(player->velocity.y) < 0.1f) {
-					if (BPS > 5.612332f) {
-						VL = BPS - 5.612332f;
-						clientMessageF("%s %sSpeed-A VL:%.2f", playerName, WHITE, VL);
+					if (BPS > 12.f) { //5.612332f
+						VL = BPS - 12.f;
+						if (VL < 100.f) {
+							clientMessageF(u8"%s %sSpeed-A VL:%.2f", playerName.c_str(), WHITE, VL);
+						}
 					}
 				} //当玩家水平行走时
 				else {
-					if (BPS > 12.5f) {
-						VL = BPS - 12.5f;
-						clientMessageF("%s %sSpeed-B VL:%.2f", playerName, WHITE, VL);
+					if (BPS > 20.f) { //12.5f
+						VL = BPS - 20.f;
+						clientMessageF(u8"%s %sSpeed-B VL:%.2f", playerName.c_str(), WHITE, VL);
 					} //当玩家跳跃时
 				}
 			}
@@ -60,14 +60,14 @@ void HackerDetector::onTick(C_GameMode* gm) {
 		if (fly) {
 			if (!isHurting) {
 				if (!realOnGround) {
-					if (player->velocity.y > 0.334f) {
-						VL = BPS - 0.334f;
-						clientMessageF("%s %sFly-A VL:%.2f", playerName, WHITE, VL);
+					if (player->velocity.y > 0.5f) { //0.334f
+						VL = player->velocity.y - 0.5f;
+						clientMessageF(u8"%s %sFly-A VL:%.2f", playerName.c_str(), WHITE, VL);
 					} //向上垂直飞行
 					else if (abs(player->velocity.y) < 0.1f) {
-						if (BPS > 2.f) {
-							VL = BPS - 2.f;
-							clientMessageF("%s %sFly-B VL:%.2f", playerName, WHITE, VL);
+						if (BPS > 13.f) {
+							VL = BPS - 13.f;
+							clientMessageF(u8"%s %sFly-B VL:%.2f", playerName.c_str(), WHITE, VL);
 						}
 					} //水平飞行
 				}
@@ -75,7 +75,10 @@ void HackerDetector::onTick(C_GameMode* gm) {
 		}
 
 		if (velocity) {
-
+			if (player->damageTime > 1 && player->damageTime < 10) {
+				if (abs(player->velocity.y) < 0.1f)
+					clientMessageF(u8"%s %sVelocity", playerName.c_str(), WHITE);
+			}
 		}
 	}
 }
