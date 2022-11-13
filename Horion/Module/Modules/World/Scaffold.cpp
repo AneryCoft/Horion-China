@@ -21,7 +21,7 @@ Scaffold::Scaffold() : IModule(VK_NUMPAD1, Category::WORLD, "Automatically build
 	registerBoolSetting("AutoBlocks", &autoBlock, autoBlock);
 	registerBoolSetting("blockCount", &showBlockCount, showBlockCount);
 	//registerBoolSetting("Rotation", &this->rotation, this->rotation);
-	registerBoolSetting("Render", &render, render);
+	registerBoolSetting("RenderBlocks", &render, render);
 	registerBoolSetting("Lock rendered item", &renderItemBefore, renderItemBefore);
 
 }
@@ -36,8 +36,7 @@ const char* Scaffold::getModuleName() {
 bool Scaffold::tryScaffold(vec3_t blockBelow) {
 	blockBelow = blockBelow.floor();
 
-	C_Block* block = g_Data.getLocalPlayer()->region->getBlock(vec3_ti(blockBelow));
-	C_BlockLegacy* blockLegacy = (block->blockLegacy);
+	C_BlockLegacy* blockLegacy = g_Data.getLocalPlayer()->region->getBlock(vec3_ti(blockBelow))->blockLegacy;
 	if (blockLegacy->material->isReplaceable) {
 		vec3_ti blok(blockBelow);
 

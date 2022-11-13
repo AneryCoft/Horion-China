@@ -40,6 +40,7 @@ void ViewModel::onTick(C_GameMode* gm) {
 		yScale = 1.f;
 		zScale = 1.f;
 
+		rotateAngle = 0.f;
 		xRotate = 1.f;
 		yRotate = 1.f;
 		zRotate = 1.f;

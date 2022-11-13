@@ -462,6 +462,8 @@ public:
 
 	static std::string sanitize(std::string text);
 
+	static std::string onlyOneLine(std::string text);
+
 	static std::wstring stringToWstring(std::string txt);
 	
 	static bool endsWith(std::wstring const& fullString, std::wstring const& ending) {

@@ -33,6 +33,9 @@ bool Target::isValidTarget(C_Entity* ent) {
 	if (!ent->isAlive())
 		return false;
 
+	if (ent->timeSinceDeath > 0)
+		return false;
+
 	auto entityTypeId = ent->getEntityTypeId();
 
 	if (antibotMod->isEnabled()) {
@@ -51,31 +54,32 @@ bool Target::isValidTarget(C_Entity* ent) {
 		}
 
 		if (antibotMod->nameCheck) {
+			std::string targetName = ent->getNameTag()->getText();
+
 			if (ent->getNameTag()->getTextLength() < 1)
 				return false;
 
-			if ((!ent->checkNameTagFunc() && !ent->isSneaking()) && !ent->canShowNameTag())
+			if (localPlayer->canShowNameTag() && !ent->canShowNameTag())
 				return false;
 
-			std::string name = ent->getNameTag()->getText();
-
-			if (name.find(u8"§eShopkeeper\n§d§lBuy Here!") != std::string::npos) //Lifeboat BedWars的商人
+			if (localPlayer->checkNameTagFunc() && !ent->checkNameTagFunc())
 				return false;
 
-			if (name.find(u8"§bITEM SHOP\n§e§lRIGHT CLICK") != std::string::npos || name.find(u8"§bSOLO\n§bUPGRADES") != std::string::npos) //NetherGames BedWars的商人
-				return false; //这两个商人canShowNameTag = false NameTag != nullptr 和Galaxite的正好相反
-
-			if (name.find(u8"§") == std::string::npos && !ent->canShowNameTag()) //NetherGames Bot
+			if ((std::string(localPlayer->getNameTag()->getText()).find(std::string("\n")) == std::string::npos) && (targetName.find(std::string("\n")) != std::string::npos))
 				return false;
+
+			//if (targetName.find(u8"§eShopkeeper\n§d§lBuy Here!") != std::string::npos)
+			//	return false; //Lifeboat BedWars的商人
+
+			//if (targetName.find(u8"§bITEM SHOP\n§e§lRIGHT CLICK") != std::string::npos || targetName.find(u8"§bSOLO\n§bUPGRADES") != std::string::npos) //NetherGames BedWars的商人
+			//	return false; //NG的两个商人canShowNameTag = false NameTag != nullptr 和Galaxite的正好相反
+
+			//if (targetName.find(u8"§") == std::string::npos && !ent->canShowNameTag()) //NetherGames Bot
+			//	return false;
+
+			//if (!Target::containsOnlyASCII(ent->getNameTag()->getText()))
+			//	return false; // Temporarily removed from gui, tons of false negatives
 		}
-
-		if (antibotMod->nameCheckPlus) {
-			if (!Target::containsOnlyASCII(ent->getNameTag()->getText()))
-				return false; // Temporarily removed from gui, tons of false negatives
-
-			if (std::string(ent->getNameTag()->getText()).find(std::string("\n")) != std::string::npos)
-				return false;
-		} //误判率高
 
 		if (antibotMod->invisibleCheck) {
 			if (ent->isInvisible())
@@ -99,12 +103,12 @@ bool Target::isValidTarget(C_Entity* ent) {
 		}
 		/*
 		if (antibotMod->advanceCheck) { //tpd fake player
-			if (!ent->isPlayer()) 
+			if (!ent->isPlayer())
 				return false;
 
-			if (auto tgl = advancechecklist.find(*ent->getUniqueId()); tgl != advancechecklist.end()) 
+			if (auto tgl = advancechecklist.find(*ent->getUniqueId()); tgl != advancechecklist.end())
 				return tgl->second.isbot <= 2ui8;
-		
+
 			return false;
 		}
 		*/
@@ -121,7 +125,7 @@ bool Target::isValidTarget(C_Entity* ent) {
 				std::string targetName = ent->getNameTag()->getText();
 				std::string localName = localPlayer->getNameTag()->getText();
 
-				if (targetName.size() > 2 && localName.size() > 2){
+				if (targetName.size() > 2 && localName.size() > 2) {
 					targetName = std::string(targetName, 0, targetName.find('\n'));
 					localName = std::string(localName, 0, localName.find('\n'));
 
@@ -155,19 +159,20 @@ bool Target::isValidTarget(C_Entity* ent) {
 			case 2: {
 				C_ItemStack* localHelmet = localPlayer->getArmor(0); //本地头盔
 				C_ItemStack* targetHelmet = ent->getArmor(0); //目标头盔
-				
+
 				if (localHelmet->isValid() && targetHelmet->isValid()) {
-					if (localHelmet->tag != nullptr && targetHelmet->tag != nullptr) {
-						if (targetHelmet->tag->equals(*localHelmet->tag)) //直接比较了NBT
-							return false;
+					if (localHelmet->getItem()->itemId == 335 && targetHelmet->getItem()->itemId == 335) { //玩家是否有穿皮革帽子
+						if (localHelmet->tag != nullptr && targetHelmet->tag != nullptr) {
+							if (targetHelmet->tag->equals(*localHelmet->tag)) //直接比较了NBT
+								return false;
+						}
 					}
-					
 				}
 			}
-			/*case 2: {
-				if (localPlayer->getArmorColorInSlot(0, 0) == ent->getArmorColorInSlot(0, 0))
-					return false;
-			}*/
+				  /*case 2: {
+					  if (localPlayer->getArmorColorInSlot(0, 0) == ent->getArmorColorInSlot(0, 0))
+						  return false;
+				  }*/
 			}
 		}
 	}

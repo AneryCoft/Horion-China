@@ -60,6 +60,13 @@ std::string Utils::sanitize(std::string text) {
 	return out;
 }
 
+std::string Utils::onlyOneLine(std::string text) {
+	if (auto i = text.find("\n"); i != std::string::npos) {
+		text.erase(text.begin() + i, text.end());
+	} //删除其他行的字符串
+	return text;
+}
+
 std::wstring Utils::stringToWstring(std::string txt) {
 	int wchars_num = MultiByteToWideChar(CP_UTF8, 0, txt.c_str(), -1, NULL, 0);
 	wchar_t* wstr = new wchar_t[wchars_num];

@@ -37,9 +37,8 @@ void TargetHud::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 
 	if (target != nullptr && Target::isValidTarget(target)) {
 		std::string name = target->getNameTag()->getText();
-		if (auto i = name.find("\n"); i != std::string::npos) {
-			name.erase(name.begin() + i, name.end());
-		} //删除其他行的字符串
+
+		name = Utils::onlyOneLine(name);
 		//name = std::regex_replace(name,std::regex("\n"), " "); //将换行改为空格
 		std::string nameStr = "Name : " + name + "\n"; //名字
 

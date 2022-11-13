@@ -15,8 +15,10 @@ const char* ChestStealer::getModuleName() {
 }
 
 void ChestStealer::chestScreenController_tick(C_ChestScreenController* c) {
-	if (c != nullptr && !g_Data.getLocalPlayer()->canOpenContainerScreen()) {
+	if (c != nullptr) {
 		if (canReset && !noDelay) {
+			if (g_Data.getLocalPlayer()->canOpenContainerScreen())
+				return;
 			openDelayTime.resetTime();
 			canReset = false;
 		}

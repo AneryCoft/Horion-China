@@ -12,6 +12,7 @@ public:
 	bool displayDistance = true;
 	bool underline = false;
 	float opacity = 0.7f;
+	bool gameName = true;
 
 	NameTags();
 	~NameTags();
