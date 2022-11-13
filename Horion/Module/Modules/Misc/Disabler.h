@@ -9,7 +9,8 @@ private:
 	TimerUtil attackTime;
 public:
 	SettingEnum mode;
-	std::vector<NetworkLatencyPacket*> NetworkLatencyPacketHolder = {};
+	//std::vector<NetworkLatencyPacket*> NetworkLatencyPacketHolder = {};
+	std::map<NetworkLatencyPacket*, TimerUtil*> NetworkLatencyPacketHolder = {};
 
 	Disabler();
 	~Disabler();
