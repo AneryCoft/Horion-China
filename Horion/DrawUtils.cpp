@@ -365,12 +365,14 @@ void DrawUtils::drawNameTags(C_Entity* ent, float textSize, bool drawHealth, boo
 	static auto nameTagsMod = moduleMgr->getModule<NameTags>();
 
 	std::string text;
+	std::string entityName = (Utils::sanitize(Utils::onlyOneLine(ent->getNameTag()->getText())));
+
 	if (nameTagsMod->displayDistance) {
 		float distance = ent->getPos()->dist(*g_Data.getLocalPlayer()->getPos());
-		text = ent->getNameTag()->getText() + std::string("[") + std::to_string((int)distance) + std::string("blocks") + std::string("]");
+		text = entityName + std::string(" ") + std::string("[") + std::to_string((int)distance) + std::string("blocks") + std::string("]");
 	}
 	else {
-		text = ent->getNameTag()->getText();
+		text = entityName;
 	}
 
 	vec2_t textPos;
