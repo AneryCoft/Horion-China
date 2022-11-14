@@ -1,8 +1,12 @@
 #pragma once
+#include <queue>
 #include "../Module.h"
 #include "../../ModuleManager.h"
 #include "../../../Utils/TimerUtil.h"
-
+struct n_t {
+	NetworkLatencyPacket nlp;
+	TimerUtil tu;
+};
 class Disabler : public IModule {
 private:
 	int tick = 0;
@@ -10,7 +14,8 @@ private:
 public:
 	SettingEnum mode;
 	//std::vector<NetworkLatencyPacket*> NetworkLatencyPacketHolder = {};
-	std::map<NetworkLatencyPacket*, TimerUtil*> NetworkLatencyPacketHolder = {};
+
+	std::queue<n_t> nt_queue;
 
 	Disabler();
 	~Disabler();
