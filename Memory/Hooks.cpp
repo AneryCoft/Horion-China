@@ -840,29 +840,17 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 	}
 
 	if (disablerMod->isEnabled() && (disablerMod->mode.selected == 3 || disablerMod->mode.selected == 4)) {
-		static auto packetHolder = disablerMod->NetworkLatencyPacketHolder;
-
+		auto& packetHolder = disablerMod->nt_queue;
+		while (!packetHolder.empty())
+		{
+			oFunc(a, &packetHolder.front().nlp);
+			packetHolder.pop();
+		}
 		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
-			NetworkLatencyPacket* packets = reinterpret_cast<NetworkLatencyPacket*>(packet);
-			//packetHolder.push_back(new NetworkLatencyPacket(*packets));
-			packetHolder[packets] = new TimerUtil;
-			logF("A");
+			packetHolder.push(n_t{ *reinterpret_cast<NetworkLatencyPacket*>(packet), TimerUtil{} });
 			return;
 		}
-		if (!packetHolder.empty()) {
-			for (auto packet : packetHolder) {
-				//unsigned long nowTimeStamp = std::chrono::system_clock::now().time_since_epoch().count();
-				//if (packet->timeStamp <= nowTimeStamp - 10000000) {
-				
-				if(packet.second->elapsed(1000.f)){
-					logF("packet");
-					packet.first->timeStamp = std::chrono::system_clock::now().time_since_epoch().count();
-					oFunc(a, (packet.first));
-					delete packet.first;
-					packetHolder.erase(packetHolder.begin()); //不出意外的话，发送出去的是第一个包
-				}
-			}
-		}
+
 	}
 
 
