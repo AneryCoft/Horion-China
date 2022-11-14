@@ -843,8 +843,15 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 		auto& packetHolder = disablerMod->nt_queue;
 		while (!packetHolder.empty())
 		{
-			oFunc(a, &packetHolder.front().nlp);
-			packetHolder.pop();
+			if (auto i = packetHolder.front(); i.tu.hasTimedElapsed(1000,false))
+			{
+				oFunc(a, &i.nlp);
+				packetHolder.pop();
+			}
+			else
+			{
+				break;
+			}
 		}
 		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
 			packetHolder.push(n_t{ *reinterpret_cast<NetworkLatencyPacket*>(packet), TimerUtil{} });
