@@ -1086,8 +1086,9 @@ __int64 Hooks::ChestScreenController_tick(C_ChestScreenController* a1) {
 float Hooks::GetGamma(uintptr_t* a1) {
 	static auto fullbright = moduleMgr->getModule<FullBright>();
 	static auto xrayMod = moduleMgr->getModule<Xray>();
-	static auto nametagmod = moduleMgr->getModule<NameTags>();
+	static auto nameTagMod = moduleMgr->getModule<NameTags>();
 	static auto zoomMod = moduleMgr->getModule<Zoom>();
+	static auto noParticlesMod = moduleMgr->getModule<NoParticles>();
 
 	uintptr_t** list = (uintptr_t**)a1;
 
@@ -1110,7 +1111,7 @@ float Hooks::GetGamma(uintptr_t* a1) {
 		}
 		else if (!strcmp(settingname->getText(), "gfx_ingame_player_names")) {
 			bool* ingamePlayerName = (bool*)((uintptr_t)list[i] + 16);
-			nametagmod->ingameNametagSetting = ingamePlayerName;
+			nameTagMod->ingameNametagSetting = ingamePlayerName;
 			obtainedSettings++;
 		}
 		else if (!strcmp(settingname->getText(), "gfx_field_of_view")) {
@@ -1119,14 +1120,22 @@ float Hooks::GetGamma(uintptr_t* a1) {
 				zoomMod->OGFov = *FieldOfView;
 			// Zoom calc
 			{
-				static auto zoomModule = moduleMgr->getModule<Zoom>();
-				if (zoomModule->isEnabled()) zoomModule->target = zoomModule->strength;
-				zoomModule->modifier = zoomModule->target - ((zoomModule->target - zoomModule->modifier) * 0.8f);
-				if (abs(zoomModule->modifier - zoomModule->target) < 0.1f && !zoomModule->isEnabled())
-					zoomModule->zooming = false;
+				if (zoomMod->isEnabled())
+					zoomMod->target = zoomMod->strength;
+				zoomMod->modifier = zoomMod->target - ((zoomMod->target - zoomMod->modifier) * 0.8f);
+				if (abs(zoomMod->modifier - zoomMod->target) < 0.1f && !zoomMod->isEnabled())
+					zoomMod->zooming = false;
 			}
 			obtainedSettings++;
 		}
+		else if (!strcmp(translateName->getText(), "options.dev_disableRenderParticles")) {
+			bool* disableRenderParticles = (bool*)((uintptr_t)list[i] + 16);
+			if (noParticlesMod->isEnabled())
+				*disableRenderParticles = true;
+			else
+				*disableRenderParticles = false;
+			obtainedSettings++;
+		} //更改开发版中的游戏设置
 		if (obtainedSettings == 3) break;
 	}
 

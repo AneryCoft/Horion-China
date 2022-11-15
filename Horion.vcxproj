@@ -276,7 +276,6 @@
     <ClCompile Include="Horion\Menu\Hud\Watermark.cpp" />
     <ClCompile Include="Horion\Module\ModuleManager.cpp" />
     <ClCompile Include="Horion\Module\Modules\Combat\Aimbot.cpp" />
-    <ClCompile Include="Horion\Module\Modules\Combat\TargetStrafe.cpp" />
     <ClCompile Include="Horion\Module\Modules\Movement\AirJump.cpp" />
     <ClCompile Include="Horion\Module\Modules\Movement\AirSwim.cpp" />
     <ClCompile Include="Horion\Module\Modules\Player\AntiBot.cpp" />
@@ -302,6 +301,7 @@
     <ClCompile Include="Horion\Module\Modules\Misc\Godmode.cpp" />
     <ClCompile Include="Horion\Module\Modules\Misc\HackerDetector.cpp" />
     <ClCompile Include="Horion\Module\Modules\Visual\CustomSky.cpp" />
+    <ClCompile Include="Horion\Module\Modules\Visual\NoParticles.cpp" />
     <ClCompile Include="Horion\Module\Modules\Visual\Swing.cpp" />
     <ClCompile Include="Horion\Module\Modules\Combat\InfiniteAura.cpp" />
     <ClCompile Include="Horion\Module\Modules\Client\InventoryView.cpp" />
@@ -477,7 +477,6 @@
     <ClInclude Include="Horion\Menu\Hud\Watermark.h" />
     <ClInclude Include="Horion\Module\ModuleManager.h" />
     <ClInclude Include="Horion\Module\Modules\Combat\Aimbot.h" />
-    <ClInclude Include="Horion\Module\Modules\Combat\TargetStrafe.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\AirJump.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\AirSwim.h" />
     <ClInclude Include="Horion\Module\Modules\Player\AntiBot.h" />
@@ -517,6 +516,7 @@
     <ClInclude Include="Horion\Module\Modules\Movement\FastStop.h" />
     <ClInclude Include="Horion\Module\Modules\Misc\Godmode.h" />
     <ClInclude Include="Horion\Module\Modules\Misc\HackerDetector.h" />
+    <ClInclude Include="Horion\Module\Modules\Visual\NoParticles.h" />
     <ClInclude Include="Horion\Module\Modules\Visual\Swing.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\Fly.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\FollowPathModule.h" />

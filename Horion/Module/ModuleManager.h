@@ -31,6 +31,7 @@
 #include "Modules/Visual/FullBright.h"
 #include "Modules/Visual/NameTags.h"
 #include "Modules/Visual/NoHurtcam.h"
+#include "Modules/Visual/NoParticles.h"
 #include "Modules/Visual/StorageESP.h"
 #include "Modules/Visual/Swing.h"
 #include "Modules/Visual/TargetHud.h"
