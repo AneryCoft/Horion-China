@@ -4,10 +4,11 @@ AutoGapple::AutoGapple() : IModule(0, Category::COMBAT, "Auto Heal if you're at 
 	item = SettingEnum(this)
 		.addEntry(EnumEntry("GApple", 0))
 		.addEntry(EnumEntry("Soup", 1))
-		.addEntry(EnumEntry("Potion", 2));
-	registerEnumSetting("Mode", &item, 0);
-	registerFloatSetting("Health", &health, this->health, 1.f, maxHealth);
-	registerIntSetting("Delay", &delay, this->delay, 0, 20);
+		.addEntry(EnumEntry("Potion", 2))
+		.addEntry(EnumEntry("Spell of Life", 3));
+	registerEnumSetting("Item", &item, 0);
+	registerFloatSetting("Health", &health, health, 0.f, maxHealth);
+	registerFloatSetting("Delay", &delay, delay, 0.f, 1000.f);
 }
 
 AutoGapple::~AutoGapple() {
@@ -17,7 +18,11 @@ const char* AutoGapple::getModuleName() {
 	return ("AutoHeal");
 }
 
-bool AutoGapple::targetItem(int16_t itemId, uint16_t extraData) {
+bool AutoGapple::targetItem(C_ItemStack* itemStack) {
+	int16_t itemId = (*itemStack->item)->itemId;
+	uint16_t itemData = itemStack->extraData;
+	CompoundTag* itemTag = itemStack->tag;
+
 	switch (item.selected) {
 	case 0:
 		if (itemId == 258 || itemId == 259) //金苹果和附魔金苹果 
@@ -28,14 +33,60 @@ bool AutoGapple::targetItem(int16_t itemId, uint16_t extraData) {
 			return true;
 		break;
 	case 2:
-		if (itemId == 561 && (extraData == 21 || extraData == 22)) //喷溅治疗药水 
+		if (itemId == 561 && (itemData == 21 || itemData == 22)) //喷溅治疗药水 
 			return true;
+		break;
+	case 3:
+		std::stringstream build;
+		if (itemId == 521 && itemTag != nullptr) {
+			itemTag->write(build);
+			static const char* tagStr = "{display:{Lore:[\"§7Apply mending and heal\",\"§7yourself\"],Name:\"§r§dSpell of Life§7[Use]\"}}";
+			if (strcmp(build.str().c_str(), tagStr) != 0) { //The Hive的回血附魔书
+				return true;
+			}
+		}
+		break;
 	}
 	return false;
 }
 
+void AutoGapple::selectedItem() {
+	C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
+	C_Inventory* inventory = supplies->inventory;
+	C_ItemStack* stack;
+	int emptySlot = 0;
+
+	for (int i = 0; i < 36; i++) {
+		stack = inventory->getItemStack(i);
+		if (i < 9) {
+			if (stack->item != nullptr) {
+				if (targetItem(stack)) {
+					//clientMessageF("data=%i", stack->getItemData());
+					if (supplies->selectedHotbarSlot != i) {
+						prevSlot = supplies->selectedHotbarSlot;
+						supplies->selectedHotbarSlot = i;
+					}
+					break;
+				}
+			}
+			else {
+				emptySlot = i;
+			}
+		}
+		else {
+			if (stack->item != nullptr && targetItem(stack)) {
+				inventory->swapSlots(i, emptySlot);
+				if (supplies->selectedHotbarSlot != i) {
+					prevSlot = supplies->selectedHotbarSlot;
+					supplies->selectedHotbarSlot = i;
+				}
+				break;
+			}
+		}
+	}
+}
+
 void AutoGapple::onTick(C_GameMode* gm) {
-	rotation = false;
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	if (localPlayer == nullptr)
 		return;
@@ -43,90 +94,46 @@ void AutoGapple::onTick(C_GameMode* gm) {
 	maxHealth = localPlayer->getAttribute(&HealthAttribute())->maximumValue;
 	float loaclPlayerHealth = localPlayer->getAttribute(&HealthAttribute())->currentValue;
 
-	if (loaclPlayerHealth < health) {
-		/*
-		switch (mode.selected) {
-		case 0:
-			itemID = 258 || 259; //金苹果和附魔金苹果 
-			break;
-		case 1:
-			itemID = 260; //蘑菇煲 
-			break;
-		case 2:
-			itemID = 561; //喷溅药水 
-		}
-		*/
-		C_PlayerInventoryProxy* supplies = localPlayer->getSupplies();
-		C_Inventory* inventory = supplies->inventory;
-		C_ItemStack* stack;
-		int emptySlot = 0;
+	if (loaclPlayerHealth > health) {
+		rotation = false;
+		return;
+	}
 
-		for (int i = 0; i < 36; i++) {
-			stack = inventory->getItemStack(i);
-			if (i < 9) {
-				if (stack->item != nullptr) {
-					if (targetItem((*stack->item)->itemId, stack->extraData)) {
-						//clientMessageF("data=%i", stack->getItemData());
-						supplies->selectedHotbarSlot = i;
-						break;
-					}
-				}
-				else {
-					emptySlot = i;
-				}
-			}
-			else {
-				if (stack->item != nullptr && targetItem((*stack->item)->itemId, stack->extraData)) {
-					inventory->moveItem(i, emptySlot);
-					supplies->selectedHotbarSlot = emptySlot;
-					break;
-				}
-			}
-		}
+	selectedItem();
 
-		C_ItemStack* selectedItemStack = localPlayer->getSelectedItem();
-		if (selectedItemStack->item == nullptr)
-			return;
+	C_ItemStack* selectedItemStack = localPlayer->getSelectedItem();
+	if (selectedItemStack->item == nullptr)
+		return;
 
-		int16_t selectedItemId = (*selectedItemStack->item)->itemId;
-		uint16_t selectedItemData = selectedItemStack->extraData;
-
-		if (targetItem(selectedItemId, selectedItemData)) {
-			static auto fastEatMod = moduleMgr->getModule<FastEat>();
-			++tick;
-			if (item.selected == 1/*蘑菇煲在大多数服务器都是秒吃 */ || item.selected == 2 || candelay) {
-				if (tick < delay) {
+	if (targetItem(selectedItemStack)) {
+		if (delayTime.hasTimedElapsed(delay, false)) {
+			if (item.selected == 0 || item.selected == 1) {
+				++tick;
+				int duration = (*selectedItemStack->item)->getMaxUseDuration(selectedItemStack);
+				if (tick > duration) {
+					tick = 0;
+					delayTime.resetTime();
+					localPlayer->getSupplies()->selectedHotbarSlot = prevSlot;
 					return;
 				}
 				else {
-					tick = 0;
-					candelay = false;
+					gm->useItem(*selectedItemStack);
 				}
 			}
 			else {
-				if (fastEatMod->isEnabled()) {
-					duration = fastEatMod->duration;
+				if (item.selected == 2) {
+					if (localPlayer->velocity.magnitude() < 0.01f) {
+						C_MovePlayerPacket packet(localPlayer, *localPlayer->getPos());
+						packet.pitch = 89.f;
+						packet.yaw = localPlayer->yaw;
+						packet.headYaw = localPlayer->bodyYaw;
+						g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet); //不动的时候转头也能工作 
+					}
+					rotation = true;
 				}
-				else
-				{
-					duration = 32;
-				}
-				if (tick == duration) {
-					tick = 0;
-					candelay = true;
-				}
+				gm->useItem(*selectedItemStack);
+				delayTime.resetTime();
 			}
-
-			if (item.selected == 2) {
-				if (localPlayer->velocity.squaredxzlen() < 0.01) {
-					C_MovePlayerPacket packet(localPlayer, *localPlayer->getPos());
-					packet.pitch = 89.f;
-					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet); //不动的时候转头也能工作 
-				}
-				rotation = true;
-			}
-
-			gm->useItem(*stack);
 		}
 	}
 }
@@ -137,9 +144,9 @@ void AutoGapple::onSendPacket(C_Packet* packet, bool& cancelSend) {
 			C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
 			movePacket->pitch = 89.f;
 		}
-		if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+		/*else if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 			PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
 			authInputPacket->pitch = 89.f;
-		}
+		}*/
 	}
 }

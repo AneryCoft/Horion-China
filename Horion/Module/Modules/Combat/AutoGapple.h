@@ -2,18 +2,21 @@
 
 #include "../Module.h"
 #include "../../../../SDK/CAttribute.h"
-#include "../../ModuleManager.h"
+#include "../../../SDK/Tag.h"
+#include "../../../Utils/TimerUtil.h"
 
 class AutoGapple : public IModule {
 private:
-	bool targetItem(int16_t itemId, uint16_t extraData);
+	bool targetItem(C_ItemStack* itemStack);
+	void selectedItem();
 	float health = 15.f;
 	bool rotation = false;
-	int delay = 10;
+	TimerUtil delayTime;
+	float delay = 500.f;
 	int tick = 0;
-	bool candelay = false;
-	int duration;
+	bool canDelay = true;
 	float maxHealth = 20.f;
+	int prevSlot = 0;
 public:
 	SettingEnum item;
 
