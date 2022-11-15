@@ -844,6 +844,7 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 		while (!packetHolder.empty())
 		{
 			if (auto i = packetHolder.front(); i.sendTime.hasTimedElapsed(1000.f,false)){
+				i.networkLatencyPacket.timeStamp = std::chrono::system_clock::now().time_since_epoch().count();
 				oFunc(a, &i.networkLatencyPacket);
 				packetHolder.pop();
 			}
