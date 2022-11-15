@@ -3,10 +3,12 @@
 #include "../Module.h"
 #include "../../ModuleManager.h"
 #include "../../../Utils/TimerUtil.h"
-struct n_t {
-	NetworkLatencyPacket nlp;
-	TimerUtil tu;
+
+struct packetAndTimer {
+	NetworkLatencyPacket networkLatencyPacket;
+	TimerUtil sendTime;
 };
+
 class Disabler : public IModule {
 private:
 	int tick = 0;
@@ -15,7 +17,7 @@ public:
 	SettingEnum mode;
 	//std::vector<NetworkLatencyPacket*> NetworkLatencyPacketHolder = {};
 
-	std::queue<n_t> nt_queue;
+	std::queue<packetAndTimer> packetQueue;
 
 	Disabler();
 	~Disabler();

@@ -823,7 +823,7 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 			for (auto it : *blinkMod->getMovePlayerPacketHolder()) {
 				oFunc(a, (it));
 				delete it;
-				it = nullptr;
+				//it = nullptr;
 			}
 			blinkMod->getMovePlayerPacketHolder()->clear();
 			return;
@@ -832,7 +832,7 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 			for (auto it : *blinkMod->getPlayerAuthInputPacketHolder()) {
 				oFunc(a, (it));
 				delete it;
-				it = nullptr;
+				//it = nullptr;
 			}
 			blinkMod->getPlayerAuthInputPacketHolder()->clear();
 			return;
@@ -840,21 +840,20 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 	}
 
 	if (disablerMod->isEnabled() && (disablerMod->mode.selected == 3 || disablerMod->mode.selected == 4)) {
-		auto& packetHolder = disablerMod->nt_queue;
+		auto& packetHolder = disablerMod->packetQueue;
 		while (!packetHolder.empty())
 		{
-			if (auto i = packetHolder.front(); i.tu.hasTimedElapsed(1000,false))
-			{
-				oFunc(a, &i.nlp);
+			if (auto i = packetHolder.front(); i.sendTime.hasTimedElapsed(1000.f,false)){
+				oFunc(a, &i.networkLatencyPacket);
 				packetHolder.pop();
 			}
-			else
-			{
+			else{
 				break;
 			}
 		}
+
 		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
-			packetHolder.push(n_t{ *reinterpret_cast<NetworkLatencyPacket*>(packet), TimerUtil{} });
+			packetHolder.push(packetAndTimer{ *reinterpret_cast<NetworkLatencyPacket*>(packet), TimerUtil{} });
 			return;
 		}
 
