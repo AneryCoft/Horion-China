@@ -41,7 +41,11 @@ public:
 
 		this->computeHash();
 	}
-
+	HashedString(uint64_t inputhash, std::string text) {
+		memset(this, 0x0, sizeof(HashedString));
+		this->hash = inputhash;
+		this->text.setText(text);
+	}
 	void computeHash() {
 		hash = 0xCBF29CE484222325i64;
 		if (this->text.getTextLength() <= 0)
