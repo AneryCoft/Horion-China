@@ -33,7 +33,7 @@ void FastEat::onTick(C_GameMode* gm) {
 			(*stack->item)->setMaxUseDuration(duration);
 		}*/
 
-		if (stack->isValid() && ((*stack->item)->isFood() || (*stack->item)->itemId != 426)) {
+		if (stack->isValid() && ((*stack->item)->isFood() || (*stack->item)->itemId == 426)) {
 			if (items.find(*stack->item) == items.end()) {
 				items[*stack->item] = (*stack->item)->getMaxUseDuration(stack); //保存修改前的MaxUseDuration
 			}

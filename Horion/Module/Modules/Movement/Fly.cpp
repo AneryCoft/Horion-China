@@ -300,9 +300,9 @@ void Fly::onMove(C_MoveInputHandler* input) {
 		}
 		else {
 			g_Data.getClientInstance()->minecraft->setTimerSpeed(50.f);
-			moveVec.x = moveVec2d.x * 0.1;
+			moveVec.x = moveVec2d.x * 0.1f;
 			moveVec.y = 0.01f;
-			moveVec.z = moveVec2d.y * 0.1;
+			moveVec.z = moveVec2d.y * 0.1f;
 		}
 
 		//if (pressed)
