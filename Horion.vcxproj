@@ -331,6 +331,7 @@
     <ClCompile Include="Horion\Module\Modules\Combat\Hitbox.cpp" />
     <ClCompile Include="Horion\Module\Modules\Client\HudModule.cpp" />
     <ClCompile Include="Horion\Module\Modules\Player\BlockReach.cpp" />
+    <ClCompile Include="Horion\Module\Modules\World\Extinguisher.cpp" />
     <!--    <ClCompile Include="Horion\Module\Modules\InfiniteAura.cpp" /> -->
     <ClCompile Include="Horion\Module\Modules\World\InstaBreak.cpp" />
     <ClCompile Include="Horion\Module\Modules\Player\InventoryCleaner.cpp" />
@@ -531,6 +532,7 @@
     <ClInclude Include="Horion\Module\Modules\Client\HudModule.h" />
     <ClInclude Include="Horion\Module\Modules\Player\BlockReach.h" />
     <ClInclude Include="Horion\Module\Modules\Combat\InfiniteAura.h" />
+    <ClInclude Include="Horion\Module\Modules\World\Extinguisher.h" />
     <!--    <ClInclude Include="Horion\Module\Modules\InfiniteAura.h" /> -->
     <ClInclude Include="Horion\Module\Modules\World\InstaBreak.h" />
     <ClInclude Include="Horion\Module\Modules\Player\InventoryCleaner.h" />

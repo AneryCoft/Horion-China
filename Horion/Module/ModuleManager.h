@@ -82,6 +82,7 @@
 #include "Modules/Player/Teams.h"
 
 #include "Modules/World/Breaker.h"
+#include "Modules/World/Extinguisher.h"
 #include "Modules/World/InstaBreak.h"
 #include "Modules/World/Nuker.h"
 #include "Modules/World/Scaffold.h"
