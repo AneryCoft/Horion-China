@@ -43,7 +43,7 @@ void Swing::onTick(C_GameMode* gm) {
 					itemId == 426 || //药水
 					itemId == 561 || //喷溅药水
 					itemId == 562 || //滞留药水
-					(itemId > 360 && itemId < 369) //各种桶
+					(itemId >= 360 && itemId <= 369) //各种桶
 					)) {
 				Utils::nopBytes((unsigned char*)SmoothSwing, 6);
 				return;

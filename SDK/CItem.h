@@ -228,7 +228,7 @@ public:
 			return true;
 		if (itemId == 30) //蜘蛛网
 			return true;
-		if (itemId > 360 && itemId < 363)
+		if (itemId >= 360 && itemId <= 363)
 			return true; //几种桶
 
 		if (itemId == 247) //下界反应核
@@ -239,7 +239,7 @@ public:
 			return true;
 		//The Hive SkyWars Kits中的职业道具
 
-		if (itemId > -479 && itemId < -476)
+		if (itemId >= -479 && itemId <= -476)
 			return true; //The Hive的四种爆炸盒子
 
 		//用id检测物品不容易误判
