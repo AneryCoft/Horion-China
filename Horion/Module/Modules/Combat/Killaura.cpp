@@ -283,12 +283,19 @@ void Killaura::onTick(C_GameMode* gm) {
 	if (localPlayer == nullptr || !localPlayer->isAlive())
 		return;
 
-	if (autoDisable && (isDigging || scaffoldMod->isEnabled() || towerMod->isEnabled() || (breakerMod->isEnabled() && !breakerMod->blockList.empty())))
+	targetList.clear();
+
+	if (autoDisable && 
+		(isDigging 
+			|| scaffoldMod->isEnabled() 
+			|| towerMod->isEnabled() 
+			|| (breakerMod->isEnabled() && !breakerMod->blockList.empty() && !breakerMod->entityBedList.empty())
+			)
+		)
 		return;
 
 	//static bool swing = !moduleMgr->getModule<NoSwing>()->isEnabled();
-
-	targetList.clear();
+	
 	canswing = false;
 
 	g_Data.forEachValidEntity(findEntity);

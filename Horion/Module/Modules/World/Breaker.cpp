@@ -1,8 +1,12 @@
 #include "Breaker.h"
 
 Breaker::Breaker() : IModule(VK_NUMPAD9, Category::WORLD, "Destroys certain blocks around you.") {
+	action = SettingEnum(this)
+		.addEntry(EnumEntry("Destroy", 0))
+		.addEntry(EnumEntry("Build", 1));
+	registerEnumSetting("Action", &action, 0);
 	registerIntSetting("Range", &range, range, 3, 10);
-	registerIntSetting("Delay", &delay, delay, 0, 20);
+	registerFloatSetting("Delay", &delay, delay, 0.f, 1000.f);
 	registerFloatSetting("lineWidth", &thick, thick, 0.1f, 0.8f);
 	registerBoolSetting("TargetESP", &targetEsp, targetEsp);
 	registerBoolSetting("Rotations", &rotations, rotations);
@@ -24,178 +28,163 @@ const char* Breaker::getModuleName() {
 	return ("Breaker");
 }
 
-void Breaker::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
-	if (g_Data.getLocalPlayer() == nullptr || !GameData::canUseMoveKeys())
-		return;
+void Breaker::findBlocks() {
+	vec3_t* pos = g_Data.getLocalPlayer()->getPos();
+	for (int x = (int)pos->x - range; x < pos->x + range; x++) {
+		for (int z = (int)pos->z - range; z < pos->z + range; z++) {
+			for (int y = (int)pos->y - range; y < pos->y + range; y++) {
+				vec3_ti blockPos = vec3_ti(x, y, z);
+				short blockId = g_Data.getLocalPlayer()->region->getBlock(blockPos)->toLegacy()->blockId;
 
-	if (targetEsp) {
-		if (bedsRender) {
-			DrawUtils::setColor(133 / 255.f, 16 / 255.f, 14 / 255.f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
-		}
-		if (eggsRender) {
-			DrawUtils::setColor(45 / 255.f, 1 / 255.f, 51 / 255.f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
-		}
-		if (cakesRender) {
-			DrawUtils::setColor(199 / 255.f, 97 / 255.f, 36 / 255.f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
-		}
-		if (chestsRender) {
-			DrawUtils::setColor(164 / 255.f, 114 / 255.f, 39 / 255.f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
-		}
-		if (barrelsRender) {
-			DrawUtils::setColor(85 / 255.f, 58 / 255.f, 31 / 255.f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
-		}
-		if (redStoneRender) {
-			DrawUtils::setColor(255 / 255.f, 0 / 255.f, 0 / 255.f, 1);
-			DrawUtils::drawBox(renderPos.toVec3t(), (renderPos.toVec3t()).add(1.f), thick / 1.f, false);
-		}
-		if (shouldRenderEntity) {
-			if (target != nullptr) {
-				DrawUtils::drawEntityBox(target, fmax(thick, 1 / fmax(1, g_Data.getLocalPlayer()->getPos()->dist(*target->getPos()))));
+				if ((blockId == 26 && beds) ||
+					(blockId == 122 && eggs) ||
+					(blockId == 92 && cakes) ||
+					(blockId == 54 && chests) ||
+					(blockId == 458 && barrels) ||
+					((blockId == 73 || blockId == 74) && redStone)) {
+					blockList.emplace_back(blockPos, blockId);
+				}
 			}
 		}
 	}
 }
 
+void findEntityBed(C_Entity* currentEntity, bool isRegularEntitie) {
+	static auto breakerMod = moduleMgr->getModule <Breaker>();
+
+	std::string entityName = currentEntity->getNameTag()->getText();
+	float dist = (*currentEntity->getPos()).dist(*g_Data.getLocalPlayer()->getPos());
+
+	if (dist < breakerMod->range) {
+		if (
+			(currentEntity->getEntityTypeId() == 256 &&
+			((currentEntity->height > 0.79f && currentEntity->height < 0.81f)
+				&& (currentEntity->width > 0.79f && currentEntity->width < 0.81f) //小型宝藏(0.8*0.8)
+				|| (currentEntity->height > 2.39f && currentEntity->height < 2.41f)
+				&& (currentEntity->width > 2.39f && currentEntity->width < 2.41f)) //12V12中的大型宝藏(2.4*2.4)
+			&& breakerMod->treasures)
+			|| (entityName.find("'s Bed") != std::string::npos && breakerMod->lifeboatBeds)
+			|| ((currentEntity->height > 1.24f && currentEntity->height < 1.26f)
+				&& (currentEntity->width > 0.39 && currentEntity->width < 0.41) //1.25*0.4
+				&& breakerMod->core)
+			) {
+			breakerMod->entityBedList.push_back(currentEntity);
+		}
+	}
+}
+
+void Breaker::selectPickaxe() {
+	C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
+	C_Inventory* inventory = supplies->inventory;
+
+	for (int n = 0; n < 36; n++) {
+		C_ItemStack* stack = inventory->getItemStack(n);
+		if (stack->item != nullptr && stack->getItem()->isPickaxe()) {
+			prevSlot = supplies->selectedHotbarSlot;
+			supplies->selectedHotbarSlot = n;
+			return;
+		}
+	}
+}
+
 void Breaker::onTick(C_GameMode* gm) {
-	if (g_Data.getLocalPlayer() == nullptr)
+	auto localPlayer = g_Data.getLocalPlayer();
+	if (localPlayer == nullptr)
+		return;
+	
+	blockList.clear();
+	findBlocks();
+
+	entityBedList.clear();
+	g_Data.forEachEntity(findEntityBed);
+
+	if (blockList.empty() && entityBedList.empty())
+		shouldRotation = false;
+
+	if (delayTime.hasTimedElapsed(delay, true)) {
+		if (!blockList.empty()) {
+			vec3_t localPos = *g_Data.getLocalPlayer()->getPos();
+
+			std::sort(blockList.begin(), blockList.end(), [localPos](std::pair<vec3_ti, short>& lhs, std::pair<vec3_ti, short>& rhs) {
+				return localPos.dist(lhs.first.toFloatVector()) < localPos.dist(rhs.first.toFloatVector());
+				}); //距离优先
+				
+			vec3_ti blockPos = blockList.begin()->first;
+
+			if (rotations) {
+				angle = localPos.CalcAngle(blockPos.toVec3t());
+				shouldRotation = true;
+			}
+
+			if (blockList.begin()->second == 73 || blockList.begin()->second == 74)
+				selectPickaxe();
+
+			if (action.selected == 0) {
+				bool isDestroyedOut = false;
+				gm->startDestroyBlock(blockPos, 1, isDestroyedOut);
+				gm->destroyBlock(&blockPos, 1);
+				gm->stopDestroyBlock(blockPos);
+			}
+			else if (action.selected == 1) {
+				gm->buildBlock(&blockPos, 1, true);
+			}
+
+			if (blockList.begin()->second == 73 || blockList.begin()->second == 74)
+				localPlayer->getSupplies()->selectedHotbarSlot = prevSlot;
+		}
+
+		if (!entityBedList.empty()) {
+			if (rotations) {
+				angle = localPlayer->getPos()->CalcAngle(*entityBedList[0]->getPos());
+				shouldRotation = true;
+			}
+			localPlayer->swingArm();
+			g_Data.getCGameMode()->attack(entityBedList[0]);
+		}
+	}
+}
+
+void Breaker::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
+	if (g_Data.getLocalPlayer() == nullptr || !GameData::canUseMoveKeys())
 		return;
 
-	bool destroy = false;
-	bool eat = false;
+	if (targetEsp) {
+		if (!blockList.empty()) {
+			vec3_t renderPos = (blockList.begin()->first).toVec3t();
+			short blockId = blockList.begin()->second;
 
-	bedsRender = false;
-	eggsRender = false;
-	cakesRender = false;
-	chestsRender = false;
-	barrelsRender = false;
-	redStoneRender = false;
-	shouldRotation = false;
-	shouldRenderEntity = false;
+			if (blockId == 26) {
+				DrawUtils::setColor(133 / 255.f, 16 / 255.f, 14 / 255.f, 1);
+				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
+			} //床
+			else if (blockId == 122) {
+				DrawUtils::setColor(45 / 255.f, 1 / 255.f, 51 / 255.f, 1);
+				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
+			} //龙蛋
+			else if (blockId == 92) {
+				DrawUtils::setColor(199 / 255.f, 97 / 255.f, 36 / 255.f, 1);
+				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
+			} //蛋糕
+			else if (blockId == 54) {
+				DrawUtils::setColor(164 / 255.f, 114 / 255.f, 39 / 255.f, 1);
+				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
+			} //箱子
+			else if (blockId == 458) {
+				DrawUtils::setColor(85 / 255.f, 58 / 255.f, 31 / 255.f, 1);
+				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
+			} //木桶
+			else if (blockId == 73 || blockId == 74) {
+				DrawUtils::setColor(255 / 255.f, 0 / 255.f, 0 / 255.f, 1);
+				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
+			} //红石矿石和发光的红石矿石
+		}
 
-	blockList.clear();
-
-	vec3_t* pos = gm->player->getPos();
-	for (int x = (int)pos->x - range; x < pos->x + range; x++) {
-		for (int z = (int)pos->z - range; z < pos->z + range; z++) {
-			for (int y = (int)pos->y - range; y < pos->y + range; y++) {
-				vec3_ti blockPos = vec3_ti(x, y, z);
-				int id = gm->player->region->getBlock(blockPos)->toLegacy()->blockId;
-
-				if ((id == 26 && beds) ||
-					(id == 122 && eggs) ||
-					(id == 92 && cakes) ||
-					(id == 54 && chests) ||
-					(id == 458 && barrels) ||
-					((id == 73 || id == 74) && redStone)) {
-					blockList.push_back(blockPos);
-				}
+		if (!entityBedList.empty()) {
+			if (entityBedList[0] != nullptr) {
+				DrawUtils::setColor(255 / 255.f, 255 / 255.f, 255 / 255.f, 1);
+				DrawUtils::drawEntityBox(entityBedList[0], fmax(thick, 1 / fmax(1, g_Data.getLocalPlayer()->getPos()->dist(*entityBedList[0]->getPos()))));
 			}
 		}
-	}
-
-	++tick;
-	if (!blockList.empty()) {
-		std::sort(blockList.begin(), blockList.end(), [](const vec3_ti lhs, const vec3_ti rhs) {
-			vec3_t localPos = *g_Data.getLocalPlayer()->getPos();
-			return localPos.dist(lhs.toFloatVector()) < localPos.dist(rhs.toFloatVector());
-			}); //距离优先
-
-		//for (vec3_ti i : blockList) {
-		int id = gm->player->region->getBlock(blockList[0])->toLegacy()->blockId;
-
-		if (id == 26 && beds) {
-			destroy = true;
-			bedsRender = true;
-			shouldRotation = true;
-		} // Beds
-		if (id == 122 && eggs) {
-			destroy = true;
-			eggsRender = true;
-		} // Dragon Eggs
-		if (id == 92 && cakes) {
-			eat = true;
-			cakesRender = true;
-			shouldRotation = true;
-		} // Cakes
-		if (id == 54 && chests) {
-			destroy = true;
-			chestsRender = true;
-		} // Chests
-		if (id == 458 && barrels) {
-			destroy = true;
-			barrelsRender = true;
-			shouldRotation = true;
-		} // Barrels
-		if ((id == 73 || id == 74) && redStone) {
-			destroy = true;
-			redStoneRender = true;
-			selectPickaxe();
-			shouldRotation = true;
-		} // redStone
-
-		if (rotations && shouldRotation) {
-			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockList[0].toVec3t());
-		}
-		if (bedsRender || eggsRender || cakesRender || chestsRender || barrelsRender || redStoneRender) {
-			renderPos = blockList[0];
-		}
-
-		if (tick >= delay) {
-			if (destroy) {
-				bool isDestroyedOut = false;
-				gm->startDestroyBlock(blockList[0], 0, isDestroyedOut);
-				gm->destroyBlock(&blockList[0], 0);
-				gm->stopDestroyBlock(blockList[0]);
-			}
-
-			if (eat) {
-				gm->buildBlock(&blockList[0], 0, true);
-			}
-		}
-
-		//}
-		/*
-		if (rotations) {
-			if (g_Data.getLocalPlayer()->velocity.squaredxzlen() < 0.01) {
-				C_MovePlayerPacket packet(g_Data.getLocalPlayer(), *g_Data.getLocalPlayer()->getPos());
-				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);  //不动的时候Packet转头也能工作
-			}
-		}
-		*/
-	}
-
-
-	g_Data.forEachEntity([this](C_Entity* ent, bool b) {
-		std::string name = ent->getNameTag()->getText();
-
-		if (g_Data.getLocalPlayer()->getPos()->dist(*ent->getPos()) <= range) {
-			if ((ent->getEntityTypeId() == 256 && (ent->height > 0.79f && ent->height < 0.81f) && (ent->width > 0.79f && ent->width < 0.81f) && treasures) ||
-				(name.find("'s Bed") != std::string::npos && lifeboatBeds) ||
-				((ent->height > 1.24f && ent->height < 1.26f) && (ent->width > 0.3 && ent->width < 0.5) && core)/* ||
-				(name.find("Core") != std::string::npos && core)*/) { //Core上面的字是另一个实体的
-
-				if (rotations) {
-					angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(*ent->getPos());
-					shouldRotation = true;
-				}
-				target = ent;
-				shouldRenderEntity = true;
-				if (tick >= delay) {
-					g_Data.getCGameMode()->attack(ent);
-					//if (!moduleMgr->getModule<NoSwing>()->isEnabled())
-					g_Data.getLocalPlayer()->swingArm();
-				}
-			}
-		}
-		});
-
-	if (tick >= delay) {
-		tick = 0;
 	}
 }
 
@@ -223,18 +212,5 @@ void Breaker::onSendPacket(C_Packet* packet, bool& cancelSend) {
 			authInputPacket->yaw = angle.y;
 		}
 		*/
-	}
-}
-
-void Breaker::selectPickaxe() {
-	C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
-	C_Inventory* inventory = supplies->inventory;
-
-	for (int n = 0; n < 36; n++) {
-		C_ItemStack* stack = inventory->getItemStack(n);
-		if (stack->item != nullptr && stack->getItem()->isPickaxe()) {
-			supplies->selectedHotbarSlot = n;
-			return;
-		}
 	}
 }

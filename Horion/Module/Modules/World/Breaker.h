@@ -2,43 +2,37 @@
 
 #include "../Module.h"
 #include "../../ModuleManager.h"
-#include "../../../../SDK/CAttribute.h"
+#include "../../../Utils/TimerUtil.h"
 
 class Breaker : public IModule {
 private:
-	int range = 5;
+	SettingEnum action;
 	bool beds = true;
 	bool eggs = true;
 	bool cakes = true;
-	bool treasures = true;
 	bool chests = false;
 	bool barrels = false;
 	bool redStone = false;
-	bool lifeboatBeds = false;
-	bool core = false;
 	bool targetEsp = false;
 	float thick = 0.4f;
 	bool rotations = false;
+	float delay = 100.f;
 
-	bool bedsRender = false;
-	bool eggsRender = false;
-	bool cakesRender = false;
-	bool chestsRender = false;
-	bool barrelsRender = false;
-	bool redStoneRender = false;
-
+	TimerUtil delayTime;
 	bool shouldRotation = false;
-	vec3_ti renderPos;
-	vec2_t angle;
-	C_Entity* target = nullptr;
+	vec2_t angle = {};
+	void findBlocks();
+	uint8_t prevSlot = 0;
 	void selectPickaxe();
-	bool shouldRenderEntity = false;
-
-	int tick = 0;
-	int delay = 0;
 
 public:
-	std::vector<vec3_ti> blockList;
+	std::vector<std::pair<vec3_ti, short>> blockList;
+	std::vector<C_Entity*> entityBedList;
+
+	int range = 5;
+	bool treasures = true;
+	bool lifeboatBeds = false;
+	bool core = false;
 
 	Breaker();
 	~Breaker();
