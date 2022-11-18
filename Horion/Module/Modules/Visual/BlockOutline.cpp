@@ -17,13 +17,14 @@ const char* BlockOutline::getModuleName() {
 }
 
 void BlockOutline::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
-	if (g_Data.getLocalPlayer() == nullptr || !g_Data.canUseMoveKeys())
+	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
+	if (localPlayer == nullptr || !g_Data.canUseMoveKeys())
 		return;
 
-	Level* level = g_Data.getLocalPlayer()->level;
+	vec3_ti pointingBlock = localPlayer->level->block;
 
-	if (g_Data.getLocalPlayer()->region->getBlock(level->block)->toLegacy()->blockId != 0) {
+	if (localPlayer->region->getBlock(pointingBlock)->toLegacy()->blockId != 0) {
 		DrawUtils::setColor(red / 255.f, green / 255.f, blue / 255.f, opacity);
-		DrawUtils::drawBox(level->block.toVec3t(), level->block.add(1).toVec3t(), 0.5f, outline);
+		DrawUtils::drawBox(pointingBlock.toVec3t(), pointingBlock.add(1).toVec3t(), lineWidth, outline);
 	}
 }
