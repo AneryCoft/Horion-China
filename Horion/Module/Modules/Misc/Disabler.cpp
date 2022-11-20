@@ -28,13 +28,28 @@ void Disabler::onTick(C_GameMode* gm) {
 	++tick;
 
 	if (mode.selected == 2) {
-		C_MovePlayerPacket movePacket;
+		if (!localPlayer->onGround && abs(localPlayer->velocity.y) > 0.1f) {
+			if (tick >= 30) {
+				C_MovePlayerPacket movePacket;
+				movePacket.Position = localPlayerPos->add(0.f, 15.f, 0.f);
+				movePacket.onGround = true;
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
+				/*movePacket.Position = *localPlayerPos;
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);*/
+				tick = 0;
+				clientMessageF("send packet");
+			}
+		}
+		else {
+			tick = 20;
+		}
+		/*C_MovePlayerPacket movePacket;
 
-		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
+		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);*/
 	}
 	else if (mode.selected == 3) {
 		//if (localPlayer->velocity.magnitude() > 0.1f) {
-		C_MovePlayerPacket movePacket(localPlayer, *localPlayerPos);
+		C_MovePlayerPacket movePacket;
 		movePacket.onGround = false;
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
 		//}
@@ -49,10 +64,10 @@ void Disabler::onTick(C_GameMode* gm) {
 }
 
 void Disabler::onSendPacket(C_Packet* packet, bool& cancelSend) {
-	if (mode.selected == 0) {
+	if (mode.selected == 0 || mode.selected == 3) {
 		if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 			PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-			authInputPacket->velocity = vec2_t(0.f, 0.f);
+			authInputPacket->velocity = vec2_t(2.f, 2.f);
 		}
 	}
 	else if (mode.selected == 1) {
