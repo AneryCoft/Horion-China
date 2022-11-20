@@ -81,8 +81,9 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 
 		vec2_t windowSize = g_Data.getClientInstance()->getGuiData()->windowSize;
 
-		float length = DrawUtils::getTextWidth(&std::string("Name : abcdefghijklmno"), 1.f);
-		float currentLength = DrawUtils::getTextWidth(&nameStr, 1.f);
+		//float length = DrawUtils::getTextWidth(&std::string("Name : abcdefghijklmno"), 1.f);
+		float length = 89.f;
+		float currentLength = DrawUtils::getTextWidth(&std::string("Name : " + name), 1.f);
 		if (currentLength > length)
 			length = currentLength;
 
@@ -93,10 +94,10 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 
 		static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
 		if (ClientThemes->Theme.selected == 0) {
-			DrawUtils::fillRectangle(hud, MC_Color(12, 12, 12), 0.3f);
+			DrawUtils::fillRectangle(hud, MC_Color(12, 12, 12), 0.4f);
 		}
 		else {
-			DrawUtils::fillRectangle(hud, MC_Color(13, 29, 48), 0.3f);
+			DrawUtils::fillRectangle(hud, MC_Color(13, 29, 48), 0.4f);
 		}
 
 		DrawUtils::drawText(vec2_t(windowSize.x / 1.6f,
@@ -133,7 +134,7 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			, (windowSize.x / 1.6f) + length * (armorValue / 20.f)
 			, windowSize.y / 2 + (windowSize.y + 455.f) / 12.f);
 		DrawUtils::fillRectangle(armorBars, MC_Color(74, 237, 217), 0.9f);
-		
+
 		DrawUtils::drawText(vec2_t(windowSize.x / 1.6f,
 			windowSize.y / 2 + (windowSize.y + 370.f) / 12.f),
 			&armorStr,
