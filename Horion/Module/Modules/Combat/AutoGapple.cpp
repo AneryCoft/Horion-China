@@ -1,6 +1,6 @@
 #include "AutoGapple.h"
 
-AutoGapple::AutoGapple() : IModule(0, Category::COMBAT, "Auto Heal if you're at low health.") {
+AutoGapple::AutoGapple() : IModule(0, Category::COMBAT, "Auto heal if you're at low health.") {
 	item = SettingEnum(this)
 		.addEntry(EnumEntry("GApple", 0))
 		.addEntry(EnumEntry("Soup", 1))
@@ -8,7 +8,7 @@ AutoGapple::AutoGapple() : IModule(0, Category::COMBAT, "Auto Heal if you're at 
 		.addEntry(EnumEntry("Spell of Life", 3));
 	registerEnumSetting("Item", &item, 0);
 	registerFloatSetting("Health", &health, health, 0.f, maxHealth);
-	registerFloatSetting("Delay", &delay, delay, 0.f, 1000.f);
+	registerFloatSetting("Delay", &delay, delay, 0.f, 2000.f);
 }
 
 AutoGapple::~AutoGapple() {
@@ -37,11 +37,11 @@ bool AutoGapple::targetItem(C_ItemStack* itemStack) {
 			return true;
 		break;
 	case 3:
-		std::stringstream build;
 		if (itemId == 521 && itemTag != nullptr) {
+			std::stringstream build;
 			itemTag->write(build);
-			static const char* tagStr = "{display:{Lore:[\"§7Apply mending and heal\",\"§7yourself\"],Name:\"§r§dSpell of Life§7[Use]\"}}";
-			if (strcmp(build.str().c_str(), tagStr) != 0) { //The Hive的回血附魔书
+			static const char* tagStr = u8"{display:{Lore:[\"§7Apply mending and heal\",\"§7yourself\"],Name:\"§r§dSpell of Life§7[Use]\"}}";
+			if (!strcmp(build.str().c_str(), tagStr)) { //The Hive的回血附魔书
 				return true;
 			}
 		}
@@ -53,11 +53,10 @@ bool AutoGapple::targetItem(C_ItemStack* itemStack) {
 void AutoGapple::selectedItem() {
 	C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
 	C_Inventory* inventory = supplies->inventory;
-	C_ItemStack* stack;
 	int emptySlot = 0;
 
 	for (int i = 0; i < 36; i++) {
-		stack = inventory->getItemStack(i);
+		C_ItemStack* stack = inventory->getItemStack(i);
 		if (i < 9) {
 			if (stack->item != nullptr) {
 				if (targetItem(stack)) {
