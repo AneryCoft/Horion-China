@@ -13,12 +13,13 @@ private:
 	int prevSlot = 0;
 	float horizontalHigh;
 	bool render = false;
-	vec3_t blockPos;
+	vec3_t blockPos = {};
 	bool needRender = false;
-	vec2_t angle;
+	vec2_t angle = {};
 	bool renderItemBefore = false;
 	static uint8_t* renderItem ;
 	unsigned long oldProtect = 0;
+	vec3_t calcPos = {};
 public:
 	SettingEnum mode;
 	SettingEnum rotations;

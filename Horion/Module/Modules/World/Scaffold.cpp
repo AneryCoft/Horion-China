@@ -70,8 +70,8 @@ bool Scaffold::tryScaffold(vec3_t blockBelow) {
 			// if (spoof) findBlock();
 			blockPos = blockBelow;
 			needRender = true;
-			bool idk = true;
-			g_Data.getCGameMode()->buildBlock(&blok, i, idk);
+			calcPos = blok.toVec3t().add(0.78f, -0.78f, 0.78f);
+			g_Data.getCGameMode()->buildBlock(&blok, i, true);
 
 			return true;
 		}
@@ -366,6 +366,7 @@ void Scaffold::onPlayerTick(C_Player* player) {
 			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockBelow);
 		} break;
 		case 3: {
+			/*
 			vec3_t blockBelow = g_Data.getLocalPlayer()->eyePos0;
 			float cal = (g_Data.getLocalPlayer()->yaw + 90) * (PI / 180);
 			vec3_t vel = g_Data.getLocalPlayer()->velocity;
@@ -376,7 +377,12 @@ void Scaffold::onPlayerTick(C_Player* player) {
 			blockBelow.z = blockBelow.z -= sin(cal) * 1;
 			blockBelow.x -= vel.x * 0.4f;
 			blockBelow.x -= vel.z * 0.4f;
-			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockBelow);
+			angle = g_Data.getLocalPlayer()->getPos()->CalcAngle(blockBelow);*/
+
+			vec3_t vel = g_Data.getLocalPlayer()->velocity; vel = vel.normalize();
+			calcPos.x += vel.x * 0.14;
+			calcPos.z += vel.z * 0.14;
+			angle = player->getPos()->CalcAngle(calcPos);
 		}
 		}
 		if (g_Data.getLocalPlayer()->getBlocksPerSecond() > 0.1f || player->isJumping()) {
