@@ -1,6 +1,6 @@
 #include "Breaker.h"
 
-Breaker::Breaker() : IModule(VK_NUMPAD9, Category::WORLD, "Destroys certain blocks around you.") {
+Breaker::Breaker() : IModule(VK_NUMPAD9, Category::WORLD, "Destroys certain blocks and entities around you.") {
 	action = SettingEnum(this)
 		.addEntry(EnumEntry("Destroy", 0))
 		.addEntry(EnumEntry("Build", 1));
@@ -30,6 +30,7 @@ const char* Breaker::getModuleName() {
 
 void Breaker::findBlocks() {
 	vec3_t* pos = g_Data.getLocalPlayer()->getPos();
+
 	for (int x = (int)pos->x - range; x < pos->x + range; x++) {
 		for (int z = (int)pos->z - range; z < pos->z + range; z++) {
 			for (int y = (int)pos->y - range; y < pos->y + range; y++) {
@@ -58,11 +59,11 @@ void findEntityBed(C_Entity* currentEntity, bool isRegularEntitie) {
 	if (dist < breakerMod->range) {
 		if (
 			(currentEntity->getEntityTypeId() == 256 &&
-			((currentEntity->height > 0.79f && currentEntity->height < 0.81f)
-				&& (currentEntity->width > 0.79f && currentEntity->width < 0.81f) //小型宝藏(0.8*0.8)
-				|| (currentEntity->height > 2.39f && currentEntity->height < 2.41f)
-				&& (currentEntity->width > 2.39f && currentEntity->width < 2.41f)) //12V12中的大型宝藏(2.4*2.4)
-			&& breakerMod->treasures)
+				((currentEntity->height > 0.79f && currentEntity->height < 0.81f)
+					&& (currentEntity->width > 0.79f && currentEntity->width < 0.81f) //小型宝藏(0.8*0.8)
+					|| (currentEntity->height > 2.39f && currentEntity->height < 2.41f)
+					&& (currentEntity->width > 2.39f && currentEntity->width < 2.41f)) //12V12中的大型宝藏(2.4*2.4)
+				&& breakerMod->treasures)
 			|| (entityName.find("'s Bed") != std::string::npos && breakerMod->lifeboatBeds)
 			|| ((currentEntity->height > 1.24f && currentEntity->height < 1.26f)
 				&& (currentEntity->width > 0.39 && currentEntity->width < 0.41) //1.25*0.4
@@ -91,7 +92,7 @@ void Breaker::onTick(C_GameMode* gm) {
 	auto localPlayer = g_Data.getLocalPlayer();
 	if (localPlayer == nullptr)
 		return;
-	
+
 	blockList.clear();
 	findBlocks();
 
@@ -101,22 +102,23 @@ void Breaker::onTick(C_GameMode* gm) {
 	if (blockList.empty() && entityBedList.empty())
 		shouldRotation = false;
 
-	if (delayTime.hasTimedElapsed(delay, true)) {
-		if (!blockList.empty()) {
-			vec3_t localPos = *g_Data.getLocalPlayer()->getPos();
+	if (!blockList.empty()) {
+		vec3_t localPos = *g_Data.getLocalPlayer()->getPos();
 
-			std::sort(blockList.begin(), blockList.end(), [localPos](std::pair<vec3_ti, short>& lhs, std::pair<vec3_ti, short>& rhs) {
-				return localPos.dist(lhs.first.toFloatVector()) < localPos.dist(rhs.first.toFloatVector());
-				}); //距离优先
-				
-			vec3_ti blockPos = blockList.begin()->first;
+		std::sort(blockList.begin(), blockList.end(), [localPos](std::pair<vec3_ti, short>& lhs, std::pair<vec3_ti, short>& rhs) {
+			return localPos.dist(lhs.first.toFloatVector()) < localPos.dist(rhs.first.toFloatVector());
+			}); //距离优先
 
-			if (rotations) {
-				angle = localPos.CalcAngle(blockPos.toVec3t());
-				shouldRotation = true;
-			}
+		vec3_ti blockPos = blockList.begin()->first;
 
-			if (blockList.begin()->second == 73 || blockList.begin()->second == 74)
+		if (rotations) {
+			angle = localPos.CalcAngle(blockPos.toVec3t());
+			shouldRotation = true;
+		}
+
+		if (delayTime.hasTimedElapsed(delay, true)) {
+			bool isRedStoneOre = blockList.begin()->second == 73 || blockList.begin()->second == 74;
+			if (isRedStoneOre)
 				selectPickaxe();
 
 			if (action.selected == 0) {
@@ -129,17 +131,19 @@ void Breaker::onTick(C_GameMode* gm) {
 				gm->buildBlock(&blockPos, 1, true);
 			}
 
-			if (blockList.begin()->second == 73 || blockList.begin()->second == 74)
+			if (isRedStoneOre)
 				localPlayer->getSupplies()->selectedHotbarSlot = prevSlot;
 		}
+	}
 
-		if (!entityBedList.empty()) {
-			if (rotations) {
-				angle = localPlayer->getPos()->CalcAngle(*entityBedList[0]->getPos());
-				shouldRotation = true;
-			}
+	if (!entityBedList.empty()) {
+		if (rotations) {
+			angle = localPlayer->getPos()->CalcAngle(*entityBedList[0]->getPos());
+			shouldRotation = true;
+		}
+		if (delayTime.hasTimedElapsed(delay, true)) {
 			localPlayer->swingArm();
-			g_Data.getCGameMode()->attack(entityBedList[0]);
+			gm->attack(entityBedList[0]);
 		}
 	}
 }
