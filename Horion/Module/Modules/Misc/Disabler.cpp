@@ -37,7 +37,7 @@ void Disabler::onTick(C_GameMode* gm) {
 				/*movePacket.Position = *localPlayerPos;
 				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);*/
 				tick = 0;
-				clientMessageF("send packet");
+				//clientMessageF("send packet");
 			}
 		}
 		else {
@@ -51,6 +51,7 @@ void Disabler::onTick(C_GameMode* gm) {
 		//if (localPlayer->velocity.magnitude() > 0.1f) {
 		C_MovePlayerPacket movePacket;
 		movePacket.onGround = false;
+		movePacket.Position = *localPlayerPos;
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
 		//}
 	}
