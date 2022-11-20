@@ -55,7 +55,7 @@ void HudModule::drawKeystroke(char key, const vec2_t& pos) {
 		DrawUtils::drawText(textPos, &keyString, MC_Color(255, 255, 255), 1.f, 1.f);
 	}*/
 	if (key == *input->spaceBarKey) {
-		if (key == *input->spaceBarKey) keyString = "-";
+		if (key == *input->spaceBarKey) keyString = "SPACE";
 		vec4_t rectPos(
 			pos.x,
 			pos.y,
