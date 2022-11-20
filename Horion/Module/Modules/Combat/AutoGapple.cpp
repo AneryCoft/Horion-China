@@ -40,10 +40,16 @@ bool AutoGapple::targetItem(C_ItemStack* itemStack) {
 		if (itemId == 521 && itemTag != nullptr) {
 			std::stringstream build;
 			itemTag->write(build);
+			std::string tagStr = build.str().c_str();
+			if (tagStr.find("Spell of Life") != std::string::npos) { //The Hive的回血附魔书
+				return true;
+			}
+			/*
 			static const char* tagStr = u8"{display:{Lore:[\"§7Apply mending and heal\",\"§7yourself\"],Name:\"§r§dSpell of Life§7[Use]\"}}";
 			if (!strcmp(build.str().c_str(), tagStr)) { //The Hive的回血附魔书
 				return true;
 			}
+			*/
 		}
 		break;
 	}
