@@ -21,10 +21,15 @@ void BlockOutline::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	if (localPlayer == nullptr || !g_Data.canUseMoveKeys())
 		return;
 
-	vec3_ti pointingBlock = localPlayer->level->block;
+	Level* level = localPlayer->level;
 
-	if (localPlayer->region->getBlock(pointingBlock)->toLegacy()->blockId != 0) {
-		DrawUtils::setColor(red / 255.f, green / 255.f, blue / 255.f, opacity);
-		DrawUtils::drawBox(pointingBlock.toVec3t(), pointingBlock.add(1).toVec3t(), lineWidth, outline);
-	}
+	if (level->rayHitType != 0)
+		return; //是否指向方块
+
+	vec3_ti pointingBlock = level->block;
+
+	//if (localPlayer->region->getBlock(pointingBlock)->toLegacy()->blockId != 0) {
+	DrawUtils::setColor(red / 255.f, green / 255.f, blue / 255.f, opacity);
+	DrawUtils::drawBox(pointingBlock.toVec3t(), pointingBlock.add(1).toVec3t(), lineWidth, outline);
+	//}
 }
