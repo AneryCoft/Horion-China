@@ -126,6 +126,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new CustomSky()));
 		moduleList.push_back(std::shared_ptr<IModule>(new NoParticles()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Extinguisher()));
+		moduleList.push_back(std::shared_ptr<IModule>(new AutoTool()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));

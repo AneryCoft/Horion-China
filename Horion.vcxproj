@@ -288,6 +288,7 @@
     <ClCompile Include="Horion\Module\Modules\Movement\AutoSneak.cpp" />
     <ClCompile Include="Horion\Module\Modules\Movement\AutoSprint.cpp" />
     <ClCompile Include="Horion\Module\Modules\Player\AutoLeave.cpp" />
+    <ClCompile Include="Horion\Module\Modules\Player\AutoTool.cpp" />
     <ClCompile Include="Horion\Module\Modules\Player\AutoTotem.cpp" />
     <ClCompile Include="Horion\Module\Modules\Misc\Blink.cpp" />
     <ClCompile Include="Horion\Module\Modules\Combat\BowAimbot.cpp" />
@@ -490,6 +491,7 @@
     <ClInclude Include="Horion\Module\Modules\Movement\AutoSneak.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\AutoSprint.h" />
     <ClInclude Include="Horion\Module\Modules\Player\AutoLeave.h" />
+    <ClInclude Include="Horion\Module\Modules\Player\AutoTool.h" />
     <ClInclude Include="Horion\Module\Modules\Player\AutoTotem.h" />
     <ClInclude Include="Horion\Module\Modules\Misc\Blink.h" />
     <ClInclude Include="Horion\Module\Modules\Combat\BowAimbot.h" />
