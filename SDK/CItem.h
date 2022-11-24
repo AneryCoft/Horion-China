@@ -147,7 +147,7 @@ public:
 	virtual __int64 dispense(C_BlockSource&, __int64, int, vec3_t const&, unsigned char);                                                // 80
 	virtual __int64 useTimeDepleted(C_ItemStack&, Level*, C_Player*);                                                          // 81
 	virtual __int64 releaseUsing(C_ItemStack&, C_Player*, int);                                                                          // 82
-	virtual __int64 getDestroySpeed(C_ItemStack const&, C_Block const&);                                                                 // 83
+	virtual float getDestroySpeed(C_ItemStack const&, C_Block const&);                                                                 // 83
 	virtual __int64 hurtActor(C_ItemStack&, C_Entity&, C_Entity&);                                                                      // 84
 	virtual __int64 hitActor(C_ItemStack&, C_Entity&, C_Entity&);                                                                       // 85
 	virtual __int64 hitBlock(C_ItemStack&, C_Block const&, vec3_ti const&, C_Entity&);                                                 // 86

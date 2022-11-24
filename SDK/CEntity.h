@@ -103,8 +103,14 @@ private:
 public:
 	float fallDistance;  //0x01D4
 	bool onGround;       //0x01D8
+	bool onGround2; //0x01D9 
+	bool walkingIntoObj; //0x01DA 
+	bool onGround3; //0x01DB 
+	bool TouchingObj; //0x01DC 
 private:
-	char pad_01D9[95];  //0x01D9
+	char pad_0x01DD[91]; //0x01DD
+//private:
+//	char pad_01D9[95];  //0x01D9
 public:
 	float stepHeight;  //0x0238
 private:
@@ -686,7 +692,7 @@ public:
 	virtual bool canOpenContainerScreen(void);                                                           // 384
 	virtual __int64 openChalkboard(__int64*, bool);                                                     // 385
 	virtual __int64 openNpcInteractScreen(std::shared_ptr<__int64>);                                     // 386
-	virtual __int64 openInventory(void);                                                                 // 387
+	virtual void openInventory(void);                                                                 // 387
 	virtual __int64 displayChatMessage(TextHolder*, TextHolder*);                                      // 388
 	virtual __int64 displayClientMessage(TextHolder*);                                                  // 389
 	virtual __int64 displayTextObjectMessage(__int64 const&, TextHolder*, TextHolder*);               // 390
@@ -707,7 +713,7 @@ public:
 	virtual __int64 unRegisterTrackedBoss(__int64);                                                      // 405
 	virtual __int64 setC_PlayerGameType(int);                                                            // 406
 	virtual __int64 initHUDContainerManager(void);                                                       // 407
-	virtual __int64 _crit(C_Entity*);                                                                   // 408
+	virtual void _crit(C_Entity*);                                                                   // 408
 	virtual __int64 getEventing(void);                                                                   // 409
 	virtual __int64 getUserId(void);                                                                     // 410
 	virtual __int64 sendEventPacket(__int64);                                                            // 411
@@ -734,7 +740,7 @@ public:
 	virtual __int64 sendNetworkPacket(class C_Packet&);                                                 // 432
 	virtual __int64 getC_PlayerEventCoordinator(void);                                                   // 433
 	virtual __int64 getMoveInputHandler(void);                                                           // 434
-	virtual __int64 getInputMode(void);                                                                  // 435
+	virtual uint8_t getInputMode(void);                                                                  // 435
 	virtual __int64 getPlayMode(void);                                                                   // 436
 	virtual __int64 reportMovementTelemetry(int);                                                        // 437
 	virtual bool isSimulated(void);                                                                      // 438
