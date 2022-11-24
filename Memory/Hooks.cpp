@@ -114,7 +114,7 @@ void Hooks::Init() {
 
 				g_Hooks.JumpPowerHook = std::make_unique<FuncHook>(localPlayerVtable[345], Hooks::JumpPower); //jump from ground with movement proxy
 
-				//g_Hooks.setPosHook = std::make_unique<FuncHook>(localPlayerVtable[19], Hooks::setPos);
+				g_Hooks.setPosHook = std::make_unique<FuncHook>(localPlayerVtable[19], Hooks::setPos);
 
 				g_Hooks.Actor_baseTickHook = std::make_unique<FuncHook>(localPlayerVtable[49], Hooks::Actor_baseTick);
 
@@ -299,7 +299,7 @@ void Hooks::Init() {
 			//格挡动画
 			if (swingMod->isEnabled()) {
 				if (swingMod->blockMode.selected != 0 && swingMod->shouldBlock && g_Data.canUseMoveKeys() && g_Data.getLocalPlayer() != nullptr) {
-					lerpT = 0.f;
+					lerpT = 0.f; //视角摇晃的幅度
 
 					if (swingMod->blockMode.selected == 1) {
 						matrix = glm::translate<float>(matrix, glm::vec3(0.42f, 0.f, -0.17f));
@@ -951,7 +951,6 @@ void Hooks::GameMode_stopDestroyBlock(C_GameMode* _this, vec3_ti* pos) {
 	static auto oFunc = g_Hooks.GameMode_stopDestroyBlockHook->GetFastcall<void, C_GameMode*, vec3_ti*>();
 
 	static auto killaura = moduleMgr->getModule<Killaura>();
-
 	killaura->isDigging = false;
 
 	return oFunc(_this, pos);
