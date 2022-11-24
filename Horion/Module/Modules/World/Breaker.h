@@ -16,6 +16,7 @@ private:
 	bool targetEsp = false;
 	float thick = 0.4f;
 	bool rotations = false;
+	bool throughBlock = true;
 	float delay = 100.f;
 
 	TimerUtil delayTime;

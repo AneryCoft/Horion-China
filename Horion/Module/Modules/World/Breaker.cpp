@@ -10,6 +10,7 @@ Breaker::Breaker() : IModule(VK_NUMPAD9, Category::WORLD, "Destroys certain bloc
 	registerFloatSetting("lineWidth", &thick, thick, 0.1f, 0.8f);
 	registerBoolSetting("TargetESP", &targetEsp, targetEsp);
 	registerBoolSetting("Rotations", &rotations, rotations);
+	registerBoolSetting("ThroughBlock", &throughBlock, throughBlock);
 	registerBoolSetting("Beds", &beds, beds);
 	registerBoolSetting("Eggs", &eggs, eggs);
 	registerBoolSetting("Cakes", &cakes, cakes);
@@ -43,6 +44,10 @@ void Breaker::findBlocks() {
 					(blockId == 54 && chests) ||
 					(blockId == 458 && barrels) ||
 					((blockId == 73 || blockId == 74) && redStone)) {
+					if (!throughBlock && !g_Data.getLocalPlayer()->canSee(blockPos.toVec3t())) {
+						continue;
+					}
+
 					blockList.emplace_back(blockPos, blockId);
 				}
 			}
