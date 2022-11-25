@@ -1,10 +1,14 @@
 #include "TargetHud.h"
 
 TargetHud::TargetHud() : IModule(0, Category::VISUAL, "Displays some information about the target") {
-	//registerBoolSetting("Position", &displayPosition, displayPosition);
-	//registerBoolSetting("Distance", &displayDistance, displayDistance);
-	//registerBoolSetting("Health", &displayHealth, displayHealth);
-	//registerBoolSetting("ArmorValue", &displayArmorValue, displayArmorValue);
+	armor = SettingEnum(this)
+		.addEntry(EnumEntry("ArmorValue", 0))
+		.addEntry(EnumEntry("ArmorModel", 1));
+	registerEnumSetting("ArmorDisplay", &armor, 0);
+	/*registerBoolSetting("Position", &displayPosition, displayPosition);
+	registerBoolSetting("Distance", &displayDistance, displayDistance);
+	registerBoolSetting("Health", &displayHealth, displayHealth);
+	registerBoolSetting("Armor", &displayArmor, displayArmor);*/
 }
 
 TargetHud::~TargetHud() {
@@ -15,6 +19,13 @@ const char* TargetHud::getModuleName() {
 }
 
 void TargetHud::onAttack(C_Entity* attackedEnt) {
+	static int a = 0;
+	++a;
+	if (a >= 2) {
+		a = 0;
+		return;
+	}
+
 	if (Target::isValidTarget(attackedEnt)) {
 		target = attackedEnt;
 		attacked = true;
@@ -35,25 +46,25 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		}
 	}
 
-	if (target != nullptr && Target::isValidTarget(target)) {
+	if (Target::isValidTarget(target)) {
 		std::string name = target->getNameTag()->getText();
 
 		name = Utils::onlyOneLine(name);
 		//name = std::regex_replace(name,std::regex("\n"), " "); //将换行改为空格
-		std::string nameStr = "Name : " + name + "\n";
+		std::string nameStr = "Name : " + name;
 		//名字
 
 		vec3_t position = *target->getPos();
 		std::string posStr = "Position : " +
 			std::to_string((int)floor(position.x)) + " " +
 			std::to_string((int)floor(position.y)) + " " +
-			std::to_string((int)floor(position.z)) + "\n";
+			std::to_string((int)floor(position.z));
 		//位置
 
 		float distance = g_Data.getLocalPlayer()->getPos()->dist(position);
 		char disValueStr[16];
 		sprintf_s(disValueStr, 16, "%.1f", distance);
-		std::string disStr = "Distance : " + std::string(disValueStr) + "\n";
+		std::string disStr = "Distance : " + std::string(disValueStr);
 		//距离
 
 		float maxHealth = target->getAttribute(&HealthAttribute())->maximumValue;
@@ -62,8 +73,7 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		std::string healthStr = "Health : "
 			+ std::to_string((int)currentHealth) +
 			"/" +
-			std::to_string((int)maxHealth) +
-			"\n";
+			std::to_string((int)maxHealth);
 		//生命
 
 		float armorValue = 0.f;
@@ -74,7 +84,8 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 				armorValue += (*stack->item)->getArmorValue();
 			}
 		}
-		std::string armorStr = "ArmorValue : " + std::to_string((int)armorValue) + "/20" + "\n";
+
+		std::string armorStr = "ArmorValue : " + std::to_string((int)armorValue) + "/20";
 		//盔甲值
 
 		//获取信息
@@ -83,9 +94,12 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 
 		//float length = DrawUtils::getTextWidth(&std::string("Name : abcdefghijklmno"), 1.f);
 		float length = 89.f;
-		float currentLength = DrawUtils::getTextWidth(&std::string("Name : " + name), 1.f);
+		float currentLength = DrawUtils::getTextWidth(&nameStr, 1.f);
+		//logF("currentLength = %f", currentLength);
 		if (currentLength > length)
 			length = currentLength;
+
+		float hight = windowSize.y;
 
 		vec4_t hud = vec4_t(windowSize.x / 1.6f - 5.f
 			, windowSize.y / 2 + windowSize.y / 12.f - 5.f
@@ -101,44 +115,72 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		}
 
 		DrawUtils::drawText(vec2_t(windowSize.x / 1.6f,
-			windowSize.y / 2 + windowSize.y / 12.f),
+			windowSize.y / 2 + hight / 12.f),
 			&nameStr,
 			MC_Color(1.f, 1.f, 1.f), 1.f);
 
+		hight += 85.f;
 		DrawUtils::drawText(vec2_t(windowSize.x / 1.6f,
-			windowSize.y / 2 + (windowSize.y + 85.f) / 12.f),
+			windowSize.y / 2 + hight / 12.f),
 			&posStr,
 			MC_Color(1.f, 1.f, 1.f), 1.f);
 
+		hight += 85.f;
 		DrawUtils::drawText(vec2_t(windowSize.x / 1.6f,
-			windowSize.y / 2 + (windowSize.y + 170.f) / 12.f),
+			windowSize.y / 2 + hight / 12.f),
 			&disStr,
 			MC_Color(1.f, 1.f, 1.f), 1.f);
 
+		hight += (85.f + 20.f);
 		vec4_t healthBars = vec4_t(windowSize.x / 1.6f
-			, windowSize.y / 2 + (windowSize.y + 275.f) / 12.f
+			, windowSize.y / 2 + hight / 12.f
 			, (windowSize.x / 1.6f) + length * (currentHealth / maxHealth)
-			, windowSize.y / 2 + (windowSize.y + 360.f) / 12.f);
+			, windowSize.y / 2 + (hight + 85.f) / 12.f);
 		if (target->damageTime > 0)
 			DrawUtils::fillRectangle(healthBars, MC_Color(255, 161, 161), 0.9f);
 		else
 			DrawUtils::fillRectangle(healthBars, MC_Color(255, 19, 19), 0.9f);
 
 		DrawUtils::drawText(vec2_t(windowSize.x / 1.6f,
-			windowSize.y / 2 + (windowSize.y + 275.f) / 12.f),
+			windowSize.y / 2 + hight / 12.f),
 			&healthStr,
 			MC_Color(1.f, 1.f, 1.f), 1.f);
+		
+		hight += (85.f + 10.f);
+		if (armor.selected == 0) {
+			vec4_t armorBars = vec4_t(windowSize.x / 1.6f
+				, windowSize.y / 2 + hight / 12.f
+				, (windowSize.x / 1.6f) + length * (armorValue / 20.f)
+				, windowSize.y / 2 + (hight + 85.f) / 12.f);
+			DrawUtils::fillRectangle(armorBars, MC_Color(74, 237, 217), 0.9f);
 
-		vec4_t armorBars = vec4_t(windowSize.x / 1.6f
-			, windowSize.y / 2 + (windowSize.y + 370.f) / 12.f
-			, (windowSize.x / 1.6f) + length * (armorValue / 20.f)
-			, windowSize.y / 2 + (windowSize.y + 455.f) / 12.f);
-		DrawUtils::fillRectangle(armorBars, MC_Color(74, 237, 217), 0.9f);
+			DrawUtils::drawText(vec2_t(windowSize.x / 1.6f,
+				windowSize.y / 2 + hight / 12.f),
+				&armorStr,
+				MC_Color(1.f, 1.f, 1.f), 1.f);
+		} //显示盔甲值
+		else if (armor.selected == 1) {
+			float x = 1.6f;
+			float itemPosY = windowSize.y / 2 + hight / 12.f;
 
-		DrawUtils::drawText(vec2_t(windowSize.x / 1.6f,
-			windowSize.y / 2 + (windowSize.y + 370.f) / 12.f),
-			&armorStr,
-			MC_Color(1.f, 1.f, 1.f), 1.f);
+			for (int i = 0; i < 4; i++) {
+				C_ItemStack* stack = target->getArmor(i);
+				if (stack->item != nullptr) {
+					DrawUtils::drawItem(stack, vec2_t(windowSize.x / x, itemPosY), 0.9f, 0.8f, stack->isEnchanted());
+				}
+				x -= 0.04f;
+			}
+			//盔甲
+
+			if (target->getEntityTypeId() == 319) {
+				C_Player* player = reinterpret_cast<C_Player*>(target);
+				C_ItemStack* stack = player->getSelectedItem();
+				if (stack->item != nullptr) {
+					DrawUtils::drawItem(stack, vec2_t(windowSize.x / x, itemPosY), 0.9f, 0.8f, stack->isEnchanted());
+				}
+			}
+			//手持物品
+		} //显示盔甲模型
 
 		//渲染
 	}
