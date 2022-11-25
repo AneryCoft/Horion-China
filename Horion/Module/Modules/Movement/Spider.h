@@ -4,8 +4,8 @@
 
 class Spider : public IModule {
 private:
-	float speed = 0.6f;
-	bool dontOvershoot = true;
+	float speed = 0.32f;
+	//bool dontOvershoot = true;
 
 public:
 	Spider();
