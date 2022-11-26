@@ -1,7 +1,5 @@
 #include "StorageESP.h"
 
-#include "../../../DrawUtils.h"
-
 StorageESP::StorageESP() : IModule(0, Category::VISUAL, "ESP for but storage blocks.") {
 	registerBoolSetting("Normal Chest", &normalChest, normalChest);
 	registerBoolSetting("Trapped Chest", &trappedChest, trappedChest);
@@ -27,7 +25,7 @@ void StorageESP::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	for (const auto& chest : bufferedChestList) {
 		auto storageID = g_Data.getLocalPlayer()->region->getBlock(chest.upper)->blockLegacy->blockId;
 		float math = (float)fmax(0.3f, (float)fmin(1.f, 15));
-		DrawUtils::setColor(1.f, 1.f, 1.f, math);
+		//DrawUtils::setColor(1.f, 1.f, 1.f, math);
 
 		vec3_t blockPos = chest.lower;
 		if (blockPos.x < 0)
@@ -40,17 +38,17 @@ void StorageESP::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 		mathVect.y = floor(mathVect.y);
 
 		if (storageID == 54 && normalChest)
-			DrawUtils::setColor(1.f, 1.f, 1.f, math);                     //Ïä×Ó
+			DrawUtils::setColor(164 / 255.f, 114 / 255.f, 39 / 255.f, math); //Ïä×Ó
 		else if (storageID == 146 && trappedChest)
-			DrawUtils::setColor(.92f, .14f, .14f, math);                 //ÏÝÚåÏä
+			DrawUtils::setColor(82 / 255.f, 7 / 255.f, 0 / 255.f, math); //ÏÝÚåÏä
 		else if (storageID == 130 && enderChest)
-			DrawUtils::setColor(0.435294f, 0.215686f, 0.631372f, math);  //Ä©Ó°Ïä
+			DrawUtils::setColor(36 / 255.f, 53 / 255.f, 55 / 255.f, math); //Ä©Ó°Ïä
 		else if (storageID == 458 && barrel)
-			DrawUtils::setColor(0.62f, 0.31f, 0.04f, math);                 //Í°
+			DrawUtils::setColor(85 / 255.f, 58 / 255.f, 31 / 255.f, math); //Ä¾Í°
 		else if (storageID == 205 && undyedShulkerBox)
-			DrawUtils::setColor(.49f, .17f, .95f, math);                 //Î´È¾É«µÄÇ±Ó°ºÐ
+			DrawUtils::setColor(151 / 255.f, 104 / 255.f, 151 / 255.f, math); //Î´È¾É«µÄÇ±Ó°ºÐ
 		else if (storageID == 218 && shulkerBox)
-			DrawUtils::setColor(.08f, .91f, .99f, math);                 //Ç±Ó°ºÐ
+			DrawUtils::setColor(57 / 255.f, 178 / 255.f, 218 / 255.f, math); //Ç±Ó°ºÐ
 		else
 			continue;
 

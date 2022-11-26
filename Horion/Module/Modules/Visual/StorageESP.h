@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Module.h"
+#include "../../../DrawUtils.h"
 
 class StorageESP : public IModule {
 private:
