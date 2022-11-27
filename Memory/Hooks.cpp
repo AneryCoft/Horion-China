@@ -463,12 +463,27 @@ __int64 Hooks::UIScene_render(C_UIScene* uiscene, __int64 screencontext) {
 	uiscene->getScreenName(&alloc);
 
 	if (alloc.getTextLength() < 100) {
-		strcpy_s(g_Hooks.currentScreenName, alloc.getText());
+		//strcpy_s(g_Hooks.currentScreenName, alloc.getText());
+		if (strcmp(alloc.getText(), "toast_screen") != 0
+			&& strcmp(alloc.getText(), "debug_screen"))
+			g_Data.getScreenName = alloc.getText();
 	}
 
 	if (!g_Hooks.shouldRender) {
-		g_Hooks.shouldRender = (strcmp(alloc.getText(), "start_screen") == 0 || strcmp(alloc.getText(), "hud_screen") == 0 || strcmp(alloc.getText(), "inventory_screen") == 0);
+		g_Hooks.shouldRender = (strcmp(alloc.getText(), "start_screen") == 0
+			|| strcmp(alloc.getText(), "hud_screen") == 0
+			|| strcmp(alloc.getText(), "inventory_screen") == 0);
 	}
+
+	static auto clickGuiMod = moduleMgr->getModule<ClickGuiMod>();
+	if (clickGuiMod->isEnabled()
+		&& strcmp(alloc.getText(), "pause_screen") == 0
+		|| strcmp(alloc.getText(), "respawn_screen") == 0
+		|| strcmp(alloc.getText(), "disconnect_screen") == 0) {
+		clickGuiMod->setEnabled(false);
+		g_Data.getClientInstance()->grabMouse();
+	}
+
 	alloc.alignedTextLength = 0;
 
 	return oRender(uiscene, screencontext);
@@ -496,9 +511,6 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 		else {
 			count = 0;
 		} //防止多次渲染 同时解决了渲染闪烁的问题
-
-		if (strcmp(g_Hooks.currentScreenName, "toast_screen") != 0 && strcmp(g_Hooks.currentScreenName, "debug_screen"))
-			g_Data.getScreenName = g_Hooks.currentScreenName;
 
 		// Call PreRender() functions
 		moduleMgr->onPreRender(renderCtx);

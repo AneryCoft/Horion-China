@@ -66,7 +66,7 @@ private:
 	bool shouldRender = true;
 
 public:
-	char currentScreenName[100] = { } ;
+	//char currentScreenName[100] = { } ;
 	std::vector<std::shared_ptr<FuncHook>> lambdaHooks;
 	struct EntityListPointerHolder {
 		C_Entity* ent;
