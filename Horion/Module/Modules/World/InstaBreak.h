@@ -4,6 +4,8 @@
 
 class InstaBreak : public IModule {
 public:
+	SettingEnum mode;
+
 	InstaBreak();
 	~InstaBreak();
 	
