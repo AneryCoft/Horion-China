@@ -65,7 +65,7 @@ void AutoClicker::onTick(C_GameMode* gm) {
 			g_Data.rightclickCount++;
 
 			if (selectedItem->item != nullptr && (*selectedItem->item)->isBlock()) {
-				if (g_Data.getLocalPlayer()->region->getBlock(level->block)->toLegacy()->blockId != 0) {
+				if (level->rayHitType == 0) {
 					gm->buildBlock(new vec3_ti(level->block), level->blockSide, true);
 				}
 			}

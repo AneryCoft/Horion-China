@@ -1,6 +1,12 @@
 #pragma once
 
 #include "../Module.h"
+#include "../../../DrawUtils.h"
+#include "../../../Scripting/ScriptManager.h"
+#include "../../../Menu/Hud/TabGui.h"
+#include "../../../Menu/Hud/ArrayList.h"
+#include "../../../Menu/Hud/Notifications.h"
+#include "../../../Menu/Hud/Watermark.h"
 
 class HudModule : public IModule {
 public:

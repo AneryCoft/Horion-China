@@ -1,10 +1,4 @@
 #include "HudModule.h"
-#include "../../../DrawUtils.h"
-#include "../../../Scripting/ScriptManager.h"
-#include "../../../Menu/Hud/TabGui.h"
-#include "../../../Menu/Hud/ArrayList.h"
-#include "../../../Menu/Hud/Notifications.h"
-#include "../../../Menu/Hud/Watermark.h"
 
 HudModule::HudModule() : IModule(0, Category::CLIENT, "Displays things like the ArrayList/TabGUI.") {
 	registerBoolSetting("TabGui", &tabgui, tabgui);
@@ -262,8 +256,8 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 						std::string damageText = std::to_string(damage) + "%";
 						DrawUtils::drawText(vec2_t(x + scale, y1), &damageText, MC_Color(255, 255, 255), 0.8f, 1.f); //¿ø¼×ÄÍ¾Ã¶È
 					}
-					x += scale * spacing;
 				}
+				x += scale * spacing;
 			}
 			C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
 			C_ItemStack* stack = supplies->inventory->getItemStack(supplies->selectedHotbarSlot);
@@ -298,14 +292,14 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		if (tabgui) {
 			TabGui::renderTabGui();
 		}
+		if (watermark) {
+			Watermark::renderWatermark();
+		}
 		if (arraylist) {
 			ArrayList::renderArrayList();
 		}
 		if (notifications) {
-			Notifications::renderNotifications();
-		}
-		if (watermark) {
-			Watermark::renderWatermark();
+			//Notifications::renderNotifications();
 		}
 	}
 }

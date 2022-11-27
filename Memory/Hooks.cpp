@@ -939,7 +939,8 @@ void Hooks::GameMode_startDestroyBlock(C_GameMode* _this, vec3_ti* a2, uint8_t f
 		}
 		return;
 	}
-	if (instaBreakModule->isEnabled()) {
+
+	if (instaBreakModule->isEnabled() && instaBreakModule->mode.selected == 0) {
 		_this->destroyBlock(a2, face);
 		return;
 	}
@@ -1648,6 +1649,10 @@ void Hooks::LevelRendererPlayer__renderNameTags(__int64 a1, __int64 a2, TextHold
 
 float Hooks::getDestroySpeed(C_Player* _this, C_Block& block) {
 	static auto oFunc = g_Hooks.getDestroySpeedHook->GetFastcall<float, C_Player*, C_Block&>();
+
+	static auto instaBreakMod = moduleMgr->getModule<InstaBreak>();
+	if (instaBreakMod->isEnabled() && instaBreakMod->mode.selected == 1)
+		return 1000.f;
 
 	static auto fastDigMod = moduleMgr->getModule<FastDig>();
 	if (fastDigMod->isEnabled())

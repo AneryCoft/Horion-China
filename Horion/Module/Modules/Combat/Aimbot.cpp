@@ -28,14 +28,19 @@ struct CompareTargetEnArray {
 
 void Aimbot::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
-	if (!localPlayer) return;
+	if (!localPlayer || !GameData::canUseMoveKeys())
+		return;
+
+	if (sword && !(localPlayer->getSelectedItem()->isWeapon()))
+		return;
+
+	if (click && !g_Data.isLeftClickDown())
+		return;
 
 	std::vector<C_Entity*> allEntities;
 	g_Data.forEachEntity([&](C_Entity* e, bool) -> void {
 		allEntities.push_back(e);
 	});
-
-	vec3_t origin = g_Data.getClientInstance()->levelRenderer->getOrigin();
 
 	//Loop through all our players and retrieve their information
 	targetList.clear();
@@ -53,18 +58,12 @@ void Aimbot::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 
 	if (targetList.size() > 0) {
 		std::sort(targetList.begin(), targetList.end(), CompareTargetEnArray());
+		vec3_t origin = g_Data.getClientInstance()->levelRenderer->getOrigin();
+
 		vec2_t angle = origin.CalcAngle(*targetList[0]->getPos());
 		vec2_t appl = angle.sub(localPlayer->viewAngles).normAngles();
 		appl.x = -appl.x;
-		if ((appl.x < verticalrange && appl.x > -verticalrange) && (appl.y < horizontalrange && appl.y > -horizontalrange) && GameData::canUseMoveKeys()) {
-			C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
-			C_ItemStack* item = supplies->inventory->getItemStack(supplies->selectedHotbarSlot);
-			if (sword && !(item->isWeapon()))
-				return;
-
-			if (click && !g_Data.isLeftClickDown())
-				return;
-
+		if ((appl.x < verticalrange && appl.x > -verticalrange) && (appl.y < horizontalrange && appl.y > -horizontalrange)) {
 			if (!lock) {
 				appl.x /= (100.f - verticalspeed);
 				appl.y /= (100.f - horizontalspeed);

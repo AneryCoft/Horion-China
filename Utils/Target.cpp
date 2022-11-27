@@ -10,8 +10,8 @@ void Target::init(C_LocalPlayer** cl) {
 	localPlayer = cl;
 }
 
-struct advancecheck;
-extern std::unordered_map<__int64, advancecheck> advancechecklist;
+//struct advancecheck;
+//extern std::unordered_map<__int64, advancecheck> advancechecklist;
 
 bool Target::isValidTarget(C_Entity* ent) {
 	static auto antibotMod = moduleMgr->getModule<AntiBot>();
