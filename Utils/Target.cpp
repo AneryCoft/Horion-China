@@ -48,7 +48,11 @@ bool Target::isValidTarget(C_Entity* ent) {
 
 			}
 			else {
-				if (ent->height > 1.8f || ent->height < 1.7f || ent->width > 0.6f || ent->width < 0.5f)
+				/*
+				正常玩家的碰撞箱：1.8f*0.6f 
+				CubeCraft玩家下蹲时的碰撞箱：1.65f*0.6f
+				*/
+				if (ent->height > 1.8f || ent->height < 1.649f || ent->width > 0.6f || ent->width < 0.59f)
 					return false;
 			}
 		}
