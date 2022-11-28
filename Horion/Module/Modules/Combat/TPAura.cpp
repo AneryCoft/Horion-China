@@ -1,14 +1,14 @@
 #include "TPAura.h"
 
-TPAura::TPAura() : IModule(0x0, Category::COMBAT, "TP near the target") {
+TPAura::TPAura() : IModule(0, Category::COMBAT, "Teleport to target around you.") {
 	position = SettingEnum(this)
 		.addEntry(EnumEntry("Around", 0))
 		.addEntry(EnumEntry("Above", 1))
 		.addEntry(EnumEntry("Behind", 2));
 	registerEnumSetting("Position", &position, 0);
-	this->registerFloatSetting("Range", &range, range, 3.f, 20.f);
-	this->registerIntSetting("TP delay", &delay, delay, 0, 20);
-	this->registerBoolSetting("Lerp", &lerp, lerp);
+	registerFloatSetting("Range", &range, range, 3.f, 20.f);
+	registerIntSetting("TP delay", &delay, delay, 0, 20);
+	registerBoolSetting("Lerp", &lerp, lerp);
 }
 
 TPAura::~TPAura() {
