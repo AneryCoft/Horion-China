@@ -10,8 +10,11 @@ private:
 	TimerUtil CPSTime;
 	float tpDistance = 5.f;
 	SettingEnum mode;
+	SettingEnum packetMode;
 public:
-	float range = 100;
+	std::vector<C_Entity*> targetList;
+	float range = 100.f;
+
 	InfiniteAura();
 	~InfiniteAura();
 	
