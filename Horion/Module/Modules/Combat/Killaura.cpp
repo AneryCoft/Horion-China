@@ -30,7 +30,7 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 	registerFloatSetting("Rotation Speed", &rotationSpeed, rotationSpeed, 10.f, 180.f);
 	registerBoolSetting("RandomPitch", &randomPitch, randomPitch);
 	registerBoolSetting("RandomYaw", &randomYaw, randomYaw);
-	registerBoolSetting("Mob Aura", &isMobAura, isMobAura);
+	registerBoolSetting("Attack Mob", &attackMob, attackMob);
 	registerBoolSetting("ThroughBlock", &throughBlock, throughBlock);
 	registerBoolSetting("AutoDisable", &autoDisable, autoDisable);
 	registerBoolSetting("Hurttime", &hurttime, hurttime);
@@ -51,36 +51,15 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 
 	static auto killauraMod = moduleMgr->getModule<Killaura>();
 
-	if (killauraMod->isMobAura) {
+	if (killauraMod->attackMob) {
 		if (currentEntity == nullptr)
 			return;
 
-		if (currentEntity == g_Data.getLocalPlayer())  // Skip Local player
-			return;
-
-		if (!currentEntity->checkNameTagFunc())
+		if (currentEntity == g_Data.getLocalPlayer())
 			return;
 
 		if (!currentEntity->isAlive())
 			return;
-
-		//if (currentEntity->getEntityTypeId() == 66) // falling block
-		//	return;
-
-		//if (currentEntity->getEntityTypeId() == 69)  // XP
-		//	return;
-
-		if (currentEntity->getNameTag()->getTextLength() <= 1 && currentEntity->getEntityTypeId() == 319)
-			return;
-
-		if (currentEntity->width <= 0.01f || currentEntity->height <= 0.01f) // Don't hit this pesky antibot on 2b2e.org
-			return;
-
-		//if (currentEntity->getEntityTypeId() == 64) // item
-		//	return;
-
-		//if (currentEntity->getEntityTypeId() == 80)  // Arrows
-		//	return;
 
 		if (currentEntity->getEntityTypeId() == 51) // NPC
 			return;
@@ -273,29 +252,30 @@ struct Threaten {
 	}
 };
 */
+
 void Killaura::onTick(C_GameMode* gm) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
+
+	targetList.clear();
+
+	if (localPlayer == nullptr || !localPlayer->isAlive())
+		return;
 
 	static auto scaffoldMod = moduleMgr->getModule<Scaffold>();
 	static auto towerMod = moduleMgr->getModule<Tower>();
 	static auto breakerMod = moduleMgr->getModule<Breaker>();
 
-	if (localPlayer == nullptr || !localPlayer->isAlive())
-		return;
-
-	targetList.clear();
-
-	if (autoDisable && 
-		(isDigging 
-			|| scaffoldMod->isEnabled() 
-			|| towerMod->isEnabled() 
+	if (autoDisable &&
+		(isDigging
+			|| scaffoldMod->isEnabled()
+			|| towerMod->isEnabled()
 			|| (breakerMod->isEnabled() && !breakerMod->blockList.empty() && !breakerMod->entityBedList.empty())
 			)
 		)
 		return;
 
 	//static bool swing = !moduleMgr->getModule<NoSwing>()->isEnabled();
-	
+
 	canswing = false;
 
 	g_Data.forEachValidEntity(findEntity);
@@ -330,28 +310,46 @@ void Killaura::onTick(C_GameMode* gm) {
 		}
 
 		if (rotations.selected != 0) {
-			vec3_t centrePos = {
+			/*vec3_t centrePos = {
 		targetList[switchTarget]->getPos()->x,
 		targetList[switchTarget]->aabb.lower.y + targetList[switchTarget]->height / 2,
 		targetList[switchTarget]->getPos()->z
-			};
+			};*/
+			vec3_t centrePos = targetList[switchTarget]->aabb.centerPoint();
 			vec3_t upperPos = targetList[switchTarget]->aabb.upper;
 			vec3_t lowerPos = targetList[switchTarget]->aabb.lower;
 
 			angle = localPlayer->getPos()->CalcAngle(centrePos);
 
-			if (randomPitch) {
-				float upperPitch = localPlayer->getPos()->CalcAngle(upperPos).x;
-				float lowerPitch = localPlayer->getPos()->CalcAngle(lowerPos).x;
-				angle.x = randomFloat(upperPitch, lowerPitch);
-				//clientMessageF("RandomPitch :%f", angle.x);
+			localAngle = vec2_t(localPlayer->pitch, localPlayer->bodyYaw);
+			vec2_t appl = angle.sub(localAngle).normAngles();
+			if (abs(appl.y) > rotationSpeed) {
+				if (appl.y > 0.f) {
+					localAngle.y += rotationSpeed;
+					angle.y = localAngle.y;
+				}
+				else if (appl.y < 0.f) {
+					localAngle.y -= rotationSpeed;
+					angle.y = localAngle.y;
+				}
+				return;
 			}
+			else {
+				//localAngle = localPlayer->viewAngles;
+				if (randomPitch) {
+					float upperPitch = localPlayer->getPos()->CalcAngle(upperPos).x;
+					float lowerPitch = localPlayer->getPos()->CalcAngle(lowerPos).x;
+					angle.x = randomFloat(upperPitch, lowerPitch);
+					//clientMessageF("RandomPitch :%f", angle.x);
 
-			if (randomYaw) {
-				float upperYaw = localPlayer->getPos()->CalcAngle(upperPos).y;
-				float lowerYaw = localPlayer->getPos()->CalcAngle(lowerPos).y;
-				angle.y = randomFloat(upperYaw, lowerYaw);
-				//clientMessageF("RandomYaw :%f", angle.y);
+					if (randomYaw) {
+						float upperYaw = localPlayer->getPos()->CalcAngle(upperPos).y;
+						float lowerYaw = localPlayer->getPos()->CalcAngle(lowerPos).y;
+						angle.y = randomFloat(upperYaw, lowerYaw);
+						//clientMessageF("RandomYaw :%f", angle.y);
+					}
+					angle = angle.normAngles();
+				}
 			}
 
 			/*if (pitchOffset > 0) {
@@ -368,8 +366,6 @@ void Killaura::onTick(C_GameMode* gm) {
 				angle.x += randomFloat(0.f, yawOffset);
 			}*/
 
-			//currentAngle = localPlayer->viewAngles;
-
 			/*
 			if (rotationSpeed <100.f){
 			auto turn = angle.sub(lastrotangle).normAngles();
@@ -385,10 +381,6 @@ void Killaura::onTick(C_GameMode* gm) {
 			angle = lastrotangle.add(turn);
 			lastrotangle = angle;
 			}*/
-
-			if (rotations.selected == 2) {
-				localPlayer->setRot(angle);
-			}
 		}
 
 		if (minCPS > maxCPS)
@@ -457,16 +449,6 @@ void Killaura::onTick(C_GameMode* gm) {
 	}
 }
 
-void Killaura::onPlayerTick(C_Player* player) {
-	if (rotations.selected == 1) {
-		if (!targetList.empty()) {
-			player->pitch = angle.x;
-			player->bodyYaw = angle.y;
-			player->yawUnused1 = angle.y;
-		}
-	}
-}
-
 void Killaura::onEnable() {
 	if (auto localPlayer = g_Data.getLocalPlayer(); localPlayer == nullptr)
 		setEnabled(false);
@@ -474,6 +456,25 @@ void Killaura::onEnable() {
 	switchTime.resetTime();
 	attackTime.resetTime();
 	//计时器初始化
+}
+
+void Killaura::onDisable() {
+	targetList.clear();
+	lastTarget = nullptr;
+	switchTarget = 0;
+}
+
+void Killaura::onPlayerTick(C_Player* player) {
+	if (!targetList.empty()) {
+		if (rotations.selected == 1) {
+			player->pitch = angle.x;
+			player->bodyYaw = angle.y;
+			player->yawUnused1 = angle.y;
+		}
+		else if (rotations.selected == 2) {
+			player->setRot(angle);
+		}
+	}
 }
 
 void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
@@ -493,10 +494,4 @@ void Killaura::onSendPacket(C_Packet* packet, bool& cancelSend) {
 			}*/
 		}
 	}
-}
-
-void Killaura::onDisable() {
-	targetList.clear();
-	lastTarget = nullptr;
-	switchTarget = 0;
 }
