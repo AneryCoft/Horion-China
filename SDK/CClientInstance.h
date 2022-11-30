@@ -253,37 +253,43 @@ class C_CameraManager;
 
 class C_ClientInstance {
 private:
-	char pad_0x8[0xA0];  //0x8
+	char pad_0x8[0xA0]; //0x8
 public:
-	class MinecraftGame* minecraftGame;  //0xA8
+	class MinecraftGame* minecraftGame; //0xA8
+	class MinecraftGame* N00000A0C; //0xB0
+	class MinecraftGame* N00000A0D; //0xB8
+	class Minecraft* minecraft; //0xC0
 private:
-	class MinecraftGame* N00000A0C;  //0xB0
-	class MinecraftGame* N00000A0D;  //0xB8
+	char pad_0xC8[0x8]; //0xC8
 public:
-	class Minecraft* minecraft;  //0xC0
+	class LevelRenderer* levelRenderer; //0xD0
 private:
-	char pad_0xC8[0x8];  //0xC8
+	char pad_0xD8[0x8]; //0xD8
 public:
-	class LevelRenderer* levelRenderer;  //0xD0
+	C_LoopbackPacketSender* loopbackPacketSender; //0xE0
 private:
-	char pad_0xD8[0x8];  //0xD8
+	char pad_0xE8[0x18]; //0xE8
 public:
-	C_LoopbackPacketSender* loopbackPacketSender;  //0xE0
+	PtrToGameSettings1* ptr; //0x100
 private:
-	char pad_0xE8[0x18];  //0xE8
+	char pad_0x108[0x8]; //0x108
 public:
-	PtrToGameSettings1* ptr;  //0x100
+	class HitDetectSystem* hitDetectSystem; //0x110
 private:
-	char pad_0x108[0x8];  //0x108
+	char pad_0118[0x340]; //0x0118 + 0x3A0
 public:
-	class HitDetectSystem* hitDetectSystem;  //0x110
+	vec2_t mousePos; // 0x458
+private:
+	char pad_0460[0x78];
+public:
 	struct {
 		char pad[0x238];
 		struct {
 			__int64 materialPtr;
 			size_t refCount;
 		} entityLineMaterial;
-	} * itemInHandRenderer;  //0x04D8
+	} *itemInHandRenderer;  //0x04D8
+	/*
 private:
 	char pad_04C8[0x1B0];  //0x04D0
 public:
@@ -294,6 +300,7 @@ public:
 	float fovY;  //0x0694
 private:
 	char pad_0670[0x1B8];  //0x0678z
+	*/
 
 
 	virtual __int64 destructorClientInstance();

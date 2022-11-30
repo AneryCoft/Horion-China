@@ -68,7 +68,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='BetaConf|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <SpectreMitigation>false</SpectreMitigation>
@@ -275,7 +275,9 @@
     <ClCompile Include="Horion\Menu\Hud\TabGui.cpp" />
     <ClCompile Include="Horion\Menu\Hud\Watermark.cpp" />
     <ClCompile Include="Horion\Module\ModuleManager.cpp" />
+    <ClCompile Include="Horion\Module\Modules\Client\ArrayListModule.cpp" />
     <ClCompile Include="Horion\Module\Modules\Combat\Aimbot.cpp" />
+    <ClCompile Include="Horion\Module\Modules\Misc\KillInsult.cpp" />
     <ClCompile Include="Horion\Module\Modules\Movement\AirJump.cpp" />
     <ClCompile Include="Horion\Module\Modules\Movement\AirSwim.cpp" />
     <ClCompile Include="Horion\Module\Modules\Player\AntiBot.cpp" />
@@ -377,15 +379,15 @@
     <ClCompile Include="Horion\Module\Modules\Movement\Velocity.cpp" />
     <ClCompile Include="Horion\Module\Modules\Visual\Waypoints.cpp" />
     <ClCompile Include="Horion\Module\Modules\Visual\Xray.cpp" />
-    <ClCompile Include="Horion\path\goals\JoeGoal.cpp" />
-    <ClCompile Include="Horion\path\goals\JoeGoalXYZ.cpp" />
-    <ClCompile Include="Horion\path\goals\JoeGoalXZ.cpp" />
-    <ClCompile Include="Horion\path\goals\JoeGoalY.cpp" />
-    <ClCompile Include="Horion\path\JoeConstants.cpp" />
-    <ClCompile Include="Horion\path\JoeMovementController.cpp" />
-    <ClCompile Include="Horion\path\JoePath.cpp" />
-    <ClCompile Include="Horion\path\JoePathFinder.cpp" />
-    <ClCompile Include="Horion\path\JoeSegment.cpp" />
+    <ClCompile Include="Horion\path\goals\PathGoal.cpp" />
+    <ClCompile Include="Horion\path\goals\PathGoalXYZ.cpp" />
+    <ClCompile Include="Horion\path\goals\PathGoalXZ.cpp" />
+    <ClCompile Include="Horion\path\goals\PathGoalY.cpp" />
+    <ClCompile Include="Horion\path\Path.cpp" />
+    <ClCompile Include="Horion\path\PathConstants.cpp" />
+    <ClCompile Include="Horion\path\PathFinder.cpp" />
+    <ClCompile Include="Horion\path\PathMovementController.cpp" />
+    <ClCompile Include="Horion\path\PathSegment.cpp" />
     <ClCompile Include="Horion\Scripting\Functions\CommandManagerFunctions.cpp" />
     <ClCompile Include="Horion\Scripting\Functions\DrawFunctions.cpp" />
     <ClCompile Include="Horion\Scripting\Functions\EntityFunctions.cpp" />
@@ -478,7 +480,9 @@
     <ClInclude Include="Horion\Menu\Hud\TabGui.h" />
     <ClInclude Include="Horion\Menu\Hud\Watermark.h" />
     <ClInclude Include="Horion\Module\ModuleManager.h" />
+    <ClInclude Include="Horion\Module\Modules\Client\ArrayListModule.h" />
     <ClInclude Include="Horion\Module\Modules\Combat\Aimbot.h" />
+    <ClInclude Include="Horion\Module\Modules\Misc\KillInsult.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\AirJump.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\AirSwim.h" />
     <ClInclude Include="Horion\Module\Modules\Player\AntiBot.h" />
