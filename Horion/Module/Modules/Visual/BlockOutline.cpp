@@ -6,6 +6,7 @@ BlockOutline::BlockOutline() : IModule(0, Category::VISUAL, "Render the block yo
 	registerIntSetting("Blue", &blue, blue, 0, 255);
 	registerFloatSetting("Opacity", &opacity, opacity, 0.f, 1.f);
 	registerFloatSetting("lineWidth", &lineWidth, lineWidth, 0.1f, 1.f);
+	registerBoolSetting("Rainbow", &rainbow, rainbow);
 	registerBoolSetting("Outline", &outline, outline);
 }
 
@@ -29,7 +30,20 @@ void BlockOutline::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	vec3_ti pointingBlock = level->block;
 
 	//if (localPlayer->region->getBlock(pointingBlock)->toLegacy()->blockId != 0) {
-	DrawUtils::setColor(red / 255.f, green / 255.f, blue / 255.f, opacity);
+	if (rainbow) {
+		static float rainbowColor[4];
+		if (rainbowColor[3] < 1) {
+			rainbowColor[0] = 1;
+			rainbowColor[1] = 0.2f;
+			rainbowColor[2] = 0.2f;
+			rainbowColor[3] = 1;
+		}
+		Utils::ApplyRainbow(rainbowColor, 0.001f);
+		DrawUtils::setColor(rainbowColor[0], rainbowColor[1], rainbowColor[2], opacity);
+	}
+	else {
+		DrawUtils::setColor(red / 255.f, green / 255.f, blue / 255.f, opacity);
+	}
 	DrawUtils::drawBox(pointingBlock.toVec3t(), pointingBlock.add(1).toVec3t(), lineWidth, outline);
 	//}
 }

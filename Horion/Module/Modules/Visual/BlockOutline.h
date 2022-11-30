@@ -5,11 +5,12 @@
 
 class BlockOutline : public IModule {
 private:
-	int red = 20;
+	int red = 28;
 	int green = 110;
 	int blue = 200;
 	float opacity = 1.f;
 	float lineWidth = 0.5f;
+	bool rainbow = false;
 	bool outline = true;
 
 public:
