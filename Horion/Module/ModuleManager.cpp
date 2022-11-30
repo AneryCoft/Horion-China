@@ -116,7 +116,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new FastDig()));
 		moduleList.push_back(std::shared_ptr<IModule>(new BowSpam()));
 		moduleList.push_back(std::shared_ptr<IModule>(new RandomDeviceId()));
-		//moduleList.push_back(std::shared_ptr<IModule>(new Breadcrumbs()));
+		moduleList.push_back(std::shared_ptr<IModule>(new Breadcrumbs()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Swing()));
 		moduleList.push_back(std::shared_ptr<IModule>(new TPAura()));
 		moduleList.push_back(std::shared_ptr<IModule>(new TargetHud()));
@@ -127,7 +127,6 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new NoParticles()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Extinguisher()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoTool()));
-		moduleList.push_back(std::shared_ptr<IModule>(new ArrayListModule()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));

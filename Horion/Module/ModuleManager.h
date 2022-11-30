@@ -24,7 +24,7 @@
 #include "Modules/Combat/TriggerBot.h"
 
 #include "Modules/Visual/BlockOutline.h"
-//#include "Modules/Visual/Breadcrumbs.h"
+#include "Modules/Visual/Breadcrumbs.h"
 #include "Modules/Visual/CustomSky.h"
 #include "Modules/Visual/ESP.h"
 #include "Modules/Visual/Freelook.h"
@@ -109,7 +109,6 @@
 #include "Modules/Misc/TestModule.h"
 #endif
 
-#include "Modules/Client/ArrayListModule.h"
 #include "Modules/Client/ClickGuiMod.h"
 #include "Modules/Client/ClientTheme.h"
 #include "Modules/Client/Compass.h"
