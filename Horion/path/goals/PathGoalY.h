@@ -1,12 +1,12 @@
 #pragma once
 
-#include "JoeGoal.h"
+#include "PathGoal.h"
 
-class JoeGoalY : public JoeGoal {
+class PathGoalY : public PathGoal {
 private:
 	float target;
 public:
-	JoeGoalY(float target);
+	PathGoalY(float target);
 
 	bool isInGoal(vec3_ti pos) override;
 	float getHeuristicEstimation(vec3_ti pos) override;

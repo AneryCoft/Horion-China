@@ -1,15 +1,15 @@
-#include "JoeConstants.h"
+#include "PathConstants.h"
 
 #include <math.h>
 float distanceToTicks(float dist) {
-	if(dist == 0)
+	if (dist == 0)
 		return 0;
 
 	float tmp = dist;
 	int tickCnt = 0;
-	while(true){
+	while (true) {
 		float fallDist = minecraftFallVel(tickCnt);
-		if(tmp <= fallDist){
+		if (tmp <= fallDist) {
 			return tickCnt + tmp / fallDist;
 		}
 		tmp -= fallDist;
@@ -21,7 +21,7 @@ float minecraftFallVel(int ticks) {
 }
 float* generateFallNBlocksCost() {
 	float* costs = new float[257];
-	for(int i = 0; i < 257; i++){
+	for (int i = 0; i < 257; i++) {
 		costs[i] = distanceToTicks((float)i) * (1.f / 20);
 	}
 	return costs;

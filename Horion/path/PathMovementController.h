@@ -1,17 +1,17 @@
 #pragma once
 
-#include "JoePath.h"
+#include "Path.h"
 #include "../../SDK/CEntity.h"
 #include "../../SDK/CMoveInputHandler.h"
 
-class JoeMovementController {
+class PathMovementController {
 private:
-	std::shared_ptr<JoePath> currentPath;
+	std::shared_ptr<Path> currentPath;
 	struct {
 		int currentPathSegment = 0;
 		bool recoverToStartPos = false;
 
-		void nextSegment(){
+		void nextSegment() {
 			currentPathSegment++;
 			recoverToStartPos = false;
 		}
@@ -19,14 +19,14 @@ private:
 
 public:
 	bool overrideViewAngles = false;
-	vec2_t targetViewAngles = {0, 0};
+	vec2_t targetViewAngles = { 0, 0 };
 
-	JoeMovementController(std::shared_ptr<JoePath> path);
+	PathMovementController(std::shared_ptr<Path> path);
 
 	void step(C_LocalPlayer* player, C_MoveInputHandler* movementHandler);
-	bool isDone(){
+	bool isDone() {
 		return stateInfo.currentPathSegment >= currentPath->getNumSegments();
 	}
 	int getCurrentPathSegment() const;
-	const std::shared_ptr<JoePath>& getCurrentPath() const;
+	const std::shared_ptr<Path>& getCurrentPath() const;
 };

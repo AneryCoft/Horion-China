@@ -3,7 +3,7 @@
 #include "../../Utils/HMath.h"
 #include <vector>
 
-enum JoeSegmentType{
+enum PathSegmentType {
 	INVALID = -1,
 	WALK = 0,
 	JUMP,
@@ -12,19 +12,19 @@ enum JoeSegmentType{
 	WATER_WALK
 };
 
-class JoeSegment {
+class PathSegment {
 private:
-	JoeSegmentType segmentType;
+	PathSegmentType segmentType;
 	vec3_ti start, end;
 	float cost;
 	bool allowSprint;
 	std::vector<vec3_ti> validPositions;
 public:
-	JoeSegment(JoeSegmentType type, vec3_ti& start, vec3_ti& stop, float cost, bool allowSprint = false);
+	PathSegment(PathSegmentType type, vec3_ti& start, vec3_ti& stop, float cost, bool allowSprint = false);
 	void draw();
 	bool isAllowingSprint() const;
 	void setAllowSprint(bool allowSprint);
-	JoeSegmentType getSegmentType() const;
+	PathSegmentType getSegmentType() const;
 	const vec3_ti& getStart() const;
 	const vec3_ti& getEnd() const;
 	bool isInValidPosition(const vec3_ti& pos) const;
