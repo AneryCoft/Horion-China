@@ -107,10 +107,14 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			, windowSize.y / 2 + (windowSize.y + 455.f) / 12.f + 5.f);
 
 		static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-		if (ClientThemes->Theme.selected == 0) {
+		switch (ClientThemes->Theme.selected) {
+		case 0:
+			DrawUtils::fillRectangle(hud, MC_Color(180, 180, 180), 0.4f);
+			break;
+		case 1:
 			DrawUtils::fillRectangle(hud, MC_Color(12, 12, 12), 0.4f);
-		}
-		else {
+			break;
+		case 2:
 			DrawUtils::fillRectangle(hud, MC_Color(13, 29, 48), 0.4f);
 		}
 

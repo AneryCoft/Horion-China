@@ -110,6 +110,7 @@
 #include "Modules/Misc/TestModule.h"
 #endif
 
+#include "Modules/Client/ArrayListModule.h"
 #include "Modules/Client/ClickGuiMod.h"
 #include "Modules/Client/ClientTheme.h"
 #include "Modules/Client/Compass.h"

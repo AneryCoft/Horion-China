@@ -15,10 +15,9 @@ public:
 
 	bool tabgui = true;
 	bool arraylist = true;
-	bool clickToggle = true;
+	bool notifications = true;
 	bool watermark = true;
 	bool coordinates = false;
-	bool keybinds = true;
 	bool displayArmor = true;
 	bool keystrokes = true;
 	bool fps = true;
@@ -26,8 +25,6 @@ public:
 	bool alwaysShow = false;
 	bool angle = false;
 	bool speed = true;
-	bool notifications = true;
-
 	float scale = 1.f;
 
 	// Inherited via IModule

@@ -52,10 +52,14 @@ void InventoryView::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	DrawUtils::drawRectangle(vec2_t(invX, invY), vec2_t(invX + 152.f + sideBars, invY + 60.f + sideBars), sideBars / 2);
 
 	static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-	if (ClientThemes->Theme.selected == 0) {
+	switch (ClientThemes->Theme.selected) {
+	case 0:
+		DrawUtils::fillRectangle(vec4_t(invX, invY, invX + 152.f + sideBars, invY + 60.f + sideBars), MC_Color(180, 180, 180), backGround);
+		break;
+	case 1:
 		DrawUtils::fillRectangle(vec4_t(invX, invY, invX + 152.f + sideBars, invY + 60.f + sideBars), MC_Color(12, 12, 12), backGround);
-	}
-	else if (ClientThemes->Theme.selected == 1) {
+		break;
+	case 2:
 		DrawUtils::fillRectangle(vec4_t(invX, invY, invX + 152.f + sideBars, invY + 60.f + sideBars), MC_Color(13, 29, 48), backGround);
 	}
 

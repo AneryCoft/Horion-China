@@ -1,9 +1,10 @@
 #pragma once
 
-#include <vector>
-
-#include "../../DrawUtils.h"
 #include "../../Module/ModuleManager.h"
+#include "../../DrawUtils.h"
+#include <vector>
+#include <Windows.h>
+#include "../../Scripting/ScriptManager.h"
 
 class TabGui {
 private:

@@ -1,8 +1,5 @@
 #include "TabGui.h"
 
-#include <Windows.h>
-#include "../../Scripting/ScriptManager.h"
-
 struct SelectedItemInformation {
 	int selectedItemId = 0;
 	float currentSelectedItemInterpol = 0;
@@ -64,7 +61,7 @@ void TabGui::renderLevel() {
 	// Parameters
 	float textSize = hudModule->scale;
 	float textHeight = 10.f * textSize;
-	float alphaVal = 1.0f;
+	//float alphaVal = 1.f;
 
 	// First loop: Get the maximum text length
 	float maxLength = 0.f;
@@ -96,16 +93,21 @@ void TabGui::renderLevel() {
 			xOffset + maxLength + 4.5f,
 			yOffset + textHeight);
 
-		MC_Color color = MC_Color(200, 200, 200);
+		MC_Color color = MC_Color(255, 255, 255);
 
 		if (selected[renderedLevel].selectedItemId == i && level >= renderedLevel) {  // We are selected
 			if (renderedLevel == level) {                                             // Are we actually in the menu we are drawing right now?
 				// We are selected in the current menu
-				if (ClientThemes->Theme.selected == 1) {
-				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
-			} else {
-				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
-		}
+				switch (ClientThemes->Theme.selected) {
+				case 0:
+					DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), 0.35f);
+					break;
+				case1:
+					DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
+					break;
+				case 2:
+					DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
+				}
 				static bool lastVal = toggleCurrentSelection;
 
 				if (toggleCurrentSelection) {
@@ -119,18 +121,30 @@ void TabGui::renderLevel() {
 					label.mod->setEnabled(false);
 				lastVal = toggleCurrentSelection;
 			} else {  // selected, but not what the user is interacting with
-				if (ClientThemes->Theme.selected == 1) {
-					DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
-				} else
+				switch (ClientThemes->Theme.selected) {
+				case 0:
+					DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), 0.35f);
+					break;
+				case 1:
 					DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
+					break;
+				case 2:
+					DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
+				}
 
 			}
 			// selectedYOffset = yOffset;
 		} else {  // We are not selected
-			if (ClientThemes->Theme.selected == 1) {
-				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
-			} else
+			switch (ClientThemes->Theme.selected) {
+			case 0:
+				DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), 0.35f);
+				break;
+			case 1:
 				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
+				break;
+			case 2:
+				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
+			}
 		}
 
 
@@ -156,10 +170,15 @@ void TabGui::renderLevel() {
 			selected[renderedLevel].rollback();
 		} else
 			selected[renderedLevel].rollin();
-		if (ClientThemes->Theme.selected == 1) {
-			DrawUtils::fillRectangle(selectedPos, MC_Color(28, 107, 201), alphaVal);
-		} else {
-			DrawUtils::fillRectangle(selectedPos, MC_Color(85, 85, 85), alphaVal);
+		switch (ClientThemes->Theme.selected) {
+		case 0:
+			DrawUtils::fillRectangle(selectedPos, MC_Color(120, 120, 120), 0.9f);
+			break;
+		case 1:
+			DrawUtils::fillRectangle(selectedPos, MC_Color(85, 85, 85), 0.9f);
+			break;
+		case 2:
+			DrawUtils::fillRectangle(selectedPos, MC_Color(28, 107, 201), 0.9f);
 		}
 	}
 	//DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);

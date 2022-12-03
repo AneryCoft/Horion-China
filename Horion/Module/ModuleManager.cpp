@@ -127,6 +127,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new NoParticles()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Extinguisher()));
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoTool()));
+		moduleList.push_back(std::shared_ptr<IModule>(new ArrayListModule()));
 		moduleList.push_back(std::shared_ptr<IModule>(new KillInsult()));
 
 #ifdef _DEBUG
@@ -144,6 +145,7 @@ void ModuleManager::initModules() {
 		initialized = true;
 	}
 
+	getModule<ArrayListModule>()->setEnabled(getModule<HudModule>()->arraylist ? true : false);
 	getModule<HudModule>()->setEnabled(true);
 	getModule<ClickGuiMod>()->setEnabled(false);
 	getModule<AntiBot>()->setEnabled(true);

@@ -119,18 +119,21 @@ void ClickGui::renderTooltip(std::string* text) {
 		currentTooltipPos.x + (textPaddingX * 2) + textWidth + 2.f,
 		currentTooltipPos.y + textHeight + 2.f);
 	static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-	if (ClientThemes->Theme.selected == 1) {
-		DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), 1.0f);
-	} else {
+	switch (ClientThemes->Theme.selected) {
+	case 0:
+		DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), 0.2f);
+		DrawUtils::drawRectangle(rectPos, MC_Color(180, 180, 180), 1.f, 0.5f);
+		break;
+	case 1:
 		DrawUtils::fillRectangle(rectPos, moduleColor, 1.0f);
-	}
-	if (ClientThemes->Theme.selected == 1) {
-		DrawUtils::drawRectangle(rectPos, MC_Color(30, 110, 200), 1.f, 0.5f);
-	} else {
 		DrawUtils::drawRectangle(rectPos, brightModuleBlendColor, 1.f, 0.5f);
+		break;
+	case 2:
+		DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), 1.0f);
+		DrawUtils::drawRectangle(rectPos, MC_Color(30, 110, 200), 1.f, 0.5f);
 	}
 	DrawUtils::drawText(textPos, text, whiteColor, textSize);
-}
+} //¹¦ÄÜÃèÊö
 
 void ClickGui::renderCategory(Category category) {
 	const char* categoryName = ClickGui::catToName(category);
@@ -260,10 +263,15 @@ void ClickGui::renderCategory(Category category) {
 			if (allowRender) {
 				static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
 				if (!ourWindow->isInAnimation && !isDragging && rectPos.contains(&mousePos)) {  // Is the Mouse hovering above us?
-					if (ClientThemes->Theme.selected == 1) {
-						DrawUtils::fillRectangle(rectPos, MC_Color(30, 110, 200), backgroundAlpha);
-					} else {
+					switch (ClientThemes->Theme.selected) {
+					case 0:
+						DrawUtils::fillRectangle(rectPos, MC_Color(120, 120, 120), backgroundAlpha);
+						break;
+					case 1:
 						DrawUtils::fillRectangle(rectPos, selectedModuleColor, backgroundAlpha);
+						break;
+					case 2:
+						DrawUtils::fillRectangle(rectPos, MC_Color(30, 110, 200), backgroundAlpha);
 					}
 					std::string tooltip = mod->getTooltip();
 					static auto clickGuiMod = moduleMgr->getModule<ClickGuiMod>();
@@ -274,17 +282,31 @@ void ClickGui::renderCategory(Category category) {
 						shouldToggleLeftClick = false;
 					}
 				} else {
-					if (ClientThemes->Theme.selected == 1) {
-						DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
-					} else
+					switch (ClientThemes->Theme.selected) {
+					case 0:
+						DrawUtils::fillRectangle(rectPos, mod->isEnabled() ? MC_Color(0, 122, 204) : MC_Color(180, 180, 180), backgroundAlpha);
+						break;
+					case 1:
 						DrawUtils::fillRectangle(rectPos, mod->isEnabled() ? enabledModuleColor : moduleColor, backgroundAlpha);
-				
+						break;
+					case 2:
+						DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
+					}
 				}
 			}
 
 			// Text
-			if (allowRender)
-				DrawUtils::drawText(textPos, &textStr, mod->isEnabled() ? whiteColor : MC_Color(200, 200, 200), textSize);
+			if (allowRender) {
+				static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
+				if (ClientThemes->Theme.selected == 0) {
+					DrawUtils::drawText(textPos, &textStr, whiteColor, textSize);
+				}
+				else {
+					DrawUtils::drawText(textPos, &textStr, mod->isEnabled() ? whiteColor : MC_Color(200, 200, 200), textSize);
+				}
+			}
+				
+		
 
 			// Settings
 			{
@@ -330,10 +352,15 @@ void ClickGui::renderCategory(Category category) {
 								rectPos.w = currentYOffset + textHeight + (textPaddingY * 2);
 								// Background of bool setting
 								static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-								if (ClientThemes->Theme.selected == 1) {
-									DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
-								} else {
+								switch (ClientThemes->Theme.selected) {
+								case 0:
+									DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), backgroundAlpha);
+									break;
+								case 1:
 									DrawUtils::fillRectangle(rectPos, moduleColor, backgroundAlpha);
+									break;
+								case 2:
+									DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
 								}
 								vec4_t selectableSurface = vec4_t(
 									textPos.x + textPaddingX,
@@ -402,20 +429,32 @@ void ClickGui::renderCategory(Category category) {
 									// Background of enum setting
 									
 									if (rectPos.contains(&mousePos)) {
-										if (ClientThemes->Theme.selected == 1) {
-											DrawUtils::fillRectangle(rectPos, MC_Color(30, 110, 200), backgroundAlpha);
-										} else {
+										switch (ClientThemes->Theme.selected) {
+										case 0:
+											DrawUtils::fillRectangle(rectPos, MC_Color(120, 120, 120), backgroundAlpha);
+											break;
+										case 1:
 											DrawUtils::fillRectangle(rectPos, selectedModuleColor, backgroundAlpha);
+											break;
+										case 2:
+											DrawUtils::fillRectangle(rectPos, MC_Color(30, 110, 200), backgroundAlpha);
 										}
 										if (shouldToggleRightClick && !ourWindow->isInAnimation) {
 											shouldToggleRightClick = false;
 											setting->minValue->_bool = !setting->minValue->_bool;
 										}
-									}else 
-										if (ClientThemes->Theme.selected == 1) {
-										DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
-									} else {
-										DrawUtils::fillRectangle(rectPos, moduleColor, backgroundAlpha);
+									}
+									else {
+										switch (ClientThemes->Theme.selected) {
+										case 0:
+											DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), backgroundAlpha);
+											break;
+										case 1:
+											DrawUtils::fillRectangle(rectPos, moduleColor, backgroundAlpha);
+											break;
+										case 2:
+											DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
+										}
 									}
 									
 									DrawUtils::drawText(textPos, &elTexto, whiteColor, textSize);
@@ -455,37 +494,41 @@ void ClickGui::renderCategory(Category category) {
 											xEnd,
 											rectPos.w);
 										MC_Color col;
-										if (ClientThemes->Theme.selected == 1) {
+										switch (ClientThemes->Theme.selected) {
+										case 0:
 											if (setting->value->_int == e || (selectableSurface.contains(&mousePos) && !ourWindow->isInAnimation)) {
-												if (isEven)
-													col = MC_Color(30, 110, 200);
-												else
-													col = MC_Color(30, 110, 200);
-											} else {
-												if (isEven)
-													col = MC_Color(15, 30, 50);
-												else
-													col = MC_Color(15, 30, 50);
+												col = MC_Color(120, 120, 120);
 											}
-										} else {
+											else {
+												col = MC_Color(180, 180, 180);
+											}
+											break;
+										case 1:
 											if (setting->value->_int == e || (selectableSurface.contains(&mousePos) && !ourWindow->isInAnimation)) {
-												if (isEven)
 													col = selectedSettingColor1;
-												else
-													col = selectedSettingColor2;
-											} else {
-												if (isEven)
+											}
+											else {
 													col = SettingColor1;
-												else
-													col = SettingColor2;
+											}
+											break;
+										case 2:
+											if (setting->value->_int == e || (selectableSurface.contains(&mousePos) && !ourWindow->isInAnimation)) {
+												col = MC_Color(30, 110, 200);
+											}
+											else {
+												col = MC_Color(15, 30, 50);
 											}
 										}
 										// Background of individual enum
-										static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-										if (ClientThemes->Theme.selected == 1) {
-											DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
-										} else {
+										switch (ClientThemes->Theme.selected) {
+										case 0:
+											DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), backgroundAlpha);
+											break;
+										case 1:
 											DrawUtils::fillRectangle(rectPos, moduleColor, backgroundAlpha);
+											break;
+										case 2:
+											DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
 										}
 										DrawUtils::fillRectangle(selectableSurface, col, backgroundAlpha);
 										DrawUtils::drawText(textPos, &elTexto, whiteColor);
@@ -515,10 +558,15 @@ void ClickGui::renderCategory(Category category) {
 									currentYOffset += textPaddingY + textHeight;
 									rectPos.w = currentYOffset;
 									static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-									if (ClientThemes->Theme.selected == 1) {
-										DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
-									} else {
+									switch (ClientThemes->Theme.selected) {
+									case 0:
+										DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), backgroundAlpha);
+										break;
+									case 1:
 										DrawUtils::fillRectangle(rectPos, moduleColor, backgroundAlpha);
+										break;
+									case 2:
+										DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
 									}
 								}
 
@@ -542,11 +590,16 @@ void ClickGui::renderCategory(Category category) {
 										const bool areWeFocused = rect.contains(&mousePos);
 
 										static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-										if (ClientThemes->Theme.selected == 1) {
-											DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
-										} else {
+										switch (ClientThemes->Theme.selected) {
+										case 0:
+											DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), backgroundAlpha);
+											break;
+										case 1:
 											DrawUtils::fillRectangle(rectPos, moduleColor, backgroundAlpha);
-										}                                                                  // Background
+											break;
+										case 2:
+											DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
+										}                                                                 // Background
 										DrawUtils::drawRectangle(rect, whiteColor, 1.f, backgroundAlpha);  // Slider background
 
 										const float minValue = setting->minValue->_float;
@@ -575,10 +628,15 @@ void ClickGui::renderCategory(Category category) {
 										// Draw Progress
 										{
 											rect.z = rect.x + value;
-											if (ClientThemes->Theme.selected == 1) {
-												DrawUtils::fillRectangle(rect, MC_Color(28, 107, 201), (areWeFocused || setting->isDragging) ? 1.f : 0.8f);
-											} else {
+											switch (ClientThemes->Theme.selected) {
+											case 0:
+												DrawUtils::fillRectangle(rect, MC_Color(120, 120, 120), (areWeFocused || setting->isDragging) ? 1.f : 0.8f);
+												break;
+											case 1:
 												DrawUtils::fillRectangle(rect, MC_Color(85, 85, 85), (areWeFocused || setting->isDragging) ? 1.f : 0.8f);
+												break;
+											case 2:
+												DrawUtils::fillRectangle(rect, MC_Color(28, 107, 201), (areWeFocused || setting->isDragging) ? 1.f : 0.8f);
 											}
 										}
 
@@ -625,10 +683,15 @@ void ClickGui::renderCategory(Category category) {
 									currentYOffset += textPaddingY + textHeight;
 									rectPos.w = currentYOffset;
 									static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-									if (ClientThemes->Theme.selected == 1) {
-										DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
-									} else {
+									switch (ClientThemes->Theme.selected) {
+									case 0:
+										DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), backgroundAlpha);
+										break;
+									case 1:
 										DrawUtils::fillRectangle(rectPos, moduleColor, backgroundAlpha);
+										break;
+									case 2:
+										DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
 									}
 								}
 								if ((currentYOffset - ourWindow->pos.y) > (g_Data.getGuiData()->heightGame * 0.75)) {
@@ -651,11 +714,16 @@ void ClickGui::renderCategory(Category category) {
 										const bool areWeFocused = rect.contains(&mousePos);
 
 										static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-										if (ClientThemes->Theme.selected == 1) {
-											DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
-										} else {
+										switch (ClientThemes->Theme.selected) {
+										case 0:
+											DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), backgroundAlpha);
+											break;
+										case 1:
 											DrawUtils::fillRectangle(rectPos, moduleColor, backgroundAlpha);
-										}                                                                  // Background
+											break;
+										case 2:
+											DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), backgroundAlpha);
+										}                                                                // Background
 										DrawUtils::drawRectangle(rect, whiteColor, 1.f, backgroundAlpha);  // Slider background
 
 										const float minValue = (float)setting->minValue->_int;
@@ -684,10 +752,15 @@ void ClickGui::renderCategory(Category category) {
 										// Draw Progress
 										{
 											rect.z = rect.x + value;
-											if (ClientThemes->Theme.selected == 1) {
-												DrawUtils::fillRectangle(rect, MC_Color(28, 107, 201), (areWeFocused || setting->isDragging) ? 1.f : 0.8f);
-											} else {
+											switch (ClientThemes->Theme.selected) {
+											case 0:
+												DrawUtils::fillRectangle(rect, MC_Color(120, 120, 120), (areWeFocused || setting->isDragging) ? 1.f : 0.8f);
+												break;
+											case 1:
 												DrawUtils::fillRectangle(rect, MC_Color(85, 85, 85), (areWeFocused || setting->isDragging) ? 1.f : 0.8f);
+												break;
+											case 2:
+												DrawUtils::fillRectangle(rect, MC_Color(28, 107, 201), (areWeFocused || setting->isDragging) ? 1.f : 0.8f);
 											}
 										}
 
@@ -814,16 +887,18 @@ void ClickGui::renderCategory(Category category) {
 			std::string textStr = categoryName;
 			DrawUtils::drawText(textPos, &textStr, whiteColor, textSize);
 			static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-			if (ClientThemes->Theme.selected == 1) {
-				DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), 1.f);
-			} else {
+			switch (ClientThemes->Theme.selected) {
+			case 0:
+				DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), 1.f);
+				DrawUtils::fillRectangle(vec4_t(rectPos.x, rectPos.w - 1, rectPos.z, rectPos.w), MC_Color(120, 120, 120), 1 - ourWindow->animation);
+				break;
+			case 1:
 				DrawUtils::fillRectangle(rectPos, moduleColor, 1.f);
-			}
-			if (ClientThemes->Theme.selected == 1) {
-				DrawUtils::fillRectangle(vec4_t(rectPos.x, rectPos.w - 1, rectPos.z, rectPos.w), MC_Color(30, 110, 200), 1 - ourWindow->animation);
-			} else {
 				DrawUtils::fillRectangle(vec4_t(rectPos.x, rectPos.w - 1, rectPos.z, rectPos.w), brightModuleBlendColor, 1 - ourWindow->animation);
-
+				break;
+			case 2:
+				DrawUtils::fillRectangle(rectPos, MC_Color(15, 30, 50), 1.f);
+				DrawUtils::fillRectangle(vec4_t(rectPos.x, rectPos.w - 1, rectPos.z, rectPos.w), MC_Color(30, 110, 200), 1 - ourWindow->animation);
 			}
 			// Draw Dash
 			GuiUtils::drawCrossLine(vec2_t(

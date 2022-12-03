@@ -41,11 +41,16 @@ void Watermark::renderWatermark() {
 		windowSize.y - margin);
 
 	DrawUtils::drawRectangle(rect, MC_Color(rcolors), 1.f, 2.f);
-	if (ClientThemes->Theme.selected == 1) {
-		DrawUtils::fillRectangle(rect, MC_Color(13, 29, 48), 1.f);
-	}
-	else {
+
+	switch (ClientThemes->Theme.selected) {
+	/*case 0:
+		DrawUtils::fillRectangle(rect, MC_Color(100, 100, 130), 1.f);
+		break;*/
+	case 1:
 		DrawUtils::fillRectangle(rect, MC_Color(12, 12, 12), 1.f);
+		break;
+	case 2:
+		DrawUtils::fillRectangle(rect, MC_Color(13, 29, 48), 1.f);
 	}
 	DrawUtils::drawText(vec2_t(rect.x + borderPadding, rect.y), &name, MC_Color(rcolors), nameTextSize);
 	DrawUtils::drawText(vec2_t(rect.x + borderPadding + nameLength, rect.w - 7), &version, MC_Color(rcolors), versionTextSize);

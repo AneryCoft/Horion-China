@@ -2,7 +2,9 @@
 
 void ArrayList::renderArrayList() {
 	static auto hudModule = moduleMgr->getModule<HudModule>();
+	static auto arrayListModule = moduleMgr->getModule<ArrayListModule>();
 	static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
+	static auto fontChangerModule = moduleMgr->getModule<FontChanger>();
 
 	static float rcolors[4];          // Rainbow color array RGBA
 	static float disabledRcolors[4];  // Rainbow Colors, but for disabled modules
@@ -59,7 +61,7 @@ void ArrayList::renderArrayList() {
 				moduleName = moduleNameChr;
 			else {
 				char text[50];
-				sprintf_s(text, 50, "%s%s", moduleNameChr, hudModule->keybinds ? std::string(" [" + std::string(Utils::getKeybindName(keybind)) + "]").c_str() : "");
+				sprintf_s(text, 50, "%s%s", moduleNameChr, arrayListModule->keybinds ? std::string(" [" + std::string(Utils::getKeybindName(keybind)) + "]").c_str() : "");
 				moduleName = text;
 			}
 
@@ -94,7 +96,7 @@ void ArrayList::renderArrayList() {
 		auto lock = moduleMgr->lockModuleList();
 		std::vector<std::shared_ptr<IModule>>* moduleList = moduleMgr->getModuleList();
 		for (auto it : *moduleList) {
-			if (it.get() != hudModule)
+			if (it.get() != hudModule && it.get() != arrayListModule && it.get() != ClientThemes && it.get() != fontChangerModule)
 				modContainerList.emplace(IModuleContainer(it));
 		}
 	}
@@ -142,11 +144,11 @@ void ArrayList::renderArrayList() {
 			yOffset,
 			xOffset - 1,
 			yOffset + textPadding * 2 + textHeight);
-		vec4_t downRect = vec4_t(
+		/*vec4_t downRect = vec4_t(
 			xOffset - 1,
 			yOffset + textPadding * 2 + textHeight - 1,
 			xOffset + textPadding * 2 + textWidth,
-			yOffset + textPadding * 2 + textHeight);
+			yOffset + textPadding * 2 + textHeight);*/
 		c++;
 		b++;
 		if (b < 20)
@@ -158,24 +160,35 @@ void ArrayList::renderArrayList() {
 		currColor[0] += 1.f / a * c;
 		Utils::ColorConvertHSVtoRGB(currColor[0], currColor[1], currColor[2], currColor[0], currColor[1], currColor[2]);
 
-		if (ClientThemes->Theme.selected == 1) {
-			DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
+		if (arrayListModule->fill) {
+			switch (ClientThemes->Theme.selected) {
+			case 0:
+				DrawUtils::fillRectangle(rectPos, MC_Color(180, 180, 180), 0.5f);
+				break;
+			case 1:
+				DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
+				break;
+			case 2:
+				DrawUtils::fillRectangle(rectPos, MC_Color(13, 29, 48), 0.5f);
+			}
 		}
-		else if (ClientThemes->Theme.selected == 0) {
-			DrawUtils::fillRectangle(rectPos, MC_Color(12, 12, 12), 0.5f);
+
+		if (arrayListModule->border) {
+			DrawUtils::fillRectangle(leftRect, MC_Color(currColor), 0.8f);
 		}
-		DrawUtils::fillRectangle(leftRect, MC_Color(currColor), 0.8f);
-		DrawUtils::fillRectangle(downRect, MC_Color(currColor), 0.8f);
-		if (!GameData::canUseMoveKeys() && rectPos.contains(&mousePos) && hudModule->clickToggle) {
+		//DrawUtils::fillRectangle(downRect, MC_Color(currColor), 0.8f);
+		if (!GameData::canUseMoveKeys() && rectPos.contains(&mousePos) && arrayListModule->clickToggle) {
 			vec4_t selectedRect = rectPos;
 			selectedRect.x = leftRect.z;
 			if (leftMouseDown) {
-				DrawUtils::fillRectangle(selectedRect, MC_Color(0.8f, 0.8f, 0.8f), 0.8f);
+				if (arrayListModule->fill)
+					DrawUtils::fillRectangle(selectedRect, MC_Color(0.8f, 0.8f, 0.8f), 0.8f);
 				if (executeClick)
 					it->backingModule->toggle();
 			}
 			else
-				DrawUtils::fillRectangle(selectedRect, MC_Color(0.8f, 0.8f, 0.8f, 0.8f), 0.3f);
+				if (arrayListModule->fill)
+					DrawUtils::fillRectangle(selectedRect, MC_Color(0.8f, 0.8f, 0.8f, 0.8f), 0.3f);
 		}
 		DrawUtils::drawText(textPos, &textStr, MC_Color(currColor), textSize);
 

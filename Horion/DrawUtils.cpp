@@ -388,20 +388,26 @@ void DrawUtils::drawNameTags(C_Entity* ent, float textSize, bool drawHealth, boo
 		subRectPos.y = subRectPos.w - 1.f * textSize;
 
 		static auto ClientThemes = moduleMgr->getModule<ClientTheme>();
-		if (ClientThemes->Theme.selected == 1) {
-			fillRectangle(rectPos, MC_Color(13, 29, 48), nameTagsMod->opacity);
+		switch (ClientThemes->Theme.selected) {
+		case 0:
+			fillRectangle(rectPos, MC_Color(120, 120, 120), nameTagsMod->opacity);
 			if (nameTagsMod->underline) {
-				fillRectangle(subRectPos, MC_Color(28, 107, 201), 0.9f);
+				fillRectangle(subRectPos, MC_Color(85, 85, 85), 0.9f);
 			}
-			drawText(textPos, &text, MC_Color(255, 255, 255), textSize);
-		}
-		else {
+			break;
+		case 1:
 			fillRectangle(rectPos, MC_Color(12, 12, 12), nameTagsMod->opacity);
 			if (nameTagsMod->underline) {
 				fillRectangle(subRectPos, MC_Color(85, 85, 85), 0.9f);
 			}
-			drawText(textPos, &text, MC_Color(255, 255, 255), textSize);
+			break;
+		case 2:
+			fillRectangle(rectPos, MC_Color(13, 29, 48), nameTagsMod->opacity);
+			if (nameTagsMod->underline) {
+				fillRectangle(subRectPos, MC_Color(28, 107, 201), 0.9f);
+			}
 		}
+		drawText(textPos, &text, MC_Color(255, 255, 255), textSize);
 
 		if (ent->getEntityTypeId() == 319 && nameTagsMod->displayArmor) {  // is player, show armor
 			auto* player = reinterpret_cast<C_Player*>(ent);
