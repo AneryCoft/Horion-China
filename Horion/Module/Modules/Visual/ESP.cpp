@@ -66,11 +66,14 @@ void doRenderStuff(C_Entity* ent, bool isRegularEntitie) {
 	break;
 	}
 
+	if (ent->damageTime > 10 || ent->damageTime < 0)
+		ent->damageTime = 0;
+		//部分实体的HurtTime是脏数据
+
 	if (espMod->doRainbow)
 		DrawUtils::setColor(rcolors[0], rcolors[1], rcolors[2], (float)fmax(0.1f, (float)fmin(1.f, 15 / (ent->damageTime + 1))));
 	else
 		DrawUtils::setColor(0.9f, 0.9f, 0.9f, (float)fmax(0.1f, (float)fmin(1.f, 15 / (ent->damageTime + 1))));
-
 
 	float distance = (*localPlayer->getPos()).dist(*ent->getPos());
 	switch (espMod->renderMode.selected) {
@@ -82,6 +85,27 @@ void doRenderStuff(C_Entity* ent, bool isRegularEntitie) {
 		break;
 	case 2:
 		DrawUtils::drawBox(ent->aabb.lower, ent->aabb.upper, (float)fmax(0.2f, 1 / (float)fmax(1, distance)));
+		break;
+	case 3:
+	{
+		/*
+		vec2_t boxPos1 = DrawUtils::worldToScreen(ent->aabb.lower);
+		vec2_t boxPos2 = DrawUtils::worldToScreen(vec3_t(ent->aabb.upper.x, ent->aabb.lower.y, ent->aabb.upper.z));
+		vec2_t boxPos3 = DrawUtils::worldToScreen(vec3_t(ent->aabb.lower.x, ent->aabb.lower.y, ent->aabb.upper.z));
+		vec2_t boxPos4 = DrawUtils::worldToScreen(vec3_t(ent->aabb.upper.x, ent->aabb.lower.y, ent->aabb.lower.z));
+		vec2_t boxPos5 = DrawUtils::worldToScreen(ent->aabb.upper);
+		vec2_t boxPos6 = DrawUtils::worldToScreen(vec3_t(ent->aabb.lower.x, ent->aabb.upper.y, ent->aabb.lower.z));
+		vec2_t boxPos7 = DrawUtils::worldToScreen(vec3_t(ent->aabb.lower.x, ent->aabb.upper.y, ent->aabb.upper.z));
+		vec2_t boxPos8 = DrawUtils::worldToScreen(vec3_t(ent->aabb.upper.x, ent->aabb.upper.y, ent->aabb.lower.z));
+
+		DrawUtils::fillRectangle(vec4_t(boxPos1.x, boxPos1.y, boxPos2.x, boxPos2.y), MC_Color(200, 200, 200), 0.3f); //底面
+		DrawUtils::fillRectangle(vec4_t(boxPos5.x, boxPos5.y, boxPos6.x, boxPos6.y), MC_Color(200, 200, 200), 0.3f); //顶面
+		DrawUtils::fillRectangle(vec4_t(boxPos1.x, boxPos1.y, boxPos7.x, boxPos7.y), MC_Color(200, 200, 200), 0.3f);
+		DrawUtils::fillRectangle(vec4_t(boxPos1.x, boxPos1.y, boxPos8.x, boxPos8.y), MC_Color(200, 200, 200), 0.3f);
+		DrawUtils::fillRectangle(vec4_t(boxPos5.x, boxPos5.y, boxPos3.x, boxPos3.y), MC_Color(200, 200, 200), 0.3f);
+		DrawUtils::fillRectangle(vec4_t(boxPos5.x, boxPos5.y, boxPos4.x, boxPos4.y), MC_Color(200, 200, 200), 0.3f); //四个侧面
+		*/ //失败的3DFillBox
+	}
 	}
 }
 
