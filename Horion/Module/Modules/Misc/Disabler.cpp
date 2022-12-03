@@ -27,15 +27,15 @@ void Disabler::onTick(C_GameMode* gm) {
 
 	++tick;
 
-	if (mode.selected == 2) {
+	/*if (mode.selected == 2) {
 		if (!localPlayer->onGround && abs(localPlayer->velocity.y) > 0.1f) {
 			if (tick >= 30) {
 				C_MovePlayerPacket movePacket;
 				movePacket.Position = localPlayerPos->add(0.f, 15.f, 0.f);
 				movePacket.onGround = true;
 				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
-				/*movePacket.Position = *localPlayerPos;
-				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);*/
+				movePacket.Position = *localPlayerPos;
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
 				tick = 0;
 				//clientMessageF("send packet");
 			}
@@ -43,24 +43,24 @@ void Disabler::onTick(C_GameMode* gm) {
 		else {
 			tick = 20;
 		}
-		/*C_MovePlayerPacket movePacket;
-
-		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);*/
 	}
-	else if (mode.selected == 3) {
-		//if (localPlayer->velocity.magnitude() > 0.1f) {
+	else */if (mode.selected == 3) {
+	//if (localPlayer->velocity.magnitude() > 0.1f) {
 		C_MovePlayerPacket movePacket;
 		movePacket.onGround = false;
 		movePacket.Position = *localPlayerPos;
+		movePacket.pitch = localPlayer->pitch;
+		movePacket.yaw = localPlayer->bodyYaw;
+		movePacket.headYaw = localPlayer->yawUnused1;
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
 		//}
 	}
 	else if (mode.selected == 4) {
-		if (g_Data.getRakNetInstance()->serverIp.getTextLength() < 1) {
-			if (attackTime.hasTimedElapsed(1000.f / 10.f, true)) {
-				g_Data.getCGameMode()->attack(localPlayer);
-			}
+		//if (g_Data.getRakNetInstance()->serverIp.getTextLength() < 1) {
+		if (attackTime.hasTimedElapsed(1000.f / 10.f, true)) {
+			g_Data.getCGameMode()->attack(localPlayer);
 		}
+		//}
 	}
 }
 
@@ -68,7 +68,7 @@ void Disabler::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (mode.selected == 0 || mode.selected == 3) {
 		if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 			PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-			authInputPacket->velocity = vec2_t(2.f, 2.f);
+			authInputPacket->velocity = vec3_t(0.01f, 0.01f, 0.01f);
 		}
 	}
 	else if (mode.selected == 1) {
@@ -78,6 +78,17 @@ void Disabler::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				//soundEventPacket->sound = 0; 
 				cancelSend = true;
 		} //ÈÆ¹ýEaseCation·þÎñÆ÷CPS¼ì²â 
+	}
+	else if (mode.selected == 2) {
+		if (tick >= 20) {
+			if (abs(g_Data.getLocalPlayer()->velocity.y) > 0.1f) {
+				if (packet->isInstanceOf<C_MovePlayerPacket>()) {
+					C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
+					movePacket->Position = movePacket->Position.add(-100.f);
+				}
+				tick = 0;
+			}
+		}
 	}
 	/*
 	else if (mode.selected == 3 || mode.selected == 4) {

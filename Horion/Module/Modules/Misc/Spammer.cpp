@@ -25,9 +25,10 @@ void Spammer::onTick(C_GameMode* gm) {
 	Odelay++;
 	if (Odelay > delay * 20) {
 		C_TextPacket textPacket;
+		textPacket.messageType = 1;
 		textPacket.message.setText(bypass ? (message + " | " + Utils::randomString(length)) : message);
 		textPacket.sourceName.setText(g_Data.getLocalPlayer()->getNameTag()->getText());
-		textPacket.xboxUserId = std::to_string(g_Data.getLocalPlayer()->getUserId());
+		textPacket.xboxUserId = g_Data.getClientInstance()->minecraftGame->xuid;
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&textPacket);
 		Odelay = 0;
 	}

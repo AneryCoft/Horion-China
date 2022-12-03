@@ -19,7 +19,7 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 		if (showAuth) {
 			auto packets = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-			g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s Pos(X=%f Y=%f Z=%f) pitch=%f yaw=%f yawUnused=%f velocity(x=%f y=%f)", packetName, packets->pos.x, packets->pos.y, packets->pos.z, packets->pitch, packets->yaw, packets->yawUnused, packets->velocity.x, packets->velocity.y);
+			g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s Pos(X=%f Y=%f Z=%f) pitch=%f yaw=%f yawUnused=%f velocity(x=%f y=%f z=%f) inputMode=%i", packetName, packets->pos.x, packets->pos.y, packets->pos.z, packets->pitch, packets->yaw, packets->yawUnused, packets->velocity.x, packets->velocity.y, packets->velocity.z, packets->inputMode);
 		}
 		return;
 	}
