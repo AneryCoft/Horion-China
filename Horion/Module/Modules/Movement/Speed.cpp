@@ -115,18 +115,18 @@ void Speed::onDisable() {
 }
 
 float hiveSpeed[12] = {
-	0.59041,
-	0.58005,
-	0.55040,
-	0.50000,
-	0.46050,
-	0.42000,
-	0.39000,
-	0.37000,
-	0.34000,
-	0.30000,
-	0.26041,
-	0.24647
+	0.54041,
+	0.52005,
+	0.50040,
+	0.49500,
+	0.43050,
+	0.39056,
+	0.36010,
+	0.31871,
+	0.27010,
+	0.24200,
+	0.22041,
+	0.20647
 };
 
 void Speed::onMove(C_MoveInputHandler* input) {
@@ -201,7 +201,7 @@ void Speed::onMove(C_MoveInputHandler* input) {
 			if (son)
 				safeSpeedArray = hiveSpeed[index++ % 12];
 			else
-				safeSpeedArray = 0.24247;
+				safeSpeedArray = 0.20247;
 		}
 		if (player->onGround) {
 			//safeSpeedArray == 0.61000;
@@ -220,12 +220,12 @@ void Speed::onMove(C_MoveInputHandler* input) {
 			moveVec.z = movement.y * safeSpeedArray;
 			if (!player->onGround) {
 				if (inter)
-					*g_Data.getClientInstance()->minecraft->timer = 16;
+					*g_Data.getClientInstance()->minecraft->timer = 20;
 				else
-					*g_Data.getClientInstance()->minecraft->timer = 22;
+					*g_Data.getClientInstance()->minecraft->timer = 21;
 			}
 			else {
-				*g_Data.getClientInstance()->minecraft->timer = 16;
+				*g_Data.getClientInstance()->minecraft->timer = 20;
 				if (pressed) player->lerpMotion(moveVec);
 			}
 		}
