@@ -63,7 +63,7 @@ std::string Utils::sanitize(std::string text) {
 std::string Utils::onlyOneLine(std::string text) {
 	if (auto i = text.find("\n"); i != std::string::npos) {
 		text.erase(text.begin() + i, text.end());
-	} //删除其他行的字符串
+	} //删除其他行的字符串 
 	return text;
 }
 
