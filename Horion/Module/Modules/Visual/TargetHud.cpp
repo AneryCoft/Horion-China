@@ -50,22 +50,22 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		std::string name = target->getNameTag()->getText();
 
 		name = Utils::onlyOneLine(name);
-		//name = std::regex_replace(name,std::regex("\n"), " "); //将换行改为空格
+		//name = std::regex_replace(name,std::regex("\n"), " "); //将换行改为空格 
 		std::string nameStr = "Name : " + name;
-		//名字
+		//名字 
 
 		vec3_t position = *target->getPos();
 		std::string posStr = "Position : " +
 			std::to_string((int)floor(position.x)) + " " +
 			std::to_string((int)floor(position.y)) + " " +
 			std::to_string((int)floor(position.z));
-		//位置
+		//位置 
 
 		float distance = g_Data.getLocalPlayer()->getPos()->dist(position);
 		char disValueStr[16];
 		sprintf_s(disValueStr, 16, "%.1f", distance);
 		std::string disStr = "Distance : " + std::string(disValueStr);
-		//距离
+		//距离 
 
 		float maxHealth = target->getAttribute(&HealthAttribute())->maximumValue;
 		float currentHealth = target->getAttribute(&HealthAttribute())->currentValue;
@@ -74,7 +74,7 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			+ std::to_string((int)currentHealth) +
 			"/" +
 			std::to_string((int)maxHealth);
-		//生命
+		//生命 
 
 		float armorValue = 0.f;
 		for (int i = 0; i < 4; i++) {
@@ -86,9 +86,9 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		}
 
 		std::string armorStr = "ArmorValue : " + std::to_string((int)armorValue) + "/20";
-		//盔甲值
+		//盔甲值 
 
-		//获取信息
+		//获取信息 
 
 		vec2_t windowSize = g_Data.getClientInstance()->getGuiData()->windowSize;
 
@@ -162,7 +162,7 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 				windowSize.y / 2 + hight / 12.f),
 				&armorStr,
 				MC_Color(1.f, 1.f, 1.f), 1.f);
-		} //显示盔甲值
+		} //显示盔甲值 
 		else if (armor.selected == 1) {
 			float x = 1.6f;
 			float itemPosY = windowSize.y / 2 + hight / 12.f;
@@ -174,7 +174,7 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 				}
 				x -= 0.04f;
 			}
-			//盔甲
+			//盔甲 
 
 			if (target->getEntityTypeId() == 319) {
 				C_Player* player = reinterpret_cast<C_Player*>(target);
@@ -183,9 +183,9 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 					DrawUtils::drawItem(stack, vec2_t(windowSize.x / x, itemPosY), 0.9f, 0.8f, stack->isEnchanted());
 				}
 			}
-			//手持物品
-		} //显示盔甲模型
+			//手持物品 
+		} //显示盔甲模型 
 
-		//渲染
+		//渲染 
 	}
 }
