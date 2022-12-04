@@ -65,13 +65,13 @@ void findEntityBed(C_Entity* currentEntity, bool isRegularEntitie) {
 		if (
 			(currentEntity->getEntityTypeId() == 256 &&
 				((currentEntity->height > 0.79f && currentEntity->height < 0.81f)
-					&& (currentEntity->width > 0.79f && currentEntity->width < 0.81f) //小型宝藏(0.8*0.8)
+					&& (currentEntity->width > 0.79f && currentEntity->width < 0.81f) //小型宝藏(0.8*0.8) 
 					|| (currentEntity->height > 2.39f && currentEntity->height < 2.41f)
-					&& (currentEntity->width > 2.39f && currentEntity->width < 2.41f)) //12V12中的大型宝藏(2.4*2.4)
+					&& (currentEntity->width > 2.39f && currentEntity->width < 2.41f)) //12V12中的大型宝藏(2.4*2.4) 
 				&& breakerMod->treasures)
 			|| (entityName.find("'s Bed") != std::string::npos && breakerMod->lifeboatBeds)
 			|| ((currentEntity->height > 1.24f && currentEntity->height < 1.26f)
-				&& (currentEntity->width > 0.39 && currentEntity->width < 0.41) //1.25*0.4
+				&& (currentEntity->width > 0.39 && currentEntity->width < 0.41) //1.25*0.4 
 				&& breakerMod->core)
 			) {
 			breakerMod->entityBedList.push_back(currentEntity);
@@ -112,7 +112,7 @@ void Breaker::onTick(C_GameMode* gm) {
 
 		std::sort(blockList.begin(), blockList.end(), [localPos](std::pair<vec3_ti, short>& lhs, std::pair<vec3_ti, short>& rhs) {
 			return localPos.dist(lhs.first.toFloatVector()) < localPos.dist(rhs.first.toFloatVector());
-			}); //距离优先
+			}); //距离优先 
 
 		vec3_ti blockPos = blockList.begin()->first;
 
@@ -165,27 +165,27 @@ void Breaker::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 			if (blockId == 26) {
 				DrawUtils::setColor(133 / 255.f, 16 / 255.f, 14 / 255.f, 1);
 				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
-			} //床
+			} //床 
 			else if (blockId == 122) {
 				DrawUtils::setColor(45 / 255.f, 1 / 255.f, 51 / 255.f, 1);
 				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
-			} //龙蛋
+			} //龙蛋 
 			else if (blockId == 92) {
 				DrawUtils::setColor(199 / 255.f, 97 / 255.f, 36 / 255.f, 1);
 				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
-			} //蛋糕
+			} //蛋糕 
 			else if (blockId == 54) {
 				DrawUtils::setColor(164 / 255.f, 114 / 255.f, 39 / 255.f, 1);
 				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
-			} //箱子
+			} //箱子 
 			else if (blockId == 458) {
 				DrawUtils::setColor(85 / 255.f, 58 / 255.f, 31 / 255.f, 1);
 				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
-			} //木桶
+			} //木桶 
 			else if (blockId == 73 || blockId == 74) {
 				DrawUtils::setColor(255 / 255.f, 0 / 255.f, 0 / 255.f, 1);
 				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
-			} //红石矿石和发光的红石矿石
+			} //红石矿石和发光的红石矿石 
 		}
 
 		if (!entityBedList.empty()) {
