@@ -165,20 +165,54 @@ void GameData::setRakNetInstance(C_RakNetInstance* raknet) {
 
 void GameData::forEachEntity(std::function<void(C_Entity*, bool)> callback) {
 	if (localPlayer && localPlayer->level) {
-		for (const auto& ent : g_Hooks.entityList) 
-			if (ent.ent != nullptr) callback(ent.ent, false);
-		for (const auto& ent : g_Data.getLocalPlayer()->level->getMiscEntityList())
-			if (ent != nullptr && ent->getEntityTypeId() >= 1 && ent->getEntityTypeId() <= 999999999) callback(ent, false);
+		for (const auto ent : g_Hooks.entityList) 
+		{
+			[ent, &callback]() {
+				__try {
+					if (ent.ent != nullptr && ent.ent->isPlayer()) [[likely]] {
+						ent.ent->getNameTag(); //chect ent will crash
+						callback(ent.ent, false);
+					}
+				}
+				__except (EXCEPTION_EXECUTE_HANDLER) {
+				}
+			}();
+		}
+		for (const auto ent : g_Data.getLocalPlayer()->level->getMiscEntityList())
+		{
+			[ent, &callback]() {
+				__try {
+					if (ent != nullptr && ent->getEntityTypeId() >= 1 && ent->getEntityTypeId() <= 999999999) [[likely]] {
+						ent->getNameTag(); //chect ent will crash
+						callback(ent, false);
+					}
+				}
+				__except (EXCEPTION_EXECUTE_HANDLER) {
+				}
+			}();
+		}
 	}
 
 }
 
 void GameData::forEachValidEntity(std::function<void(C_Entity*, bool)> callback) {
 	if (localPlayer && localPlayer->level) {
-		for (const auto& ent : g_Hooks.entityList)
-			if (ent.ent != nullptr) callback(ent.ent, false);
+		for (const auto ent : g_Hooks.entityList)
+		{
+			[ent, &callback]() {
+				__try {
+					if (ent.ent != nullptr && ent.ent->isPlayer()) [[likely]] {
+						ent.ent->getNameTag(); //chect ent will crash
+						callback(ent.ent, false);
+					}
+				}
+				__except (EXCEPTION_EXECUTE_HANDLER) {
+				}
+			}();
+		}
 	}
 }
+
 
 void GameData::addChestToList(C_ChestBlockActor* chest) {
 	if (chest == nullptr || !chest->isMainSubchest())
