@@ -433,6 +433,7 @@ void DrawUtils::drawNameTags(C_Entity* ent, float textSize, bool drawHealth, boo
 		}
 	}
 }
+
 void DrawUtils::drawEntityBox(C_Entity* ent, float lineWidth) {
 	vec3_t end = ent->eyePos0;
 	AABB render(end, ent->width, ent->height, end.y - ent->aabb.lower.y);
@@ -475,6 +476,23 @@ void DrawUtils::draw2D(C_Entity* ent, float lineWidth) {
 		drawLine(corners2d[0], corners2d[2], lineWidth);
 		drawLine(corners2d[3], corners2d[1], lineWidth);
 		drawLine(corners2d[3], corners2d[2], lineWidth);
+	}
+}
+
+void DrawUtils::draw2DFill(C_Entity* ent, const MC_Color& color, float opacity) {
+	vec3_t base = *ent->getPos();
+	float ofs = (g_Data.getLocalPlayer()->yaw + 90.f) * (PI / 180);
+
+	vec3_t corners[2];
+	vec2_t corners2d[2];
+
+	corners[0] = vec3_t(base.x - ent->width / 1.5f * -sin(ofs), ent->aabb.upper.y + (float)0.1, base.z - ent->width / 1.5f * cos(ofs));
+	corners[1] = vec3_t(base.x + ent->width / 1.5f * -sin(ofs), ent->aabb.lower.y, base.z + ent->width / 1.5f * cos(ofs));
+
+	if (refdef->OWorldToScreen(origin, corners[0], corners2d[0], fov, screenSize) &&
+		refdef->OWorldToScreen(origin, corners[1], corners2d[1], fov, screenSize)) {
+
+		fillRectangle(vec4_t(corners2d[0].x, corners2d[0].y, corners2d[1].x, corners2d[1].y), MC_Color(color.r, color.g, color.b), opacity);
 	}
 }
 

@@ -9,9 +9,10 @@ ESP::ESP() : IModule('O', Category::VISUAL, "Makes it easier to find entities ar
 		.addEntry(EnumEntry("Item", 2));
 	registerEnumSetting("Target", &target, 0);
 	renderMode = SettingEnum(this)
-		.addEntry(EnumEntry("2D", 0))
-		.addEntry(EnumEntry("3D Border", 1))
-		.addEntry(EnumEntry("3D Box", 2));
+		.addEntry(EnumEntry("2D Border", 0))
+		.addEntry(EnumEntry("2D Fill", 1))
+		.addEntry(EnumEntry("3D Border", 2))
+		.addEntry(EnumEntry("3D Box", 3));
 	registerEnumSetting("RenderMode", &renderMode, 1);
 	registerBoolSetting("Rainbow", &doRainbow, doRainbow);
 }
@@ -68,7 +69,7 @@ void doRenderStuff(C_Entity* ent, bool isRegularEntitie) {
 
 	if (ent->damageTime > 10 || ent->damageTime < 0)
 		ent->damageTime = 0;
-		//部分实体的HurtTime是脏数据
+	//部分实体的HurtTime是脏数据
 
 	if (espMod->doRainbow)
 		DrawUtils::setColor(rcolors[0], rcolors[1], rcolors[2], (float)fmax(0.1f, (float)fmin(1.f, 15 / (ent->damageTime + 1))));
@@ -80,13 +81,19 @@ void doRenderStuff(C_Entity* ent, bool isRegularEntitie) {
 	case 0:
 		DrawUtils::draw2D(ent, (float)fmax(0.4f, 1 / (float)fmax(1, distance * 3.f)));
 		break;
-	case 1:
-		DrawUtils::drawEntityBox(ent, (float)fmax(0.2f, 1 / (float)fmax(1, distance)));
+	case 1: 
+		if (espMod->doRainbow)
+		DrawUtils::draw2DFill(ent, MC_Color(rcolors[0], rcolors[1], rcolors[2]), 0.3f);
+		else
+			DrawUtils::draw2DFill(ent, MC_Color(0.9f, 0.9f, 0.9f), 0.3f);
 		break;
 	case 2:
-		DrawUtils::drawBox(ent->aabb.lower, ent->aabb.upper, (float)fmax(0.2f, 1 / (float)fmax(1, distance)));
+		DrawUtils::drawEntityBox(ent, (float)fmax(0.2f, 1 / (float)fmax(1, distance)));
 		break;
 	case 3:
+		DrawUtils::drawBox(ent->aabb.lower, ent->aabb.upper, (float)fmax(0.2f, 1 / (float)fmax(1, distance)));
+		break;
+	case 4:
 	{
 		/*
 		vec2_t boxPos1 = DrawUtils::worldToScreen(ent->aabb.lower);
