@@ -8,10 +8,12 @@ Fly::Fly() : IModule('F', Category::MOVEMENT, "Fly to the sky") {
 		.addEntry(EnumEntry("Jetpack2", 3))
 		.addEntry(EnumEntry("Motion", 4))
 		.addEntry(EnumEntry("NoClip", 5))
-		.addEntry(EnumEntry("Lifeboat", 6))
+		.addEntry(EnumEntry("AirWalk", 6))
+		.addEntry(EnumEntry("Jump", 7))
+		.addEntry(EnumEntry("Lifeboat", 8))
 		//.addEntry(EnumEntry("The Hive", 7));
-		.addEntry(EnumEntry("CubeCraft", 7))
-		.addEntry(EnumEntry("Jump", 8));
+		.addEntry(EnumEntry("Old CubeCraft", 9))
+		.addEntry(EnumEntry("CubeCraft", 10));
 	registerEnumSetting("Mode", &mode, 4);
 	registerFloatSetting("Horizontal Speed", &horizontalSpeed, horizontalSpeed, 0.1f, 10.f);
 	registerFloatSetting("Vertical Speed", &verticalSpeed, verticalSpeed, 0.1f, 10.f);
@@ -40,11 +42,12 @@ void Fly::onEnable() {
 		packet.Position = g_Data.getLocalPlayer()->getPos()->add(0.f, 4.f, 0.f);
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
 	}*/
+
 	switch (mode.selected) {
 	case 1:
 		g_Data.getLocalPlayer()->setPos((*g_Data.getLocalPlayer()->getPos()).add(vec3_t(0, 1, 0)));
 		break;
-	case 8:
+	case 7:
 		y = g_Data.getLocalPlayer()->aabb.lower.y;
 		/*case 7:
 			hiveSpeedIndex = 0;
@@ -74,8 +77,7 @@ void Fly::onDisable() {
 		break;
 	case 5:
 		g_Data.getLocalPlayer()->aabb.upper.y = g_Data.getLocalPlayer()->aabb.lower.y + 1.8f;
-	case 6:
-	case 7:
+	case 9:
 		g_Data.getLocalPlayer()->velocity = vec3_t(0.f, 0.f, 0.f);
 		break;
 	}
@@ -100,7 +102,6 @@ void Fly::onTick(C_GameMode* gm) {
 
 		gm->player->lerpMotion(moveVec);
 	} break;
-
 	case 3: {
 		if (gameTick >= 5) {
 			float calcYaw = (gm->player->yaw + 90) * (PI / 180);
@@ -133,12 +134,17 @@ void Fly::onTick(C_GameMode* gm) {
 	} break;
 	case 5:
 		gm->player->aabb.upper.y = gm->player->aabb.lower.y - 1.8f;
-	case 7:
+	case 10:
+	case 8:
 	case 4:
 	case 1:
 		gm->player->velocity = vec3_t(0.f, 0.f, 0.f);
 		break;
-	case 6: {
+	case 6:
+		gm->player->onGround = true;
+		gm->player->velocity.y = 0.f;
+		break;
+	case 9: {
 		float calcYaw = (gm->player->yaw + 90) * (PI / 180);
 
 		vec3_t pos = *g_Data.getLocalPlayer()->getPos();
@@ -155,7 +161,7 @@ void Fly::onTick(C_GameMode* gm) {
 
 		gm->player->lerpMotion(moveVec);
 
-		/*if (gameTick >= 5) {
+		if (gameTick >= 5) {
 			gameTick = 0;
 			float yaw = gm->player->yaw * (PI / 180);
 			float length = 4.f;
@@ -164,7 +170,7 @@ void Fly::onTick(C_GameMode* gm) {
 			float z = cos(yaw) * length;
 
 			gm->player->setPos(pos.add(vec3_t(x, 0.5f, z)));
-		}*/
+		}
 	} break;
 	}
 }
@@ -188,19 +194,33 @@ float hiveSpeedArray[15] = {
 0.362665
 };
 */
+
 void Fly::onMove(C_MoveInputHandler* input) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 	if (localPlayer == nullptr)
 		return;
 
+	vec3_t localPlayerPos = *localPlayer->getPos();
+
 	g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
 
 	switch (mode.selected) {
+	case 8: {
+		localPlayerPos.y += 0.3f;
+		C_MovePlayerPacket packet(g_Data.getLocalPlayer(), localPlayerPos);
+		packet.pitch = localPlayer->pitch;
+		packet.yaw = localPlayer->bodyYaw;
+		packet.headYaw = localPlayer->yawUnused1;
+		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
+		localPlayerPos.y -= 0.3f;
+		/*if (localPlayer->velocity.magnitude() < 0.1f) {
+			packet.Position = localPlayerPos;
+			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
+		}*/
+	}
 	case 4:
 	case 5:
 	{
-		vec3_t* localPlayerPos = localPlayer->getPos();
-
 		float yaw = localPlayer->yaw;
 		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
 		bool pressed = moveVec2d.magnitude() > 0.01f;
@@ -239,34 +259,41 @@ void Fly::onMove(C_MoveInputHandler* input) {
 			localPlayer->lerpMotion(moveVec);
 		}
 	} break;
-	/*case 7:
-		hiveVelocity++;
-		enabledTick++;
-
-		float safeSpeedArray = hiveSpeedArray[hiveSpeedIndex++ % 15];
-
-		float yaw = localPlayer->yaw;
-		float calcYaw = (yaw + 90.f) * (PI / 180.f);
-		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
-		bool pressed = moveVec2d.magnitude() > 0.01f;
-		vec3_t moveVec;
-
-		if (pressed) {
-			moveVec.x = cos(calcYaw) * safeSpeedArray;
-			moveVec.z = sin(calcYaw) * safeSpeedArray;
-
-			if (hiveVelocity >= 3) {
-				hiveVelocity = 0; moveVec.y = -0.08f;
-			}
-
-			if (enabledTick >= 5 && pressed && !localPlayer->onGround)
-				localPlayer->lerpMotion(moveVec);
-		}
-		else {
-			localPlayer->velocity.x = 0.f;
-			localPlayer->velocity.z = 0.f;
-		}*/
 	case 7:
+		if (localPlayer->aabb.lower.y < y) {
+			localPlayer->jumpFromGround();
+		}
+		break;
+
+		/*case 7:
+			hiveVelocity++;
+			enabledTick++;
+
+			float safeSpeedArray = hiveSpeedArray[hiveSpeedIndex++ % 15];
+
+			float yaw = localPlayer->yaw;
+			float calcYaw = (yaw + 90.f) * (PI / 180.f);
+			vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
+			bool pressed = moveVec2d.magnitude() > 0.01f;
+			vec3_t moveVec;
+
+			if (pressed) {
+				moveVec.x = cos(calcYaw) * safeSpeedArray;
+				moveVec.z = sin(calcYaw) * safeSpeedArray;
+
+				if (hiveVelocity >= 3) {
+					hiveVelocity = 0; moveVec.y = -0.08f;
+				}
+
+				if (enabledTick >= 5 && pressed && !localPlayer->onGround)
+					localPlayer->lerpMotion(moveVec);
+			}
+			else {
+				localPlayer->velocity.x = 0.f;
+				localPlayer->velocity.z = 0.f;
+			}*/
+
+	case 10:
 	{
 		vec3_t moveVec;
 		float calcYaw = (localPlayer->yaw + 90) * (PI / 180);
@@ -276,42 +303,30 @@ void Fly::onMove(C_MoveInputHandler* input) {
 		float s = sin(calcYaw);
 		moveVec2d = { moveVec2d.x * c - moveVec2d.y * s, moveVec2d.x * s + moveVec2d.y * c };
 
-		g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
-
 		if (localPlayer->onGround)
 			localPlayer->jumpFromGround();
 
 		if (input->isJumping) {
-			//g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
 			moveVec.y = localPlayer->velocity.y + verticalSpeed;
-			localPlayer->fallDistance = 0.f;
 		}
 		if (input->isSneakDown) {
-			//g_Data.getClientInstance()->minecraft->setTimerSpeed(20.f);
 			moveVec.y = localPlayer->velocity.y - verticalSpeed;
-			localPlayer->fallDistance = 0.f;
 		}
 
-		if (gameTick == 3) {
+		if (gameTick >= 3) {
 			moveVec.x = moveVec2d.x * horizontalSpeed;
-			//moveVec.y = localPlayer->velocity.y;
 			moveVec.z = moveVec2d.y * horizontalSpeed;
 			gameTick = 0;
 		}
 		else {
-			g_Data.getClientInstance()->minecraft->setTimerSpeed(50.f);
+			g_Data.getClientInstance()->minecraft->setTimerSpeed(80.f);
 			moveVec.x = moveVec2d.x * 0.1f;
-			moveVec.y = 0.01f;
+			moveVec.y = 0.f;
 			moveVec.z = moveVec2d.y * 0.1f;
 		}
 
-		//if (pressed)
 		localPlayer->lerpMotion(moveVec);
 	}break;
-	case 8:
-		if (g_Data.getLocalPlayer()->aabb.lower.y < y) {
-			localPlayer->jumpFromGround();
-		}
 	}
 }
 
@@ -323,10 +338,15 @@ void Fly::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				cancelSend = true; //取消发送这个包
 			}
 		}
-	}
-
-	if (packet->isInstanceOf<C_MovePlayerPacket>() && groundSpoof) {
+	}else if (packet->isInstanceOf<C_MovePlayerPacket>()) {
 		C_MovePlayerPacket* packets = reinterpret_cast<C_MovePlayerPacket*>(packet);
-		packets->onGround = true;
+		if (groundSpoof) {
+			C_MovePlayerPacket* packets = reinterpret_cast<C_MovePlayerPacket*>(packet);
+			packets->onGround = true;
+		}
+		/*if (gameTick >= 2) {
+			packets->Position.y += 0.3f;
+			gameTick = 0;
+		}*/
 	}
 }
