@@ -33,7 +33,7 @@ void CommandMgr::initCommands() {
 	commandList.push_back(new ServerCommand());
 	commandList.push_back(new SetOffhandCommand());
 	commandList.push_back(new CoordsCommand());
-	commandList.push_back(new SayCommand());
+	//commandList.push_back(new SayCommand());
 	commandList.push_back(new SpammerCommand());
 	commandList.push_back(new DupeCommand());
 	//commandList.push_back(new DamageCommand());

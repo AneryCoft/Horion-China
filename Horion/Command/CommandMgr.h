@@ -16,7 +16,6 @@
 #include "Commands/PanicCommand.h"
 #include "Commands/PlayerTeleportCommand.h"
 #include "Commands/RelativeTeleportCommand.h"
-#include "Commands/SayCommand.h"
 #include "Commands/ServerCommand.h"
 #include "Commands/SpammerCommand.h"
 #include "Commands/TeleportCommand.h"

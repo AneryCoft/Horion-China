@@ -232,7 +232,6 @@
     <ClCompile Include="Horion\Command\Commands\CommandBlockExploitCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\ConfigCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\CoordsCommand.cpp" />
-    <ClCompile Include="Horion\Command\Commands\DamageCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\DupeCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\EjectCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\EnchantCommand.cpp" />
@@ -250,7 +249,6 @@
     <ClCompile Include="Horion\Command\Commands\PathCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\PlayerTeleportCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\RelativeTeleportCommand.cpp" />
-    <ClCompile Include="Horion\Command\Commands\SayCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\ScriptCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\ServerCommand.cpp" />
     <ClCompile Include="Horion\Command\Commands\SetOffhandCommand.cpp" />
@@ -438,7 +436,6 @@
     <ClInclude Include="Horion\Command\Commands\CommandBlockExploitCommand.h" />
     <ClInclude Include="Horion\Command\Commands\ConfigCommand.h" />
     <ClInclude Include="Horion\Command\Commands\CoordsCommand.h" />
-    <ClInclude Include="Horion\Command\Commands\DamageCommand.h" />
     <ClInclude Include="Horion\Command\Commands\DupeCommand.h" />
     <ClInclude Include="Horion\Command\Commands\EjectCommand.h" />
     <ClInclude Include="Horion\Command\Commands\EnchantCommand.h" />
@@ -456,7 +453,6 @@
     <ClInclude Include="Horion\Command\Commands\PathCommand.h" />
     <ClInclude Include="Horion\Command\Commands\PlayerTeleportCommand.h" />
     <ClInclude Include="Horion\Command\Commands\RelativeTeleportCommand.h" />
-    <ClInclude Include="Horion\Command\Commands\SayCommand.h" />
     <ClInclude Include="Horion\Command\Commands\ScriptCommand.h" />
     <ClInclude Include="Horion\Command\Commands\ServerCommand.h" />
     <ClInclude Include="Horion\Command\Commands\SetOffhandCommand.h" />
