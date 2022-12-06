@@ -277,38 +277,36 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			static float constexpr scale = 1.f;
 			static float constexpr opacity = 0.25f;
 			static float constexpr spacing = scale + 15.f;
-			C_LocalPlayer* player = g_Data.getLocalPlayer();
+			C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 			float x = windowSize.x / 2.f + 5.f;
 			float y = windowSize.y - 57.5f;
 			float y1 = windowSize.y - 63.5f;
 
 			for (int i = 0; i < 4; i++) {
-				C_ItemStack* stack = player->getArmor(i);
+				C_ItemStack* stack = localPlayer->getArmor(i);
 				if (stack->isValid()) {
 					DrawUtils::drawItem(stack, vec2_t(x, y), opacity, scale, stack->isEnchanted());
 					C_Item* item = stack->getItem();
 					if (item->getMaxDamage() > 0) {
-						//std::string damageText = std::to_string(item->getMaxDamage() - item->getDamageValue(stack->tag)) + "/" + std::to_string(item->getMaxDamage()); //精准显示 但是文字会互相遮挡
-						int damage = ((float)(item->getMaxDamage() - item->getDamageValue(stack->tag)) / (float)item->getMaxDamage()) * 100;
-						std::string damageText = std::to_string(damage) + "%";
-						DrawUtils::drawText(vec2_t(x + scale, y1), &damageText, MC_Color(255, 255, 255), 0.8f, 1.f); //盔甲耐久度
-					}
+						int armorDamage = ceil((float)(item->getMaxDamage() - item->getDamageValue(stack->tag)) / (float)item->getMaxDamage() * 100);
+						std::string armorDamageText = std::to_string(armorDamage) + "%";
+						int i = (int)round(255.f - (float)item->getDamageValue(stack->tag) * 255.f / (float)item->getMaxDamage());
+						DrawUtils::drawText(vec2_t(x + scale, y1), &armorDamageText, MC_Color(255 - i, i, 0), 0.8f, 1.f);
+					} //盔甲耐久度
 				}
 				x += scale * spacing;
 			}
-			C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
-			C_ItemStack* stack = supplies->inventory->getItemStack(supplies->selectedHotbarSlot);
+			C_ItemStack* stack = localPlayer->getSelectedItem();
 			//x += scale * spacing;
 			if (stack->isValid()) {
-				C_Item* item = stack->getItem();
-
-				if (item->getMaxDamage() > 0) {
-					//std::string damageText2 = std::to_string(item->getItem()->getMaxDamage() - item->getItem()->getDamageValue(item->tag)) + "/" + std::to_string(item->getItem()->getMaxDamage());
-					int damage2 = ((float)(item->getMaxDamage() - item->getDamageValue(stack->tag)) / (float)item->getMaxDamage()) * 100;
-					std::string damageText2 = std::to_string(damage2) + "%";
-					DrawUtils::drawText(vec2_t(x + scale, y1), &damageText2, MC_Color(255, 255, 255), 0.8f, 1.f); //手持物品耐久度
-				}
 				DrawUtils::drawItem(stack, vec2_t(x, y), opacity, scale, stack->isEnchanted());
+				C_Item* item = stack->getItem();
+				if (item->getMaxDamage() > 0) {
+					int itemDamage = ceil((float)(item->getMaxDamage() - item->getDamageValue(stack->tag)) / (float)item->getMaxDamage() * 100);
+					std::string itemDamageText = std::to_string(itemDamage) + "%";
+					int i = (int)round(255.f - (float)item->getDamageValue(stack->tag) * 255.f / (float)item->getMaxDamage());
+					DrawUtils::drawText(vec2_t(x + scale, y1), &itemDamageText, MC_Color(255 - i, i, 0), 0.8f, 1.f);
+				} //手持物品耐久度
 			}
 		}
 
