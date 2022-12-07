@@ -25,68 +25,98 @@ void InventoryCleaner::onTick(C_GameMode* gm) {
 	if (strcmp(g_Data.getScreenName.c_str(), "inventory_screen") != 0 && openInv)
 		return;
 
-	std::vector<int> dropSlots = findUselessItems();
-	static int i = 0;
-	if (i >= dropSlots.size())
-		i = 0;
+	if (dropTime.hasTimedElapsed(delay, true)) {
+		C_Inventory* inventory = g_Data.getLocalPlayer()->getSupplies()->inventory;
 
-	if (!dropSlots.empty()) {
-		if (noDelay) {
-			for (int i : dropSlots) {
-				g_Data.getLocalPlayer()->getSupplies()->inventory->dropSlot(i);
-			}
-		}
-		else {
-			if (dropTime.hasTimedElapsed(delay, true)) {
-				g_Data.getLocalPlayer()->getSupplies()->inventory->dropSlot(dropSlots[i]);
-				++i;
-			}
-		}
-	} //丢弃无用物品
-	else {
-		dropTime.resetTime();
-		i = 0;
-		if (autoSort) {
-			C_PlayerInventoryProxy* supplies = g_Data.getLocalPlayer()->getSupplies();
-			C_Inventory* inv = supplies->inventory;
-			float damage = 0;
+		std::vector<int> dropSlots = findUselessItems();
+		static int i = 0;
+		if (i >= dropSlots.size())
+			i = 0;
 
-			int weapon = 0;
-			int pickaxe = 1;
-			int axe = 2;
-			int shovel = 3;
-			int gApple = 4;
-
-			for (int n = 0; n < 36; n++) {
-				C_ItemStack* stack = inv->getItemStack(n);
-				if (stack->item != NULL) {
-					if ((*stack->item)->itemId == 258) { //金苹果
-						gApple = n;
-					}
-					else if ((*stack->item)->isPickaxe()) { //镐
-						pickaxe = n;
-					}
-					else if ((*stack->item)->isAxe()) { //斧
-						axe = n;
-					}
-					else if ((*stack->item)->isShovel()) { //锹
-						shovel = n;
-					}
-					else {
-						float currentDamage = stack->getAttackingDamageWithEnchants();
-						if (currentDamage > damage) {
-							damage = currentDamage;
-							weapon = n;
-						}
-					} //武器
+		if (!dropSlots.empty()) {
+			if (noDelay) {
+				for (int i : dropSlots) {
+					inventory->dropSlot(i);
 				}
 			}
+			else {
+				inventory->dropSlot(dropSlots[i]);
+				++i;
+			}
+		} //丢弃无用物品
+		else {
+			//dropTime.resetTime();
+			i = 0;
+			if (autoSort) {
+				int weapon = 0;
+				int pickaxe = 1;
+				int axe = 2;
+				int shovel = 3;
+				int gApple = 4;
 
-			if (weapon != 0) inv->swapSlots(weapon, 0); //把剑放到第一个快捷栏
-			if (pickaxe != 1) inv->swapSlots(pickaxe, 1); //把镐放到第二个快捷栏
-			if (axe != 2) inv->swapSlots(axe, 2); //把斧放到第三个快捷栏
-			if (shovel != 3) inv->swapSlots(shovel, 3); //把锹放到第四个快捷栏
-			if (gApple != 4) inv->swapSlots(gApple, 4); //把金苹果放到第五个快捷栏
+				static int slot = 0;
+
+				for (int n = 0; n < 36; n++) {
+					C_ItemStack* stack = inventory->getItemStack(n);
+					if (stack->item != NULL) {
+						if (strcmp((*stack->item)->name.getText(), "golden_apple") == 0) { //金苹果
+							gApple = n;
+						}
+						else if ((*stack->item)->isPickaxe()) { //镐
+							pickaxe = n;
+						}
+						else if ((*stack->item)->isAxe()) { //斧
+							axe = n;
+						}
+						else if ((*stack->item)->isShovel()) { //锹
+							shovel = n;
+						}
+						else if (keepWeapons && stack->isWeapon()) {
+							weapon = n;
+						} //武器
+					}
+				}
+
+				if (noDelay) {
+					if (weapon != 0)
+						inventory->swapSlots(weapon, 0);
+					if (pickaxe != 1)
+						inventory->swapSlots(pickaxe, 1);
+					if (axe != 2)
+						inventory->swapSlots(axe, 2);
+					if (shovel != 3)
+						inventory->swapSlots(shovel, 3);
+					if (gApple != 4)
+						inventory->swapSlots(gApple, 4);
+				}
+				else {
+					if (slot > 4)
+						slot = 0;
+
+					switch (slot) {
+					case 0:
+						if (weapon != 0)
+							inventory->swapSlots(weapon, 0);
+						break;
+					case 1:
+						if (pickaxe != 1)
+							inventory->swapSlots(pickaxe, 1);
+						break;
+					case 2:
+						if (axe != 2)
+							inventory->swapSlots(axe, 2);
+						break;
+					case 3:
+						if (shovel != 3)
+							inventory->swapSlots(shovel, 3);
+						break;
+					case 4:
+						if (gApple != 4)
+							inventory->swapSlots(gApple, 4);
+					}
+					++slot;
+				}
+			}
 		}
 	}
 }
@@ -94,13 +124,15 @@ void InventoryCleaner::onTick(C_GameMode* gm) {
 std::vector<int> InventoryCleaner::findStackableItems() {
 	std::vector<int> stackableSlot;
 
+	C_Inventory* inventory = g_Data.getLocalPlayer()->getSupplies()->inventory;
+
 	for (int i = 0; i < 36; i++) {
-		C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
+		C_ItemStack* itemStack = inventory->getItemStack(i);
 		if (itemStack->item != nullptr) {
 			if ((*itemStack->item)->getMaxStackSize(0) > itemStack->count) {
 				for (int i2 = 0; i2 < 36; i2++) {
 					if (i2 == i) continue;
-					C_ItemStack* itemStack2 = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i2);
+					C_ItemStack* itemStack2 = inventory->getItemStack(i2);
 					if ((*itemStack2->item)->getMaxStackSize(0) > itemStack->count) {
 						if (*itemStack->item == *itemStack2->item) {
 							if ((std::find(stackableSlot.begin(), stackableSlot.end(), i2) == stackableSlot.end())) stackableSlot.push_back(i2);
@@ -120,15 +152,20 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 	std::vector<int> uselessItems;
 	std::vector<C_ItemStack*> items;
 
+	C_Inventory* inventory = g_Data.getLocalPlayer()->getSupplies()->inventory;
+
 	{
 		for (int i = 0; i < 36; i++) {
-			C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
+			C_ItemStack* itemStack = inventory->getItemStack(i);
 			if (itemStack->item != nullptr) {
 				if (!stackIsUseful(itemStack)) {
 					if (std::find(items.begin(), items.end(), itemStack) == items.end())
 						uselessItems.push_back(i); //不保留的物品
 					else
 						items.push_back(itemStack);
+				}
+				else if (std::find(items.begin(), items.end(), itemStack) == items.end()) {
+					items.push_back(itemStack);
 				}
 				/*
 				else if (std::find(items.begin(), items.end(), itemStack) == items.end()) {
@@ -140,10 +177,10 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 			}
 		}
 
-		for (int i = 0; i < 4; i++) {
+		/*for (int i = 0; i < 4; i++) {
 			if (g_Data.getLocalPlayer()->getArmor(i)->item != nullptr)
 				items.push_back(g_Data.getLocalPlayer()->getArmor(i));
-		}
+		}*/
 	}
 
 	if (items.empty())
@@ -157,7 +194,7 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 			if (std::find(uselessItems.begin(), uselessItems.end(), i) != uselessItems.end())
 				continue;
 
-			C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
+			C_ItemStack* itemStack = inventory->getItemStack(i);
 			if (itemStack->item != nullptr) {
 				if (itemStack->isWeapon()) {
 					//clientMessageF("Damage=%f", itemStack->getAttackingDamageWithEnchants());
@@ -214,9 +251,9 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 			if (std::find(uselessItems.begin(), uselessItems.end(), i) != uselessItems.end())
 				continue;
 
-			C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
+			C_ItemStack* itemStack = inventory->getItemStack(i);
 			if (itemStack->item != nullptr) {
-				if ((*itemStack->item)->itemId == 300) {
+				if (strcmp((*itemStack->item)->name.getText(), "bow") == 0) {
 					if (itemStack->getEnchantValue(19) > enchantLevel) { //比较力量属性的等级
 						enchantLevel = itemStack->getEnchantValue(19);
 					}
@@ -242,7 +279,7 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 			return current->getArmorValueWithEnchants() > other->getArmorValueWithEnchants();
 			});
 
-		// Put armor items in their respective vectors
+		//将不同的盔甲放入不同的容器
 		for (C_ItemStack* itemsteck : items) {
 			C_Item* item = itemsteck->getItem();
 			if (item->isArmor()) {
@@ -257,6 +294,8 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 					boots.push_back(itemsteck);
 			}
 		}
+
+		//身上是否已经穿上了最好的装备
 		bool hadBest[4] = { 0, 0, 0, 0 };
 		for (int i = 0; i < 4; i++) {
 			C_ItemStack* itemsteck = g_Data.getLocalPlayer()->getArmor(i);
@@ -292,33 +331,26 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 		for (int i = 0; i < 36; i++) {
 			if (std::find(uselessItems.begin(), uselessItems.end(), i) != uselessItems.end())
 				continue;  // item already useless
-			C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
+
+			C_ItemStack* itemStack = inventory->getItemStack(i);
 			if (itemStack->item != nullptr && (*itemStack->item)->isArmor()) {
 				C_ArmorItem* armor = reinterpret_cast<C_ArmorItem*>(*itemStack->item);
 				if (armor->isHelmet()) {
-					if (hadBest[0] || itemStack->getArmorValueWithEnchants() < helmets.at(0)->getArmorValueWithEnchants()) {
+					if (hadBest[0] || itemStack != helmets.at(0)) {
 						uselessItems.push_back(i);
 					}
-					else
-						hadBest[0] = true;
 				}
 				else if (armor->isChestplate()) {
-					if (hadBest[1] || itemStack->getArmorValueWithEnchants() < chestplates.at(0)->getArmorValueWithEnchants())
+					if (hadBest[1] || itemStack != chestplates.at(0))
 						uselessItems.push_back(i);
-					else
-						hadBest[1] = true;
 				}
 				else if (armor->isLeggings()) {
-					if (hadBest[2] || itemStack->getArmorValueWithEnchants() < leggings.at(0)->getArmorValueWithEnchants())
+					if (hadBest[2] || itemStack != leggings.at(0))
 						uselessItems.push_back(i);
-					else
-						hadBest[2] = true;
 				}
 				else if (armor->isBoots()) {
-					if (hadBest[3] || itemStack->getArmorValueWithEnchants() < boots.at(0)->getArmorValueWithEnchants())
+					if (hadBest[3] || itemStack != boots.at(0))
 						uselessItems.push_back(i);
-					else
-						hadBest[3] = true;
 				}
 			}
 		}
@@ -326,20 +358,20 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 
 	//过滤工具
 	//C_ItemStack* bestTool;
-	int maxDamage = 0;
-	int maxDamage1 = 0;
-	int maxDamage2 = 0;
+	int pickaxeMaxDamage = 1;
+	int axeMaxDamage = 1;
+	int shovelMaxDamage = 1;
 
 	for (int i = 0; i < 36; i++) {
 		if (std::find(uselessItems.begin(), uselessItems.end(), i) != uselessItems.end())
 			continue;
 
-		C_ItemStack* itemStack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
+		C_ItemStack* itemStack = inventory->getItemStack(i);
 		if (itemStack->item != nullptr/* && (*itemStack->item)->isTool()*/) {
 
 			if ((*itemStack->item)->isPickaxe()) {
-				if ((*itemStack->item)->getMaxDamage() > maxDamage) {
-					maxDamage = (*itemStack->item)->getMaxDamage();
+				if ((*itemStack->item)->getMaxDamage() > pickaxeMaxDamage) {
+					pickaxeMaxDamage = (*itemStack->item)->getMaxDamage();
 					//bestTool = itemStack;
 				}
 				else {
@@ -348,8 +380,8 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 			} //镐
 
 			else if ((*itemStack->item)->isAxe()) {
-				if ((*itemStack->item)->getMaxDamage() > maxDamage1) {
-					maxDamage1 = (*itemStack->item)->getMaxDamage();
+				if ((*itemStack->item)->getMaxDamage() > axeMaxDamage) {
+					axeMaxDamage = (*itemStack->item)->getMaxDamage();
 					//bestTool = itemStack;
 				}
 				else {
@@ -358,8 +390,8 @@ std::vector<int> InventoryCleaner::findUselessItems() {
 			} //斧
 
 			else if ((*itemStack->item)->isShovel()) {
-				if ((*itemStack->item)->getMaxDamage() > maxDamage2) {
-					maxDamage2 = (*itemStack->item)->getMaxDamage();
+				if ((*itemStack->item)->getMaxDamage() > shovelMaxDamage) {
+					shovelMaxDamage = (*itemStack->item)->getMaxDamage();
 					//bestTool = itemStack;
 				}
 				else {
@@ -385,10 +417,13 @@ bool InventoryCleaner::stackIsUseful(C_ItemStack* itemStack) { //需要保留的物品
 	return false;
 }
 
-bool InventoryCleaner::isLastItem(C_Item* item) { //对需要保留的物品进行处理
+/*
+bool InventoryCleaner::isLastItem(C_Item* item) { //是否有物品重复
 	std::vector<C_Item*> items;
+
+	C_Inventory* inventory = g_Data.getLocalPlayer()->getSupplies()->inventory;
 	for (int i = 0; i < 36; i++) {
-		C_ItemStack* stack = g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(i);
+		C_ItemStack* stack = inventory->getItemStack(i);
 		if (stack->item != nullptr)
 			items.push_back((*stack->item));
 	}
@@ -398,7 +433,8 @@ bool InventoryCleaner::isLastItem(C_Item* item) { //对需要保留的物品进行处理
 			count++;
 	}
 	if (count > 1)
-		return false; //去除重复物品
+		return false;
 
 	return true;
 }
+*/

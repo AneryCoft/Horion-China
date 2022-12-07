@@ -130,7 +130,7 @@ public:
 	virtual __int64 uniqueAuxValues(void);                                                                                                 // 63
 	virtual bool isActorPlacerItem(void);                                                                                                  // 64
 	virtual bool isMultiColorTinted(C_ItemStack const&);                                                                                  // 65
-	virtual __int64 getColor();                                                                                                            // 66
+	virtual int getColor();                                                                                                            // 66
 	virtual bool hasCustomColor(C_ItemStack const&);                                                                                      // 67
 	virtual bool hasCustomColor(CompoundTag const*);                                                                                      // 68
 	virtual __int64 clearColor(C_ItemStack&);                                                                                             // 69
@@ -191,15 +191,19 @@ public:
 	virtual __int64 _checkUseOnPermissions(C_Entity&, C_ItemStack&, unsigned char const&, vec3_ti const&);                             // 124
 	virtual __int64 _calculatePlacePos(C_ItemStack&, C_Entity&, unsigned char&, vec3_ti&);                                             // 125
 	virtual __int64 _useOn(C_ItemStack&, C_Entity&, vec3_ti, unsigned char, float, float, float);                                        // 126
-	virtual __int64 getArmorKnockbackResistance(void);                                                                                     // 127
+	virtual float getArmorKnockbackResistance(void);                                                                                     // 127
 
 public:
 	bool isTool(void) {
 		//if (getAttackDamage() > 0) return true;  // Does Attack Damage
+		if (((std::string)name.getText()).find("compass") != std::string::npos)
+			return true; //Mineplex的指南针和普通指南针ID不同 名字相同
 		if (itemId == 299) //打火石
 			return true;
-		if (itemId == 391) //指南针
-			return true;
+		//if (itemId == 391) //指南针
+		//	return true;
+		//if (itemId == 345) //Mineplex的指南针
+		//	return true;
 		if (itemId == 422) //末影珍珠
 			return true;
 		if (itemId == 571) //海洋之心
@@ -228,6 +232,8 @@ public:
 			return true;
 		if (itemId == 30) //蜘蛛网
 			return true;
+		if (itemId == 549) //海晶砂粒 (Lifeboat的道具)
+			return true;
 		if (itemId >= 360 && itemId <= 363)
 			return true; //几种桶
 
@@ -239,7 +245,7 @@ public:
 			return true;
 		//The Hive SkyWars Kits中的职业道具
 
-		if (itemId >= -479 && itemId <= -476)
+		if (itemId >= -749 && itemId <= -746)
 			return true; //The Hive的四种爆炸盒子
 
 		//用id检测物品不容易误判
@@ -258,6 +264,15 @@ public:
 		if (((std::string)name.getText()).find("enchanted_book") != std::string::npos) return true;
 		if (((std::string)name.getText()).find("nautilus_shell") != std::string::npos) return true;
 		*/
+		if (((std::string)name.getText()).find("pickaxe") != std::string::npos)
+			return true;
+		if (((std::string)name.getText()).find("shovel") != std::string::npos)
+			return true;
+		if (((std::string)name.getText()).find("axe") != std::string::npos)
+			return true;
+		if (((std::string)name.getText()).find("shears") != std::string::npos)
+			return true;
+		/*
 		if (itemId == 309 || itemId == 313 || itemId == 323 || itemId == 296 || itemId == 317 || itemId == 605) //锹
 			return true;
 		if (itemId == 310 || itemId == 324 || itemId == 314 || itemId == 297 || itemId == 318 || itemId == 606) //镐
@@ -266,6 +281,7 @@ public:
 			return true;
 		if (itemId == 421) //剪刀
 			return true;
+			*/
 		return false;
 	}
 	/*
@@ -416,13 +432,13 @@ public:
 														   + this->getEnchantValue(1) * 0.4f  // Fire Protection
 														   + this->getEnchantValue(4) * 0.4f  // Projectile Protection
 														   )));*/
-		return (float)(((*this->item)->getArmorValue() + (
+		return (float)((*this->item)->getArmorValue() + (
 			this->getEnchantValue(0) * 1.f    //保护
 			+ this->getEnchantValue(1) * 2.f  //火焰保护
 			+ this->getEnchantValue(2) * 3.f  //摔落保护
 			+ this->getEnchantValue(3) * 2.f  //爆炸保护
 			+ this->getEnchantValue(4) * 2.f  //弹射物保护
-			)));
+			));
 		//根据盔甲值和附魔保护系数计算
 	}
 
