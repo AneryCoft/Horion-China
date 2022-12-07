@@ -9,7 +9,7 @@
 #include <glm/trigonometric.hpp>  // radians
 #include <shared_mutex>
 #include "../SDK/Tag.h"
-#include "../../../Utils/TimerUtil.h"
+#include "../Utils/TimerUtil.h"
 #include <chrono>
 
 Hooks g_Hooks;
@@ -123,6 +123,8 @@ void Hooks::Init() {
 				g_Hooks.Actor_isInWaterHook = std::make_unique<FuncHook>(localPlayerVtable[71], Hooks::Actor_isInWater);
 
 				g_Hooks.Player_tickWorldHook = std::make_unique<FuncHook>(localPlayerVtable[364], Hooks::Player_tickWorld);
+
+				//g_Hooks.Actor_killedHook = std::make_unique<FuncHook>(localPlayerVtable[151], Hooks::Actor_killed);
 
 				//g_Hooks.Actor__isInvisibleHook = std::make_unique<FuncHook>(localPlayerVtable[59], Hooks::Actor__isInvisible);
 			}
@@ -348,12 +350,13 @@ void Hooks::Enable() {
 static std::shared_mutex pcblock;
 bool Hooks::playerCallBack(C_Player* lp, __int64 a2, __int64 a3) {
 	static auto oTick = g_Hooks.playerCallBack_Hook->GetFastcall<bool, C_Player*, __int64, __int64>();
-	if (lp == g_Data.getLocalPlayer())
-		moduleMgr->onPlayerTick(lp);
+
 	if (g_Data.getLocalPlayer() != nullptr && lp == g_Data.getLocalPlayer()) {
+		moduleMgr->onPlayerTick(lp);
+
 		auto lock = std::shared_lock(pcblock);
 
-		if (!g_Data.getLocalPlayer() || !g_Data.getLocalPlayer()->level || !*(&g_Data.getLocalPlayer()->region + 1))
+		if (!g_Data.getLocalPlayer()->level || !*(&g_Data.getLocalPlayer()->region + 1))
 			g_Hooks.entityList.clear();
 
 		std::vector<EntityListPointerHolder> validEntities;
@@ -465,7 +468,7 @@ __int64 Hooks::UIScene_render(C_UIScene* uiscene, __int64 screencontext) {
 	if (alloc.getTextLength() < 100) {
 		//strcpy_s(g_Hooks.currentScreenName, alloc.getText());
 		if (strcmp(alloc.getText(), "toast_screen") != 0
-			&& strcmp(alloc.getText(), "debug_screen"))
+			&& strcmp(alloc.getText(), "debug_screen") != 0)
 			g_Data.getScreenName = alloc.getText();
 	}
 
@@ -477,9 +480,9 @@ __int64 Hooks::UIScene_render(C_UIScene* uiscene, __int64 screencontext) {
 
 	static auto clickGuiMod = moduleMgr->getModule<ClickGuiMod>();
 	if (clickGuiMod->isEnabled()
-		&& strcmp(alloc.getText(), "pause_screen") == 0
-		|| strcmp(alloc.getText(), "respawn_screen") == 0
-		|| strcmp(alloc.getText(), "disconnect_screen") == 0) {
+		&& (strcmp(alloc.getText(), "pause_screen") == 0
+			|| strcmp(alloc.getText(), "respawn_screen") == 0
+			|| strcmp(alloc.getText(), "disconnect_screen") == 0)) {
 		clickGuiMod->setEnabled(false);
 		g_Data.getClientInstance()->grabMouse();
 	}
@@ -808,12 +811,8 @@ void Hooks::PleaseAutoComplete(__int64 a1, __int64 a2, TextHolder* text, int a4)
 void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packet* packet) {
 	static auto oFunc = g_Hooks.LoopbackPacketSender_sendToServerHook->GetFastcall<void, C_LoopbackPacketSender*, C_Packet*>();
 
-	//static auto autoSneakMod = moduleMgr->getModule<AutoSneak>();
-	//static auto freecamMod = moduleMgr->getModule<Freecam>();
 	static auto blinkMod = moduleMgr->getModule<Blink>();
-	//static auto noPacketMod = moduleMgr->getModule<NoPacket>();
 	static auto disablerMod = moduleMgr->getModule<Disabler>();
-	//static TimerUtil sendTime;
 
 	/*if (noPacketMod->isEnabled() && g_Data.isInGame())
 		return;*/
@@ -851,42 +850,34 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 		}
 	}
 
-	if (disablerMod->isEnabled() && (disablerMod->mode.selected == 3 || disablerMod->mode.selected == 4)) {
-		auto& packetHolder = disablerMod->packetQueue;
-		while (!packetHolder.empty())
-		{
-			if (auto i = packetHolder.front(); i.sendTime.hasTimedElapsed(1000.f,false)){
-				i.networkLatencyPacket.timeStamp = std::chrono::system_clock::now().time_since_epoch().count();
-				oFunc(a, &i.networkLatencyPacket);
-				packetHolder.pop();
+	if (disablerMod->isEnabled()) {
+		if (disablerMod->mode.selected == 4) {
+			auto& packetHolder = disablerMod->packetQueue;
+			while (!packetHolder.empty())
+			{
+				if (auto i = packetHolder.front(); i.sendTime.hasTimedElapsed(1000.f, false)) {
+					i.networkLatencyPacket.timeStamp = std::chrono::system_clock::now().time_since_epoch().count();
+					oFunc(a, &i.networkLatencyPacket);
+					packetHolder.pop();
+				}
+				else {
+					break;
+				}
 			}
-			else{
-				break;
+
+			if (packet->isInstanceOf<NetworkLatencyPacket>()) {
+				packetHolder.push(packetAndTimer{ *reinterpret_cast<NetworkLatencyPacket*>(packet), TimerUtil{} });
+				return;
 			}
 		}
-
-		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
-			packetHolder.push(packetAndTimer{ *reinterpret_cast<NetworkLatencyPacket*>(packet), TimerUtil{} });
-			return;
+		else if (disablerMod->mode.selected == 5) {
+			if (packet->isInstanceOf<C_MovePlayerPacket>()) {
+				auto localPlayer = g_Data.getLocalPlayer();
+				C_MovePlayerPacket movePacket(localPlayer, localPlayer->getPos()->add(0.f, 0.1f, 0.f));
+				oFunc(a, &movePacket);
+			}
 		}
-
 	}
-
-
-	/*
-	if (autoSneakMod->isEnabled() && g_Data.getLocalPlayer() != nullptr && autoSneakMod->doSilent && packet->isInstanceOf<C_PlayerActionPacket>()) {
-		auto* pp = reinterpret_cast<C_PlayerActionPacket*>(packet);
-
-		if (pp->action == 12 && pp->entityRuntimeId == g_Data.getLocalPlayer()->entityRuntimeId)
-			return;  //dont send uncrouch
-	}
-	*/
-
-	bool cancelSend = false;
-	moduleMgr->onSendPacket(packet, cancelSend);
-
-	if (cancelSend)
-		return;
 
 	/*if (strcmp(packet->getName()->getText(), "EmotePacket") == 0) {
 		auto varInt = reinterpret_cast<__int64*>(reinterpret_cast<__int64>(packet) + 0x28);
@@ -895,7 +886,11 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 		logF("emote %llX %s %i", *varInt, text->getText(), *bet);
 	} fix emote crashing*/
 
-	oFunc(a, packet);
+	bool cancelSend = false;
+	moduleMgr->onSendPacket(packet, cancelSend);
+
+	if (!cancelSend)
+		oFunc(a, packet);
 }
 
 float Hooks::LevelRendererPlayer_getFov(__int64 _this, float a2, bool a3) {
@@ -1654,7 +1649,7 @@ void Hooks::LevelRendererPlayer__renderNameTags(__int64 a1, __int64 a2, TextHold
 
 		if (nameTagsMod->nameTags.find(text) != nameTagsMod->nameTags.end())
 			return;
-	}
+}
 
 	return func(a1, a2, a3, a4);
 }
@@ -1675,12 +1670,16 @@ float Hooks::getDestroySpeed(C_Player* _this, C_Block& block) {
 
 void Hooks::setPos(C_Entity* ent, vec3_t& pos) {
 	auto func = g_Hooks.setPosHook->GetFastcall<void, C_Entity*, vec3_t&>();
-	//static auto antiVoidmode = moduleMgr->getModule<AntiVoid>();
 
-	/*if (g_Data.getLocalPlayer() != nullptr && ent == g_Data.getLocalPlayer()) {
-		if (antiVoidmode->isEnabled() && antiVoidmode->mode.selected == 1 && antiVoidmode->lagBack) {
-			pos = antiVoidmode->savePos;
-		}
-	}*/
 	func(ent, pos);
 }
+
+/*
+void Hooks::Actor_killed(C_Entity* entity) {
+	auto func = g_Hooks.Actor_killedHook->GetFastcall<void, C_Entity*>();
+
+	//logF("Killed a Entity");
+
+	func(entity);
+}
+*/
