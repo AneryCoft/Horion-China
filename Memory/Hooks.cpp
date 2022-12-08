@@ -361,25 +361,27 @@ bool Hooks::playerCallBack(C_Player* lp, __int64 a2, __int64 a3) {
 
 		std::vector<EntityListPointerHolder> validEntities;
 
-		for (const auto& ent : g_Hooks.entityList) {
-			auto entity = ent.ent;
-			MEMORY_BASIC_INFORMATION info;
-			VirtualQuery(ent.ent, &info, sizeof(MEMORY_BASIC_INFORMATION));
-			if (info.State & MEM_FREE) continue;
-			if (info.State & MEM_RESERVE) continue;
+		if (strcmp(g_Data.getScreenName.c_str(), "world_loading_progress_screen - joining_multiplayer_external_server") != 0) {
+			for (const auto& ent : g_Hooks.entityList) {
+				auto entity = ent.ent;
+				MEMORY_BASIC_INFORMATION info;
+				VirtualQuery(ent.ent, &info, sizeof(MEMORY_BASIC_INFORMATION));
+				if (info.State & MEM_FREE) continue;
+				if (info.State & MEM_RESERVE) continue;
 
-			if ([entity]() -> bool {
-				__try {
-					return (entity != nullptr && (__int64)entity != 0xFFFFFFFFFFFFFCD7 && (__int64)entity != 0xFFFFFF00FFFFFF00 && entity != nullptr && *(__int64*)entity != 0xFFFFFFFFFFFFFCD7 && *(__int64*)entity > 0x6FF000000000 && *(__int64*)entity < 0x800000000000 && *((int64_t*)entity + 1) < 0x6FF000000000 && *(__int64*)entity <= Utils::getBase() + 0x10000000 && entity->isAlive());
-				}
-				__except (EXCEPTION_EXECUTE_HANDLER) {
-					return false;
-				}
-				}()) validEntities.push_back(ent);
+				if ([entity]() -> bool {
+					__try {
+						return (entity != nullptr && (__int64)entity != 0xFFFFFFFFFFFFFCD7 && (__int64)entity != 0xFFFFFF00FFFFFF00 && entity != nullptr && *(__int64*)entity != 0xFFFFFFFFFFFFFCD7 && *(__int64*)entity > 0x6FF000000000 && *(__int64*)entity < 0x800000000000 && *((int64_t*)entity + 1) < 0x6FF000000000 && *(__int64*)entity <= Utils::getBase() + 0x10000000 && entity->isAlive());
+					}
+					__except (EXCEPTION_EXECUTE_HANDLER) {
+						return false;
+					}
+					}()) validEntities.push_back(ent);
 
+			}
+			g_Hooks.entityList.clear();
+			g_Hooks.entityList = validEntities;
 		}
-		g_Hooks.entityList.clear();
-		g_Hooks.entityList = validEntities;
 	}
 	return oTick(lp, a2, a3);
 }
@@ -1563,8 +1565,11 @@ __int64 Hooks::InGamePlayScreen___renderLevel(__int64 playScreen, __int64 a2, __
 }
 __int64 Hooks::GameMode_attack(C_GameMode* _this, C_Entity* ent) {
 	auto func = g_Hooks.GameMode_attackHook->GetFastcall<__int64, C_GameMode*, C_Entity*>();
-	moduleMgr->onAttack(ent);
-	return func(_this, ent);
+
+	if (ent != nullptr) {
+		moduleMgr->onAttack(ent);
+		return func(_this, ent);
+	}
 }
 void Hooks::LocalPlayer__updateFromCamera(__int64 a1, C_Camera* camera) {
 	auto func = g_Hooks.LocalPlayer__updateFromCameraHook->GetFastcall<__int64, __int64, C_Camera*>();
