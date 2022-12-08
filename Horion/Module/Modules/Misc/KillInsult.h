@@ -4,9 +4,12 @@
 #include <set>
 
 class KillInsult : public IModule {
-public:
+private:
+	bool mention = true;
+
 	std::set<C_Entity*> attackList = {};
 	std::vector<C_Entity*> eraseList = {};
+public:
 
 	KillInsult();
 	~KillInsult();

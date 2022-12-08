@@ -1,6 +1,7 @@
 #include "KillInsult.h"
 
 KillInsult::KillInsult() : IModule(0, Category::MISC, "Insult the player you kill") {
+	registerBoolSetting("Mention", &mention, mention);
 }
 
 KillInsult::~KillInsult() {
@@ -34,10 +35,12 @@ void KillInsult::onTick(C_GameMode* gm) {
 		for (auto entity : attackList) {
 			if (entity != nullptr && !entity->isAlive()) {
 				std::string entityName = Utils::sanitize(Utils::onlyOneLine(entity->getNameTag()->getText()));
+				std::string insultText = "Loser";
+				std::string message = mention ? entityName + " " + insultText : insultText;
 
 				C_TextPacket textPacket;
 				textPacket.messageType = 1;
-				textPacket.message.setText("@" + entityName + +" " + "Loser");
+				textPacket.message.setText(message);
 				textPacket.sourceName.setText(localPlayer->getNameTag()->getText());
 				textPacket.xboxUserId = g_Data.getClientInstance()->minecraftGame->xuid;
 				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&textPacket);
