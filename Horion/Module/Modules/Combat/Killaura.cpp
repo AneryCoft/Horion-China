@@ -1,6 +1,6 @@
 #include "Killaura.h"
 
-Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around you automatically.") { //hoiron hud显示不下这么多选项
+Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around you automatically.") {
 	mode = SettingEnum(this)
 		.addEntry(EnumEntry("Single", 0))
 		.addEntry(EnumEntry("Multi", 1))
@@ -23,7 +23,7 @@ Killaura::Killaura() : IModule('P', Category::COMBAT, "Attacks entities around y
 	registerFloatSetting("Min Range", &minRange, minRange, 1.5f, 10.f);*/
 	registerFloatSetting("Attack Range", &range, range, 3.f, 10.f);
 	registerFloatSetting("Swing Range", &swingRange, swingRange, 3.f, 15.f);
-	registerFloatSetting("FOV", &FOV, FOV, 15.f, 360.f);
+	registerFloatSetting("FOV", &FOV, FOV, 1.f, 360.f);
 	registerIntSetting("Max CPS", &maxCPS, maxCPS, 1, 20);
 	registerIntSetting("Min CPS", &minCPS, minCPS, 1, 20);
 	registerFloatSetting("Switch Delay", &switchDelay, switchDelay, 1.f, 1000.f);
@@ -44,7 +44,6 @@ const char* Killaura::getModuleName() {
 	return ("Killaura");
 }
 
-static std::vector<C_Entity*> targetList;
 static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 	if (std::time(nullptr) < g_Hooks.connecttime + 1)
 		return;
@@ -61,7 +60,7 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 		if (!currentEntity->isAlive())
 			return;
 
-		if (currentEntity->getEntityTypeId() == 51) // NPC
+		if (currentEntity->getEntityTypeId() == 307) // NPC
 			return;
 	}
 	else {
@@ -124,7 +123,7 @@ static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
 		killauraMod->canswing = true;
 
 	if (dist < killauraMod->range)
-		targetList.push_back(currentEntity);
+		killauraMod->targetList.push_back(currentEntity);
 
 }
 
@@ -401,6 +400,10 @@ void Killaura::onTick(C_GameMode* gm) {
 
 			if (canswing && !hurttime) { //与hurttime的swing分开处理
 				localPlayer->swing();
+				LevelSoundEventPacket packet;
+				packet.pos = *localPlayer->getPos();
+				packet.sound = 42;
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
 			}
 
 			switch (mode.selected) {
@@ -443,6 +446,10 @@ void Killaura::onTick(C_GameMode* gm) {
 			if (attackTime.hasTimedElapsed(1000.f / CPS, true)) {
 				if (!hurttime) {  //与hurttime的swing分开处理
 					localPlayer->swing();
+					LevelSoundEventPacket packet;
+					packet.pos = *localPlayer->getPos();
+					packet.sound = 42;
+					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
 				}
 			}
 		}

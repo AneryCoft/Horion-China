@@ -26,6 +26,7 @@ private:
 
 	bool randomPitch = false;
 	bool randomYaw = false;
+	//static float randomFloat(float min, float max);
 
 	bool autoDisable = false;
 
@@ -40,8 +41,8 @@ private:
 	
 	bool canswing = false;
 	
+	std::vector<C_Entity*> targetList = {};
 	friend void findEntity(C_Entity* currentEntity, bool isRegularEntity);
-	//static float randomFloat(float min, float max);
 	
 public:
 	SettingEnum rotations;
@@ -50,11 +51,12 @@ public:
 	float range = 6.f;
 	float swingRange = 6.5f;
 
-	
 	bool attackMob = false;
+
 	bool throughBlock = true;
 
 	bool targetListEmpty = false;
+
 	bool isDigging = false;
 
 	Killaura();
