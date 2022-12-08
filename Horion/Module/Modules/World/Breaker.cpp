@@ -12,7 +12,7 @@ Breaker::Breaker() : IModule(VK_NUMPAD9, Category::WORLD, "Destroys certain bloc
 	registerBoolSetting("Rotations", &rotations, rotations);
 	//registerBoolSetting("ThroughBlock", &throughBlock, throughBlock);
 	registerBoolSetting("Beds", &beds, beds);
-	registerBoolSetting("Eggs", &eggs, eggs);
+	registerBoolSetting("DragonEggs", &eggs, eggs);
 	registerBoolSetting("Cakes", &cakes, cakes);
 	registerBoolSetting("Chests", &chests, chests);
 	registerBoolSetting("Barrels", &barrels, barrels);
@@ -58,24 +58,28 @@ void Breaker::findBlocks() {
 void findEntityBed(C_Entity* currentEntity, bool isRegularEntitie) {
 	static auto breakerMod = moduleMgr->getModule <Breaker>();
 
-	std::string entityName = currentEntity->getNameTag()->getText();
-	float dist = (*currentEntity->getPos()).dist(*g_Data.getLocalPlayer()->getPos());
+	if (currentEntity == nullptr)
+		return;
 
-	if (dist < breakerMod->range) {
-		if (
-			(currentEntity->getEntityTypeId() == 256 &&
-				((currentEntity->height > 0.79f && currentEntity->height < 0.81f)
-					&& (currentEntity->width > 0.79f && currentEntity->width < 0.81f) //小型宝藏(0.8*0.8) 
-					|| (currentEntity->height > 2.39f && currentEntity->height < 2.41f)
-					&& (currentEntity->width > 2.39f && currentEntity->width < 2.41f)) //12V12中的大型宝藏(2.4*2.4) 
-				&& breakerMod->treasures)
-			|| (entityName.find("'s Bed") != std::string::npos && breakerMod->lifeboatBeds)
-			|| ((currentEntity->height > 1.24f && currentEntity->height < 1.26f)
-				&& (currentEntity->width > 0.39 && currentEntity->width < 0.41) //1.25*0.4 
-				&& breakerMod->core)
-			) {
-			breakerMod->entityBedList.push_back(currentEntity);
-		}
+	float dist = (*currentEntity->getPos()).dist(*g_Data.getLocalPlayer()->getPos());
+	if (dist > breakerMod->range)
+		return;
+
+	std::string entityName = currentEntity->getNameTag()->getText();
+
+	if (
+		(currentEntity->getEntityTypeId() == 256 &&
+			((currentEntity->height > 0.79f && currentEntity->height < 0.81f)
+				&& (currentEntity->width > 0.79f && currentEntity->width < 0.81f) //小型宝藏(0.8*0.8) 
+				|| (currentEntity->height > 2.39f && currentEntity->height < 2.41f)
+				&& (currentEntity->width > 2.39f && currentEntity->width < 2.41f)) //12V12中的大型宝藏(2.4*2.4) 
+			&& breakerMod->treasures)
+		|| (entityName.find("'s Bed") != std::string::npos && breakerMod->lifeboatBeds)
+		|| ((currentEntity->height > 1.24f && currentEntity->height < 1.26f)
+			&& (currentEntity->width > 0.39 && currentEntity->width < 0.41) //1.25*0.4 
+			&& breakerMod->core)
+		) {
+		breakerMod->entityBedList.push_back(currentEntity);
 	}
 }
 
@@ -190,7 +194,7 @@ void Breaker::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 
 		if (!entityBedList.empty()) {
 			if (entityBedList[0] != nullptr) {
-				DrawUtils::setColor(255 / 255.f, 255 / 255.f, 255 / 255.f, 1);
+				DrawUtils::setColor(0.9f, 0.9f, 0.9f, 0.6f);
 				DrawUtils::drawEntityBox(entityBedList[0], fmax(thick, 1 / fmax(1, g_Data.getLocalPlayer()->getPos()->dist(*entityBedList[0]->getPos()))));
 			}
 		}
