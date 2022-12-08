@@ -2,8 +2,8 @@
 
 Aimbot::Aimbot() : IModule(0, Category::COMBAT, "Automatically aims at the nearest entity.") {
 	registerFloatSetting("Range", &range, range, 3.f, 8.f);
-	registerFloatSetting("Horizontal Speed", &horizontalspeed, horizontalspeed, 30.f, 100.f);
-	registerFloatSetting("Vertical Speed", &verticalspeed, verticalspeed, 30.f, 100.f);
+	registerFloatSetting("Horizontal Speed", &horizontalspeed, horizontalspeed, 30.f, 99.f);
+	registerFloatSetting("Vertical Speed", &verticalspeed, verticalspeed, 30.f, 99.f);
 	registerFloatSetting("Horizontal Range", &horizontalrange, horizontalrange, 20.f, 180.f);
 	registerFloatSetting("Vertical Range", &verticalrange, verticalrange, 20.f, 180.f);
 	registerBoolSetting("Vertical", &vertical, vertical);
