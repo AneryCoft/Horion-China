@@ -100,6 +100,9 @@ void AutoArmor::onTick(C_GameMode* gm) {
 
 				delete first;
 				delete second;
+
+				//g_Data.getLocalPlayer()->setEquippedSlot(armorList[0].m_slot, *armorList[0].m_item);
+				g_Data.getLocalPlayer()->setArmor(armorList[0].m_slot, *armorList[0].m_item);
 			}
 			if (armorItem->item == nullptr) {
 				*g_Data.getLocalPlayer()->getArmor(i) = *inv->getItemStack(armorList[0].m_slot);
@@ -114,6 +117,9 @@ void AutoArmor::onTick(C_GameMode* gm) {
 
 				delete first;
 				delete second;
+
+				//g_Data.getLocalPlayer()->setEquippedSlot(armorList[0].m_slot, *armorList[0].m_item);
+				g_Data.getLocalPlayer()->setArmor(armorList[0].m_slot, *armorList[0].m_item);
 			}
 		}
 		armorList.clear();
