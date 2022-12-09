@@ -30,7 +30,7 @@ std::wstring ConfigManager::GetRoamingFolderPath() {
 
 	uint32_t pathLength;
 	auto roamingPathCStr = roamingPathHString.GetRawBuffer(&pathLength);
-	return std::wstring(roamingPathCStr, pathLength) + L"\\Horion-China";
+	return std::wstring(roamingPathCStr, pathLength) + L"\\Horion-China\\Configs";
 }
 /*
 std::wstring ConfigManager::GetRoamingFolderPathNew() {
@@ -66,7 +66,7 @@ void ConfigManager::loadConfig(std::string name, bool create) {
 			} catch (json::parse_error& e) {
 				logF("Config Load Exception!: %s", e.what());
 			}
-			currentConfigObj["from"] = "Horion";
+			currentConfigObj["from"] = "Horion-China";
 		}
 
 		if (configExists) {
