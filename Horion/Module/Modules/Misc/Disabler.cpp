@@ -6,7 +6,8 @@ Disabler::Disabler() : IModule(0, Category::MISC, "Makes some Anti-Cheats unwork
 		.addEntry(EnumEntry("CPS Cancel", 1))
 		.addEntry(EnumEntry("Mineplex", 2))
 		.addEntry(EnumEntry("CubeCraft", 3))
-		.addEntry(EnumEntry("The Hive", 4));
+		.addEntry(EnumEntry("The Hive", 4))
+		.addEntry(EnumEntry("Lifeboat", 5));
 	registerEnumSetting("Mode", &mode, 0);
 }
 
@@ -49,9 +50,9 @@ void Disabler::onTick(C_GameMode* gm) {
 		C_MovePlayerPacket movePacket;
 		movePacket.onGround = false;
 		movePacket.Position = *localPlayerPos;
-		movePacket.pitch = localPlayer->pitch;
+		/*movePacket.pitch = localPlayer->pitch;
 		movePacket.yaw = localPlayer->bodyYaw;
-		movePacket.headYaw = localPlayer->yawUnused1;
+		movePacket.headYaw = localPlayer->yawUnused1;*/
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
 		//}
 	}
@@ -68,7 +69,7 @@ void Disabler::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	if (mode.selected == 0 || mode.selected == 3) {
 		if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 			PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-			authInputPacket->velocity = vec3_t(0.01f, 0.01f, 0.01f);
+			authInputPacket->velocity = vec3_t(0.f, 0.f, 0.f);
 		}
 	}
 	else if (mode.selected == 1) {
@@ -88,6 +89,11 @@ void Disabler::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				}
 				tick = 0;
 			}
+		}
+	}
+	else if (mode.selected == 3) {
+		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
+			cancelSend = true;
 		}
 	}
 	/*
