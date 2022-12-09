@@ -949,9 +949,11 @@ void Hooks::GameMode_startDestroyBlock(C_GameMode* _this, vec3_ti* a2, uint8_t f
 		return;
 	}
 
-	if (instaBreakModule->isEnabled() && instaBreakModule->mode.selected == 0) {
-		_this->destroyBlock(a2, face);
-		return;
+	if (instaBreakModule->isEnabled()) {
+		if (instaBreakModule->mode.selected == 0) {
+			_this->destroyBlock(a2, face);
+			return;
+		}
 	}
 
 	return oFunc(_this, a2, face, a4, a5);
