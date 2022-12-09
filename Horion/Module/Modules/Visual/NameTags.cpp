@@ -20,11 +20,13 @@ void drawNameTags(C_Entity* ent, bool) {
 
 	if (!ent->checkNameTagFunc())
 		return;
+
 	if (ent->getNameTag()->getTextLength() < 1)
 		return;
+
 	if (Target::isValidTarget(ent)) {
 		//nameTagsMod->nameTags.insert(Utils::sanitize(ent->getNameTag()->getText()));
-		nameTagsMod->nameTags.insert(Utils::sanitize(Utils::onlyOneLine(ent->getNameTag()->getText())));
+		//nameTagsMod->nameTags.insert(Utils::sanitize(Utils::onlyOneLine(ent->getNameTag()->getText())));
 		float dist = ent->getPos()->dist(*g_Data.getLocalPlayer()->getPos());
 		DrawUtils::drawNameTags(ent, fmax(0.8f, 3.f / dist));
 		DrawUtils::flush();
@@ -35,15 +37,13 @@ void NameTags::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	if (std::time(nullptr) < g_Hooks.connecttime + 1)
 		return;
 
-	if (!gameName) {
 		if (!gotPrevSetting) {
 			lastSetting = *ingameNametagSetting;
 			gotPrevSetting = true;
-			*ingameNametagSetting = false;
 		}
-		else
-			*ingameNametagSetting = false;  //关闭原版游戏的玩家名字
-	}
+		else {
+			*ingameNametagSetting = gameName;  //修改原版游戏的玩家名字
+		}
 
 	if (g_Data.getLocalPlayer() == nullptr || !GameData::canUseMoveKeys())
 		return;

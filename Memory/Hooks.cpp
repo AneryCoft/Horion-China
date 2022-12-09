@@ -1139,13 +1139,10 @@ float Hooks::GetGamma(uintptr_t* a1) {
 		}
 		else if (!strcmp(translateName->getText(), "options.dev_disableRenderParticles")) {
 			bool* disableRenderParticles = (bool*)((uintptr_t)list[i] + 16);
-			if (noParticlesMod->isEnabled())
-				*disableRenderParticles = true;
-			else
-				*disableRenderParticles = false;
+			*disableRenderParticles = noParticlesMod->isEnabled();
 			obtainedSettings++;
 		} //更改开发版中的游戏设置
-		if (obtainedSettings == 3) break;
+		if (obtainedSettings == 4) break;
 	}
 
 	if (xrayMod->isEnabled())
@@ -1643,7 +1640,7 @@ void Hooks::InventoryTransactionManager__addAction(C_InventoryTransactionManager
 
 void Hooks::LevelRendererPlayer__renderNameTags(__int64 a1, __int64 a2, TextHolder* a3, __int64 a4) {
 	static auto func = g_Hooks.LevelRendererPlayer__renderNameTagsHook->GetFastcall<void, __int64, __int64, TextHolder*, __int64>();
-	static auto nameTagsMod = moduleMgr->getModule<NameTags>();
+	/*static auto nameTagsMod = moduleMgr->getModule<NameTags>();
 
 	if (nameTagsMod->isEnabled() && nameTagsMod->nameTags.size() > 0) {
 		std::string text = Utils::sanitize(a3->getText());
@@ -1654,7 +1651,7 @@ void Hooks::LevelRendererPlayer__renderNameTags(__int64 a1, __int64 a2, TextHold
 
 		if (nameTagsMod->nameTags.find(text) != nameTagsMod->nameTags.end())
 			return;
-}
+	}*/
 
 	return func(a1, a2, a3, a4);
 }
