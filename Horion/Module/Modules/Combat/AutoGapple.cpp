@@ -7,7 +7,7 @@ AutoGapple::AutoGapple() : IModule(0, Category::COMBAT, "Auto heal if you're at 
 		.addEntry(EnumEntry("Potion", 2))
 		.addEntry(EnumEntry("Spell of Life", 3));
 	registerEnumSetting("Item", &item, 0);
-	registerFloatSetting("Health", &health, health, 0.f, maxHealth);
+	registerFloatSetting("Health", &health, health, 1.f, maxHealth);
 	registerFloatSetting("Delay", &delay, delay, 0.f, 2000.f);
 }
 
@@ -140,6 +140,12 @@ void AutoGapple::onTick(C_GameMode* gm) {
 				delayTime.resetTime();
 			}
 		}
+	}
+}
+
+void AutoGapple::onPlayerTick(C_Player* player) {
+	if (rotation) {
+		player->pitch = 89.f;
 	}
 }
 

@@ -7,18 +7,20 @@
 
 class AutoGapple : public IModule {
 private:
-	bool targetItem(C_ItemStack* itemStack);
-	void selectedItem();
-	float health = 15.f;
-	bool rotation = false;
-	TimerUtil delayTime;
-	float delay = 500.f;
-	int tick = 0;
-	bool canDelay = true;
-	float maxHealth = 20.f;
-	int prevSlot = 0;
-public:
 	SettingEnum item;
+	int prevSlot = 0;
+	void selectedItem();
+	bool targetItem(C_ItemStack* itemStack);
+
+	float health = 15.f;
+	float maxHealth = 20.f;
+	
+	float delay = 500.f;
+	TimerUtil delayTime;
+
+	int tick = 0;
+	bool rotation = false;
+public:
 
 	AutoGapple();
 	~AutoGapple();
@@ -27,4 +29,5 @@ public:
 	virtual const char* getModuleName() override;
 	virtual void onTick(C_GameMode* gm) override;
 	virtual void onSendPacket(C_Packet* packet, bool& cancelSend) override;
+	virtual void onPlayerTick(C_Player* player) override;
 };
