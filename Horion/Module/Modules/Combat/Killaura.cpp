@@ -41,7 +41,7 @@ Killaura::~Killaura() {
 }
 
 const char* Killaura::getModuleName() {
-	return ("Killaura");
+	return ("KillAura");
 }
 
 static void findEntity(C_Entity* currentEntity, bool isRegularEntity) {
@@ -315,8 +315,8 @@ void Killaura::onTick(C_GameMode* gm) {
 		targetList[switchTarget]->getPos()->z
 			};*/
 			vec3_t centrePos = targetList[switchTarget]->aabb.centerPoint();
-			vec3_t upperPos = targetList[switchTarget]->aabb.upper;
-			vec3_t lowerPos = targetList[switchTarget]->aabb.lower;
+			//vec3_t upperPos = targetList[switchTarget]->aabb.upper;
+			//vec3_t lowerPos = targetList[switchTarget]->aabb.lower;
 
 			angle = localPlayer->getPos()->CalcAngle(centrePos);
 
@@ -334,21 +334,17 @@ void Killaura::onTick(C_GameMode* gm) {
 				return;
 			}
 			else {
-				//localAngle = localPlayer->viewAngles;
 				if (randomPitch) {
-					float upperPitch = localPlayer->getPos()->CalcAngle(upperPos).x;
-					float lowerPitch = localPlayer->getPos()->CalcAngle(lowerPos).x;
-					angle.x = randomFloat(upperPitch, lowerPitch);
-					//clientMessageF("RandomPitch :%f", angle.x);
-
-					if (randomYaw) {
-						float upperYaw = localPlayer->getPos()->CalcAngle(upperPos).y;
-						float lowerYaw = localPlayer->getPos()->CalcAngle(lowerPos).y;
-						angle.y = randomFloat(upperYaw, lowerYaw);
-						//clientMessageF("RandomYaw :%f", angle.y);
-					}
-					angle = angle.normAngles();
+					centrePos.y += randomFloat(-0.85f, 0.85f);
 				}
+
+				if (randomYaw) {
+					centrePos.x += randomFloat(-0.25f, 0.25f);
+					centrePos.z += randomFloat(-0.25f, 0.25f);
+				}
+
+				angle = localPlayer->getPos()->CalcAngle(centrePos);
+				//angle = angle.normAngles();
 			}
 
 			/*if (pitchOffset > 0) {
