@@ -52,9 +52,10 @@ void TestModule::onTick(C_GameMode* gm) {
 		auto selectedItem = g_Data.getLocalPlayer()->getSelectedItem();
 
 		if (selectedItem->isValid()) {
-			logF("ItemID=%i extraData=%i tileName=%s", (
+			logF("ItemID=%i extraData=%i name=%s tileName=%s", (
 				*selectedItem->item)->itemId
-				,selectedItem->extraData
+				, selectedItem->extraData
+				, (*selectedItem->item)->name.getText()
 				,(*selectedItem->item)->tileName.getText());
 
 			if (selectedItem->tag != nullptr) {
@@ -81,12 +82,14 @@ void TestModule::onTick(C_GameMode* gm) {
 		Level* level = g_Data.getLocalPlayer()->level;
 		auto levelBlock = g_Data.getLocalPlayer()->region->getBlock(level->block)->toLegacy();
 		if (!level->rayHitType) {
-			logF("BlockPos(X=%i,Y=%i,Z=%i) BlockID=%i BlockName=%s tileName=%s Face=%i"
+			logF("BlockPos(X=%i,Y=%i,Z=%i) BlockID=%i BlockName=%s Face=%i"
 				, level->block.x, level->block.y, level->block.z, 
 				levelBlock->blockId
 				, levelBlock->name.getText()
-				, levelBlock->tileName.getText()
+				//, levelBlock->tileName.getText()
 				,level->blockSide);
+			bool isDestroyedOut = true;
+			gm->continueDestroyBlock(level->block, level->blockSide, isDestroyedOut);
 		}
 	}
 
