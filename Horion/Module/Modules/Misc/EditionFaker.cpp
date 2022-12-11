@@ -1,6 +1,6 @@
 #include "EditionFaker.h"
 
-EditionFaker::EditionFaker() : IModule(0, Category::MISC, "Fakes your device and inputmode.") {
+EditionFaker::EditionFaker() : IModule(0, Category::MISC, "Fakes your device,inputMode,deviceModel.") {
 	device = SettingEnum(this)
 		.addEntry(EnumEntry("Unknown", 0))
 		.addEntry(EnumEntry("Android", 1))
@@ -25,6 +25,7 @@ EditionFaker::EditionFaker() : IModule(0, Category::MISC, "Fakes your device and
 		.addEntry(EnumEntry("Gamepad", 3))
 		.addEntry(EnumEntry("Motion controller", 4));
 	registerEnumSetting("InputMode", &inputMode, 2);
+	registerBoolSetting("Null DeviceModel", &deviceModel, deviceModel);
 }
 
 EditionFaker::~EditionFaker() {
@@ -37,7 +38,7 @@ const char* EditionFaker::getModuleName() {
 int EditionFaker::getFakedDevice() {
 	// static const char* gameEditons[] = { "Unknown", "Android", "iOS", "macOS", "FireOS", "GearVR", "HoloLens", "Windows 10 (PC)", "Windows", "Dedicated", "Orbis", "NX" };
 
-	return device.GetSelectedEntry().GetValue();
+	return device.selected;
 }
 
 int EditionFaker::getFakedInputMode() {

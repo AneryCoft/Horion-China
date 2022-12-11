@@ -7,11 +7,13 @@ public:
 	int getFakedDevice();
 	int getFakedInputMode();
 	
-	EditionFaker();
-	~EditionFaker();
-
 	SettingEnum device;
 	SettingEnum inputMode;
+
+	bool deviceModel = false;
+
+	EditionFaker();
+	~EditionFaker();
 
 	// Inherited via IModule
 	virtual const char* getModuleName() override;
