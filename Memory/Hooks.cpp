@@ -1252,8 +1252,18 @@ __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager
 	static auto EditionFakerMod = moduleMgr->getModule<EditionFaker>();
 	static auto RandomDeviceIdMod = moduleMgr->getModule<RandomDeviceId>();
 
-	if (EditionFakerMod->isEnabled())
+	void* deviceModelAddress = (void*)FindSignature("44 65 76 69 63 65 4D 6F 64 65 6C 00 00 00 00 00 44 65");
+
+	if (EditionFakerMod->isEnabled()) {
 		inputMode = EditionFakerMod->getFakedInputMode();
+		if (EditionFakerMod->deviceModel)
+			Utils::patchBytes((BYTE*)((uintptr_t)deviceModelAddress), (BYTE*)"\x40", 1);
+		else
+			Utils::patchBytes((BYTE*)((uintptr_t)deviceModelAddress), (BYTE*)"\x44", 1);
+	}
+	else if (EditionFakerMod->deviceModel) {
+		Utils::patchBytes((BYTE*)((uintptr_t)deviceModelAddress), (BYTE*)"\x44", 1);
+	}
 
 	TextHolder uuid;
 	if (RandomDeviceIdMod->isEnabled()) {
