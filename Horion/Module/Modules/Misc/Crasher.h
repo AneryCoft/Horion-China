@@ -3,6 +3,8 @@
 #include "../Module.h"
 
 class Crasher : public IModule {
+private:
+	SettingEnum mode;
 public:
 	Crasher();
 	~Crasher();
