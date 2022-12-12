@@ -1,34 +1,49 @@
 #include "Speed.h"
 
-float speedFriction = 0.65f;
-bool Faststop = true;
 Speed::Speed() : IModule(VK_NUMPAD2, Category::MOVEMENT, "Speed up!") {
 	mode = SettingEnum(this)
 		.addEntry(EnumEntry("Vanilla", 0))
-		.addEntry(EnumEntry("Bhop", 1))
-		.addEntry(EnumEntry("Lowhop", 2))
+		.addEntry(EnumEntry("BHop", 1))
+		.addEntry(EnumEntry("LowHop", 2))
 		.addEntry(EnumEntry("Friction", 3))
-		.addEntry(EnumEntry("HiveTest", 4));
+		.addEntry(EnumEntry("HiveHop", 4));
 	registerEnumSetting("Mode", &mode, 1);
-	registerBoolSetting("FastStop", &Faststop, Faststop);
 	registerFloatSetting("VanillaSpeed", &vanillaSpeed, vanillaSpeed, 0.1f, 5.f);
 	registerFloatSetting("MaxSpeed", &maxSpeed, maxSpeed, 0.1f, 1.f);
 	registerFloatSetting("MinSpeed", &minSpeed, minSpeed, 0.1f, 1.f);
-	registerFloatSetting("Duration", &duration, duration, 0.2f, 1.5f);
+	registerFloatSetting("FrictionDuration", &duration, duration, 0.2f, 1.5f);
 	registerFloatSetting("LowhopMotion", &lowhopMotion, lowhopMotion, 0.1f, 5.f);
-	registerFloatSetting("Timer", &timer, timer, 20.f, 50.f);
+	registerFloatSetting("Timer", &timer, timer, 10.f, 40.f);
 }
 
 Speed::~Speed() {
 }
 
 const char* Speed::getModuleName() {
-	return ("Speed");  // 48 8D 15 ?? ?? ?? ?? 48 8B CB FF 90 ?? ?? ?? ?? 48 8B D8
+	return ("Speed");
+}
+
+void Speed::onEnable() {
+	if (g_Data.getLocalPlayer() == nullptr) {
+		setEnabled(false);
+		return;
+	}
+
+	origSpeed = *reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84);
+}
+
+void Speed::onDisable() {
+	if (g_Data.getLocalPlayer() == nullptr)
+		return;
+
+	g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
+
+	*reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84) = origSpeed;
 }
 
 void Speed::onTick(C_GameMode* gm) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
-	C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
+	//C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
 
 	// Vanilla
 	if (mode.selected == 0) {
@@ -37,6 +52,9 @@ void Speed::onTick(C_GameMode* gm) {
 	}
 	// Bhop && Lowhop
 	else if (mode.selected == 1 || mode.selected == 2) {
+		if (maxSpeed < minSpeed)
+			minSpeed = maxSpeed;
+
 		speed = randomFloat(maxSpeed, minSpeed);
 	}
 	// HiveOld Baddddddddddd
@@ -99,134 +117,103 @@ void Speed::onTick(C_GameMode* gm) {
 	*/
 }
 
-void Speed::onEnable() {
-	if (mode.selected == 0) {
-		if (g_Data.getLocalPlayer() == nullptr) {
-			setEnabled(false);
-			return;
-		}
-		else {
-			origSpeed = *reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84);
-		}
-	}
-}
-
-void Speed::onDisable() {
-	if (g_Data.getLocalPlayer() == nullptr)
-		return;
-
-	g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
-
-	if (mode.selected == 0) {
-		*reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84) = origSpeed;
-	}
-}
-
 void Speed::onMove(C_MoveInputHandler* input) {
-	auto player = g_Data.getLocalPlayer();
-	if (player == nullptr) return;
-
-	if (player->isInLava() == 1 || player->isInWater() == 1)
+	auto localPlayer = g_Data.getLocalPlayer();
+	if (localPlayer == nullptr)
 		return;
 
-	vec2_t movement = { input->forwardMovement, -input->sideMovement };
-	bool pressed = movement.magnitude() > 0.f;
-	if (!pressed && Faststop) {
-		auto player = g_Data.getLocalPlayer();
-		if (player != nullptr) {
-			if (!(player->damageTime > 1 && false)) {
-				player->velocity.x = 0.f;
-				player->velocity.z = 0.f;
-			}
-		}
-	}
+	if (localPlayer->isInLava() || localPlayer->isInWater())
+		return;
 
-	float calcYaw = (player->yaw + 90) * (PI / 180);
+	static auto flyMod = moduleMgr->getModule<Fly>();
+
+	if (flyMod->isEnabled())
+		return;
+
+	float calcYaw = (localPlayer->yaw + 90) * (PI / 180);
 	float c = cos(calcYaw);
 	float s = sin(calcYaw);
 
-	vec2_t moveVec2D = { input->forwardMovement, -input->sideMovement };
-	moveVec2D = { moveVec2D.x * c - moveVec2D.y * s, moveVec2D.x * s + moveVec2D.y * c };
+	vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
+	bool pressed = moveVec2d.magnitude() > 0.01f;
+	moveVec2d = { moveVec2d.x * c - moveVec2d.y * s, moveVec2d.x * s + moveVec2d.y * c };
+
 	vec3_t moveVec;
-	
-	// Bhop
-	if (mode.selected == 1) { 
-		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
-		bool pressed = moveVec2d.magnitude() > 0.01f;
 
-		if (player->onGround && pressed) {
-			g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
-			player->jumpFromGround();
-		}
+	switch (mode.selected) {
+		case 1: //BunnyHop
+		{
+			if (localPlayer->onGround && pressed) {
+				g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
+				localPlayer->jumpFromGround();
+			}
 
-		if (!moduleMgr->getModule<Fly>()->isEnabled()) {
 			g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
-			float calcYaw = (player->yaw + 90) * (PI / 180);
-			vec3_t moveVec;
-			float c = cos(calcYaw);
-			float s = sin(calcYaw);
-			moveVec2d = { moveVec2d.x * c - moveVec2d.y * s, moveVec2d.x * s + moveVec2d.y * c };
+
 			moveVec.x = moveVec2d.x * speed;
-			moveVec.y = player->velocity.y;
+			moveVec.y = localPlayer->velocity.y;
 			moveVec.z = moveVec2d.y * speed;
-			if (pressed) player->lerpMotion(moveVec);
+			if (pressed)
+				localPlayer->lerpMotion(moveVec);
 		}
-	}
-	// Lowhop
-	else if (mode.selected == 2) {
-		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
-		bool pressed = moveVec2d.magnitude() > 0.01f;
+		break;
+		case 2: //LowHop
+		{
+			if (localPlayer->onGround && pressed) {
+				g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
+				C_PlayerActionPacket actionPacket;
+				actionPacket.action = 8; //ÌøÔ¾
+				actionPacket.entityRuntimeId = localPlayer->entityRuntimeId;
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&actionPacket);
+				localPlayer->velocity.y = lowhopMotion;
+			}
 
-		if (player->onGround && pressed) {
-			g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
-			player->velocity.y = lowhopMotion;
-		}
-
-		if (!moduleMgr->getModule<Fly>()->isEnabled()) {
 			g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
-			float calcYaw = (player->yaw + 90) * (PI / 180);
-			vec3_t moveVec;
-			float c = cos(calcYaw);
-			float s = sin(calcYaw);
-			moveVec2d = { moveVec2d.x * c - moveVec2d.y * s, moveVec2d.x * s + moveVec2d.y * c };
-			moveVec.x = moveVec2d.x * speed;
-			moveVec.y = player->velocity.y;
-			moveVec.z = moveVec2d.y * speed;
-			if (pressed) player->lerpMotion(moveVec);
-		}
-	}
-	// Friction
-	else if (mode.selected == 3) {
-		if (player->onGround && pressed)
-			player->jumpFromGround();
 
-		speedFriction *= duration;
-		if (pressed) {
-			if (player->onGround) {
-				//if (startSpeed && !input->isJumping) player->velocity.y = 0.40;
-				speedFriction = randomFloat(minSpeed, maxSpeed);
-			}
-			else {
-				moveVec.x = moveVec2D.x * speedFriction;
-				moveVec.y = player->velocity.y;
-				moveVec.z = moveVec2D.y * speedFriction;
-				player->lerpMotion(moveVec);
+			moveVec.x = moveVec2d.x * speed;
+			moveVec.y = localPlayer->velocity.y;
+			moveVec.z = moveVec2d.y * speed;
+			if (pressed)
+				localPlayer->lerpMotion(moveVec);
+		}
+		break;
+		case 3: //Friction Hop
+		{
+			speedFriction *= duration;
+
+			if (pressed) {
+				if (localPlayer->onGround) {
+					localPlayer->jumpFromGround();
+					g_Data.getClientInstance()->minecraft->setTimerSpeed(20);
+					speedFriction = randomFloat(minSpeed, maxSpeed);
+				}
+				else {
+					g_Data.getClientInstance()->minecraft->setTimerSpeed(timer);
+
+					moveVec.x = moveVec2d.x * speedFriction;
+					moveVec.y = localPlayer->velocity.y;
+					moveVec.z = moveVec2d.y * speedFriction;
+					localPlayer->lerpMotion(moveVec);
+				}
 			}
 		}
-	}
-	// HiveTest
-	else if (mode.selected == 4) {
-		speedFriction *= 0.9400610828399658f;
-		if (pressed) {
-			if (player->onGround) {
-				player->jumpFromGround();
-				speedFriction = randomFloat(0.5285087823867798f, 0.49729517102241516f);
+		break;
+		case 4: //TheHIve Hop
+		{
+			speedFriction *= 0.9400610828399658f;
+
+			if (pressed) {
+				if (localPlayer->onGround) {
+					localPlayer->jumpFromGround();
+					speedFriction = randomFloat(0.5285087823867798f, 0.49729517102241516f);
+				}
+				else {
+					moveVec.x = moveVec2d.x * speedFriction;
+					moveVec.y = localPlayer->velocity.y;
+					moveVec.z = moveVec2d.y * speedFriction;
+					localPlayer->lerpMotion(moveVec);
+				}
 			}
-			else
-			moveVec.x = moveVec2D.x * speedFriction;
-			moveVec.y = player->velocity.y;
-			moveVec.z = moveVec2D.y * speedFriction;
-			player->lerpMotion(moveVec);
 		}
 	}
 }
