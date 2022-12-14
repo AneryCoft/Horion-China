@@ -164,23 +164,23 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 				MC_Color(1.f, 1.f, 1.f), 1.f);
 		} //显示盔甲值 
 		else if (armor.selected == 1) {
-			float x = 1.6f;
+			float x = 0.f;
 			float itemPosY = windowSize.y / 2 + hight / 12.f;
 
 			for (int i = 0; i < 4; i++) {
 				C_ItemStack* stack = target->getArmor(i);
 				if (stack->item != nullptr) {
-					DrawUtils::drawItem(stack, vec2_t(windowSize.x / x, itemPosY), 0.9f, 0.8f, stack->isEnchanted());
+					DrawUtils::drawItem(stack, vec2_t(windowSize.x / 1.6f + x, itemPosY), 0.9f, 0.8f, stack->isEnchanted());
 				}
-				x -= 0.04f;
+				x += 12.f;
 			}
 			//盔甲 
 
-			if (target->getEntityTypeId() == 319) {
+			if (target->isPlayer()) {
 				C_Player* player = reinterpret_cast<C_Player*>(target);
 				C_ItemStack* stack = player->getSelectedItem();
 				if (stack->item != nullptr) {
-					DrawUtils::drawItem(stack, vec2_t(windowSize.x / x, itemPosY), 0.9f, 0.8f, stack->isEnchanted());
+					DrawUtils::drawItem(stack, vec2_t(windowSize.x / 1.6f + x, itemPosY), 0.9f, 0.8f, stack->isEnchanted());
 				}
 			}
 			//手持物品 
