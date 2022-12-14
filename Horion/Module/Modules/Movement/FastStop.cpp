@@ -11,9 +11,11 @@ const char* FastStop::getModuleName() {
 }
 
 void FastStop::onMove(C_MoveInputHandler* input) {
-	vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
-	if (moveVec2d.magnitude() < 0.01f) {
-		g_Data.getLocalPlayer()->velocity.x = 0.f;
-		g_Data.getLocalPlayer()->velocity.z = 0.f;
+	if (!g_Data.getLocalPlayer()->damageTime) {
+		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
+		if (moveVec2d.magnitude() < 0.01f) {
+			g_Data.getLocalPlayer()->velocity.x = 0.f;
+			g_Data.getLocalPlayer()->velocity.z = 0.f;
+		}
 	}
 }
