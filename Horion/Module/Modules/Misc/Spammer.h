@@ -1,12 +1,15 @@
 #pragma once
 
 #include "../Module.h"
+#include "../../../../Utils/Utils.h"
+#include "../../../../Memory/Hooks.h"
+#include "../../../Utils/TimerUtil.h"
 
 class Spammer : public IModule {
 private:
-	int Odelay = 0;
 	bool bypass = true;
-	int delay = 2;
+	float delay = 500.f;
+	TimerUtil delayTime;
 	int length = 8;
 	std::string message = "Horion China - A Minecraft bedrock Mod";
 
@@ -15,7 +18,7 @@ public:
 	~Spammer();
 
 	inline std::string& getMessage() { return message; };
-	inline int& getDelay() { return delay; };
+	inline float& getDelay() { return delay; };
 	inline int& getLength() { return length; };
 	inline bool& getBypass() { return bypass; };
 

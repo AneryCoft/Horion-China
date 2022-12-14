@@ -2,7 +2,7 @@
 
 #include "../../Module/ModuleManager.h"
 
-SpammerCommand::SpammerCommand() : IMCCommand("spammer", "Edit spammer delay/text", "<message/delay/bypass/length/manual> <string/int/bool>") {
+SpammerCommand::SpammerCommand() : IMCCommand("spammer", "Edit spammer delay/text", "<message/delay/bypass/length/manual> <string/float/bool>") {
 	registerAlias("spam");
 }
 
@@ -32,8 +32,8 @@ bool SpammerCommand::execute(std::vector<std::string>* args) {
 		clientMessageF("[%sHorion%s] %sSpammer message set to %s%s%s!", GOLD, WHITE, GREEN, GRAY, text.c_str(), GREEN);
 		return true;
 	} else if (option == "delay") {
-		int delay = assertInt(args->at(2));
-		if (delay < 1) {
+		float delay = assertInt(args->at(2));
+		if (delay < 0.f) {
 			clientMessageF("[%sHorion%s] %sDelay needs to be 1 or more!", GOLD, WHITE, RED);
 			return true;
 		} else {
@@ -67,9 +67,10 @@ bool SpammerCommand::execute(std::vector<std::string>* args) {
 		std::string text = os.str().substr(1);
 		for (int i = 0; i < times; i++) {
 			C_TextPacket textPacket;
+			textPacket.messageType = 1;
 			textPacket.message.setText(text + (spamMod->getBypass() ? (" | " + Utils::randomString(spamMod->getLength())) : ""));
 			textPacket.sourceName = *g_Data.getLocalPlayer()->getNameTag();
-			textPacket.xboxUserId = TextHolder(std::to_string(g_Data.getLocalPlayer()->getUserId()));
+			textPacket.xboxUserId = g_Data.getClientInstance()->minecraftGame->xuid;
 			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&textPacket);
 		}
 		return true;
