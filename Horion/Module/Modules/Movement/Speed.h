@@ -5,6 +5,8 @@
 
 class Speed : public IModule {
 private:
+	SettingEnum mode;
+
 	float vanillaSpeed = 1.0f;
 	float origSpeed = 0.f;
 
@@ -14,12 +16,10 @@ private:
 	
 	float lowhopMotion = 0.3f;
 
-	float timer = 20.f;
-
 	float duration = 1.f;
 	float speedFriction = 0.65f;
 
-	SettingEnum mode;
+	float timer = 20.f;
 	
 public:
 	Speed();

@@ -6,13 +6,13 @@ Speed::Speed() : IModule(VK_NUMPAD2, Category::MOVEMENT, "Speed up!") {
 		.addEntry(EnumEntry("BHop", 1))
 		.addEntry(EnumEntry("LowHop", 2))
 		.addEntry(EnumEntry("Friction", 3))
-		.addEntry(EnumEntry("HiveHop", 4));
+		.addEntry(EnumEntry("The Hive", 4));
 	registerEnumSetting("Mode", &mode, 1);
 	registerFloatSetting("VanillaSpeed", &vanillaSpeed, vanillaSpeed, 0.1f, 5.f);
 	registerFloatSetting("MaxSpeed", &maxSpeed, maxSpeed, 0.1f, 1.f);
 	registerFloatSetting("MinSpeed", &minSpeed, minSpeed, 0.1f, 1.f);
-	registerFloatSetting("FrictionDuration", &duration, duration, 0.2f, 1.5f);
 	registerFloatSetting("LowhopMotion", &lowhopMotion, lowhopMotion, 0.1f, 5.f);
+	registerFloatSetting("FrictionDuration", &duration, duration, 0.2f, 1.5f);
 	registerFloatSetting("Timer", &timer, timer, 10.f, 40.f);
 }
 
@@ -47,7 +47,7 @@ void Speed::onTick(C_GameMode* gm) {
 
 	// Vanilla
 	if (mode.selected == 0) {
-		float* speedAdr = reinterpret_cast<float*>(g_Data.getLocalPlayer()->getSpeed() + 0x84);
+		float* speedAdr = reinterpret_cast<float*>(localPlayer->getSpeed() + 0x84);
 		*speedAdr = vanillaSpeed;
 	}
 	// Bhop && Lowhop
@@ -126,16 +126,14 @@ void Speed::onMove(C_MoveInputHandler* input) {
 		return;
 
 	static auto flyMod = moduleMgr->getModule<Fly>();
-
 	if (flyMod->isEnabled())
 		return;
 
+	vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
+	bool pressed = moveVec2d.magnitude() > 0.01f;
 	float calcYaw = (localPlayer->yaw + 90) * (PI / 180);
 	float c = cos(calcYaw);
 	float s = sin(calcYaw);
-
-	vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
-	bool pressed = moveVec2d.magnitude() > 0.01f;
 	moveVec2d = { moveVec2d.x * c - moveVec2d.y * s, moveVec2d.x * s + moveVec2d.y * c };
 
 	vec3_t moveVec;
@@ -198,7 +196,7 @@ void Speed::onMove(C_MoveInputHandler* input) {
 			}
 		}
 		break;
-		case 4: //TheHIve Hop
+		case 4: //The Hive Hop
 		{
 			speedFriction *= 0.9400610828399658f;
 
