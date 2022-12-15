@@ -126,6 +126,8 @@ void Hooks::Init() {
 
 				//g_Hooks.Actor_killedHook = std::make_unique<FuncHook>(localPlayerVtable[151], Hooks::Actor_killed);
 
+				//g_Hooks.Actor_setSprintingHook = std::make_unique<FuncHook>(localPlayerVtable[277], Hooks::setSprinting);
+
 				//g_Hooks.Actor__isInvisibleHook = std::make_unique<FuncHook>(localPlayerVtable[59], Hooks::Actor__isInvisible);
 			}
 		}
@@ -1340,7 +1342,8 @@ __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager
 		}
 
 		//Logger::WriteBigLogFileF(newGeometryData->getTextLength() + 20, "Geometry: %s", newGeometryData->getText());
-		TextHolder* newSkinResourcePatch = new TextHolder(Utils::base64_decode("ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiYW5pbWF0ZWRfZmFjZSIgOiAiZ2VvbWV0cnkuYW5pbWF0ZWRfZmFjZV9wZXJzb25hXzRjZGJiZmFjYTI0YTk2OGVfMF8wIiwKICAgICAgImRlZmF1bHQiIDogImdlb21ldHJ5LnBlcnNvbmFfNGNkYmJmYWNhMjRhOTY4ZV8wXzAiCiAgIH0KfQo="));
+
+		TextHolder* newSkinResourcePatch = new TextHolder(B64DecodeResult("ewogICAiZ2VvbWV0cnkiIDogewogICAgICAiYW5pbWF0ZWRfZmFjZSIgOiAiZ2VvbWV0cnkuYW5pbWF0ZWRfZmFjZV9wZXJzb25hXzRjZGJiZmFjYTI0YTk2OGVfMF8wIiwKICAgICAgImRlZmF1bHQiIDogImdlb21ldHJ5LnBlcnNvbmFfNGNkYmJmYWNhMjRhOTY4ZV8wXzAiCiAgIH0KfQo=").data());
 
 		TextHolder* fakeName = g_Data.getFakeName();
 		TextHolder resourcePatchBackup;
@@ -1695,5 +1698,20 @@ void Hooks::Actor_killed(C_Entity* entity) {
 	//logF("Killed a Entity");
 
 	func(entity);
+}
+*/
+
+/*
+void Hooks::setSprinting(bool sprint) {
+	auto func = g_Hooks.Actor_setSprintingHook->GetFastcall<void, bool>();
+
+	static auto autoSprintMod = moduleMgr->getModule<AutoSprint>();
+
+	if (autoSprintMod->isEnabled() && autoSprintMod->keepSprint) {
+		if (!sprint)
+			sprint = true;
+	}
+
+	func(sprint);
 }
 */

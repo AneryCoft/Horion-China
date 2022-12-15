@@ -138,6 +138,7 @@ private:
 	static float getDestroySpeed(C_Player* _this, C_Block& block);
 	static void setPos(C_Entity* ent, vec3_t& pos);
 	//static void Actor_killed(C_Entity* entity);
+	//static void setSprinting(bool);
 
 	std::unique_ptr<FuncHook> Actor_rotationHook;
 	std::unique_ptr<FuncHook> setPosHook;
@@ -202,6 +203,7 @@ private:
 	std::unique_ptr<FuncHook> InventoryTransactionManager__addActionHook;
 	std::unique_ptr<FuncHook> LevelRendererPlayer__renderNameTagsHook;
 	//std::unique_ptr<FuncHook> Actor_killedHook;
+	//std::unique_ptr<FuncHook> Actor_setSprintingHook;
 };
 
 extern Hooks g_Hooks;
