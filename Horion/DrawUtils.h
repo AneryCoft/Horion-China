@@ -128,6 +128,7 @@ public:
 	static void drawBox(const vec3_t& lower, const vec3_t& upper, float lineWidth, bool outline = false);
 	static void drawEntityBox(C_Entity* ent, float lineWidth);
 	static void draw2D(C_Entity* ent, float lineWidth);
+	static void draw2DCorners(C_Entity* ent, float lineWidth);
 	static void draw2DFill(C_Entity* ent, const MC_Color& color, float opacity);
 	static void drawNameTags(C_Entity* ent, float textSize, bool drawHealth = false, bool useUnicodeFont = false);
 	static void drawItem(C_ItemStack* item, const vec2_t& ItemPos, float opacity, float scale, bool isEnchanted);

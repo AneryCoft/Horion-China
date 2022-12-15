@@ -11,8 +11,9 @@ ESP::ESP() : IModule('O', Category::VISUAL, "Makes it easier to find entities ar
 	renderMode = SettingEnum(this)
 		.addEntry(EnumEntry("2D Border", 0))
 		.addEntry(EnumEntry("2D Fill", 1))
-		.addEntry(EnumEntry("3D Border", 2))
-		.addEntry(EnumEntry("3D Box", 3));
+		.addEntry(EnumEntry("2D Corners", 2))
+		.addEntry(EnumEntry("3D Border", 3))
+		.addEntry(EnumEntry("3D Box", 4));
 	registerEnumSetting("RenderMode", &renderMode, 1);
 	registerBoolSetting("Rainbow", &doRainbow, doRainbow);
 }
@@ -83,19 +84,22 @@ void doRenderStuff(C_Entity* ent, bool isRegularEntitie) {
 		break;
 	case 1: 
 		if (espMod->doRainbow)
-		DrawUtils::draw2DFill(ent, MC_Color(rcolors[0], rcolors[1], rcolors[2]), 0.3f);
+			DrawUtils::draw2DFill(ent, MC_Color(rcolors[0], rcolors[1], rcolors[2]), 0.3f);
 		else
 			DrawUtils::draw2DFill(ent, MC_Color(0.9f, 0.9f, 0.9f), 0.3f);
 		break;
 	case 2:
-		DrawUtils::drawEntityBox(ent, (float)fmax(0.2f, 1 / (float)fmax(1, distance)));
+		DrawUtils::draw2DCorners(ent, (float)fmax(0.4f, 1 / (float)fmax(1, distance * 3.f)));
 		break;
 	case 3:
-		DrawUtils::drawBox(ent->aabb.lower, ent->aabb.upper, (float)fmax(0.2f, 1 / (float)fmax(1, distance)));
+		DrawUtils::drawEntityBox(ent, (float)fmax(0.2f, 1 / (float)fmax(1, distance)));
 		break;
 	case 4:
+		DrawUtils::drawBox(ent->aabb.lower, ent->aabb.upper, (float)fmax(0.2f, 1 / (float)fmax(1, distance)));
+		break;
+	/*case 5:
 	{
-		/*
+		
 		vec2_t boxPos1 = DrawUtils::worldToScreen(ent->aabb.lower);
 		vec2_t boxPos2 = DrawUtils::worldToScreen(vec3_t(ent->aabb.upper.x, ent->aabb.lower.y, ent->aabb.upper.z));
 		vec2_t boxPos3 = DrawUtils::worldToScreen(vec3_t(ent->aabb.lower.x, ent->aabb.lower.y, ent->aabb.upper.z));
@@ -111,8 +115,8 @@ void doRenderStuff(C_Entity* ent, bool isRegularEntitie) {
 		DrawUtils::fillRectangle(vec4_t(boxPos1.x, boxPos1.y, boxPos8.x, boxPos8.y), MC_Color(200, 200, 200), 0.3f);
 		DrawUtils::fillRectangle(vec4_t(boxPos5.x, boxPos5.y, boxPos3.x, boxPos3.y), MC_Color(200, 200, 200), 0.3f);
 		DrawUtils::fillRectangle(vec4_t(boxPos5.x, boxPos5.y, boxPos4.x, boxPos4.y), MC_Color(200, 200, 200), 0.3f); //四个侧面
-		*/ //失败的3DFillBox
-	}
+		 //失败的3DFillBox
+	}*/
 	}
 }
 
