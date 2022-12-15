@@ -67,7 +67,7 @@ void TestModule::onTick(C_GameMode* gm) {
 			}
 			/*
 			if ((*selectedItem->item)->isArmor()) {
-				logF("ArmorKnockbackResistance=%f", (*selectedItem->item)->getArmorKnockbackResistance()); //锟铰斤拷辖锟斤拷锟阶撅拷为0.225f
+				logF("ArmorKnockbackResistance=%f", (*selectedItem->item)->getArmorKnockbackResistance()); //下界合金盔甲均为0.225f
 			}
 			*/
 		}
@@ -79,7 +79,7 @@ void TestModule::onTick(C_GameMode* gm) {
 		logF("ScreenName=%s", g_Data.getScreenName.c_str());
 		float yawSpeedInDegreesPerTick = localPlayer->getYawSpeedInDegreesPerSecond() / *g_Data.getClientInstance()->minecraft->timer;
 		logF("YawSpeed=%f", yawSpeedInDegreesPerTick);
-		logF("RayHitType=%i", localPlayer->level->rayHitType); //0方块 2? 1实体 3无
+		//logF("RayHitType=%i", localPlayer->level->rayHitType); //0方块 1实体 2? 3无
 		logF("Motion(X=%f Y=%f Z=%f)", localPlayer->velocity.x, localPlayer->velocity.y, localPlayer->velocity.z);
 		logF("yaw2 = %f,yawUnused1 = %f yawUnused2 = %f bodyYaw = %f oldBodyYaw = %f", g_Data.getLocalPlayer()->yaw2, g_Data.getLocalPlayer()->yawUnused1, g_Data.getLocalPlayer()->yawUnused2, g_Data.getLocalPlayer()->bodyYaw, g_Data.getLocalPlayer()->oldBodyYaw);
 	}
@@ -116,11 +116,17 @@ void TestModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		return;
 
 	Level* level = g_Data.getLocalPlayer()->level;
-	if (!level->rayHitType) {
+	if (level->hasBlock()) {
 		C_BlockLegacy* levelBlock = g_Data.getLocalPlayer()->region->getBlock(level->block)->toLegacy();
 		std::string blockNameAndID = std::string(levelBlock->name.getText() + std::string(" ID:") + std::to_string(levelBlock->blockId));
 		vec2_t windowSize = g_Data.getClientInstance()->getGuiData()->windowSize;
 		DrawUtils::drawText(vec2_t(windowSize.x / 2 - DrawUtils::getTextWidth(&blockNameAndID) / 2.f, windowSize.y / 2 + 10.f), &blockNameAndID, MC_Color(255, 255, 255), 1.f, 1.f);
+	}
+	else if (level->hasEntity()) {
+		C_Entity* levelEntity = level->getEntity();
+		std::string entityTypeNameAndID = std::string(levelEntity->getType()->getText()) + std::string(" ID:") + std::to_string(levelEntity->getEntityTypeId());
+		vec2_t windowSize = g_Data.getClientInstance()->getGuiData()->windowSize;
+		DrawUtils::drawText(vec2_t(windowSize.x / 2 - DrawUtils::getTextWidth(&entityTypeNameAndID) / 2.f, windowSize.y / 2 + 10.f), &entityTypeNameAndID, MC_Color(255, 255, 255), 1.f, 1.f);
 	}
 }
 
@@ -142,12 +148,10 @@ void TestModule::onAttack(C_Entity* attackedEnt) {
 	}
 
 	if (entityInfo) {
-		logF("EntityTypeId=%i Height=%f Width=%f DeathTime=%i Hurttime=%i CanShowName=%i"
-			, attackedEnt->getEntityTypeId()
+		logF("Height=%f Width=%f DeathTime=%i CanShowName=%i"
 			, attackedEnt->height
 			, attackedEnt->width
 			, attackedEnt->timeSinceDeath
-			, attackedEnt->damageTime
 			, attackedEnt->canShowNameTag());
 		logF("NameTag=%s", attackedEnt->getNameTag()->getText());
 		logF("lower(%f,%f,%f) upper(%f,%f,%f)", attackedEnt->aabb.lower.x, attackedEnt->aabb.lower.y, attackedEnt->aabb.lower.z, attackedEnt->aabb.upper.x, attackedEnt->aabb.upper.y, attackedEnt->aabb.upper.z);
