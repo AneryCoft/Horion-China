@@ -17,7 +17,7 @@ const char* StorageESP::getModuleName() {
 }
 
 void StorageESP::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
-	if (!g_Data.isInGame() || !GameData::canUseMoveKeys() || g_Data.getLocalPlayer() == nullptr)
+	if (!GameData::canUseMoveKeys() || g_Data.getLocalPlayer() == nullptr)
 		return;
 
 	auto ourListLock = std::scoped_lock(this->listLock);

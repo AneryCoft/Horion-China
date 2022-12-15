@@ -25,7 +25,7 @@ void FollowPathModule::startSearch(vec3_ti startNode, C_BlockSource* region, flo
 }
 
 void FollowPathModule::onEnable() {
-	if (g_Data.getLocalPlayer() == nullptr || !g_Data.isInGame() || !g_Data.getLocalPlayer()->isAlive()) {
+	if (g_Data.getLocalPlayer() == nullptr || !g_Data.getLocalPlayer()->isAlive()) {
 		setEnabled(false);
 		return;
 	}
