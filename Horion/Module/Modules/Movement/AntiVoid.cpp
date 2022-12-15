@@ -6,8 +6,8 @@ AntiVoid::AntiVoid() : IModule(0, Category::MOVEMENT, "Automatically teleports y
 		.addEntry(EnumEntry("Packet", 1));
 		//.addEntry(EnumEntry("The Hive", 2));
 	registerEnumSetting("Mode", &mode, 0);
+	registerFloatSetting("Distance", &distance, distance, 1.f, 10.f);
 	registerBoolSetting("Only Void", &onlyVoid, onlyVoid);
-	registerIntSetting("Distance", &distance, distance, 1, 20);
 }
 
 AntiVoid::~AntiVoid() {

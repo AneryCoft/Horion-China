@@ -5,7 +5,7 @@
 
 class AntiVoid : public IModule {
 private:
-	int distance = 5;
+	float distance = 5.f;
 	bool onlyVoid = true;
 
 public:
