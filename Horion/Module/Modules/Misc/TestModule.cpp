@@ -65,6 +65,11 @@ void TestModule::onTick(C_GameMode* gm) {
 				auto builtStr = build.str();
 				logF("NBT=%s", builtStr.c_str());
 			}
+			/*
+			if ((*selectedItem->item)->isArmor()) {
+				logF("ArmorKnockbackResistance=%f", (*selectedItem->item)->getArmorKnockbackResistance()); //�½�Ͻ���׾�Ϊ0.225f
+			}
+			*/
 		}
 	}
 

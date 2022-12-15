@@ -431,15 +431,18 @@ public:
 														   + this->getEnchantValue(3) * 0.4f  // Blast Protection
 														   + this->getEnchantValue(1) * 0.4f  // Fire Protection
 														   + this->getEnchantValue(4) * 0.4f  // Projectile Protection
-														   )));*/
+														   )));
+		*/
+
 		return (float)((*this->item)->getArmorValue() + (
 			this->getEnchantValue(0) * 1.f    //保护
 			+ this->getEnchantValue(1) * 2.f  //火焰保护
 			+ this->getEnchantValue(2) * 3.f  //摔落保护
 			+ this->getEnchantValue(3) * 2.f  //爆炸保护
 			+ this->getEnchantValue(4) * 2.f  //弹射物保护
+			+ (*this->item)->getArmorKnockbackResistance() //击退抗性
 			));
-		//根据盔甲值和附魔保护系数计算
+		//根据盔甲值和附魔保护系数、击退抗性计算
 	}
 
 	float getAttackingDamageWithEnchants() {
