@@ -169,7 +169,7 @@ void GameData::forEachEntity(std::function<void(C_Entity*, bool)> callback) {
 		{
 			[ent, &callback]() {
 				__try {
-					if (ent.ent != nullptr && ent.ent->isPlayer()) [[likely]] {
+					if (ent.ent != nullptr) [[likely]] {
 						ent.ent->getNameTag(); //chect ent will crash
 						callback(ent.ent, false);
 					}
@@ -201,7 +201,7 @@ void GameData::forEachValidEntity(std::function<void(C_Entity*, bool)> callback)
 		{
 			[ent, &callback]() {
 				__try {
-					if (ent.ent != nullptr && ent.ent->isPlayer()) [[likely]] {
+					if (ent.ent != nullptr) [[likely]] {
 						ent.ent->getNameTag(); //chect ent will crash
 						callback(ent.ent, false);
 					}
