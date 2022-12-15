@@ -506,18 +506,18 @@ __int64 Hooks::RenderText(__int64 a1, C_MinecraftUIRenderContext* renderCtx) {
 		if (GameData::shouldHide() || !moduleMgr->isInitialized())
 			return oText(a1, renderCtx);
 
-		HImGui.startFrame();
-		g_Data.frameCount++;
-
 		static int count = 0;
 		count++;
 
-		if (count % 3 != 0) {
-			return oText(a1, renderCtx);
+		if (count == 3) {
+			count = 0;
 		}
 		else {
-			count = 0;
+			return oText(a1, renderCtx);
 		} //防止多次渲染 同时解决了渲染闪烁的问题
+
+		HImGui.startFrame();
+		g_Data.frameCount++;
 
 		// Call PreRender() functions
 		moduleMgr->onPreRender(renderCtx);
@@ -899,6 +899,7 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 
 float Hooks::LevelRendererPlayer_getFov(__int64 _this, float a2, bool a3) {
 	static auto oGetFov = g_Hooks.LevelRendererPlayer_getFovHook->GetFastcall<float, __int64, float, bool>();
+	
 	return oGetFov(_this, a2, a3);
 }
 
