@@ -50,7 +50,9 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		std::string name = target->getNameTag()->getText();
 
 		name = Utils::onlyOneLine(name);
-		//name = std::regex_replace(name,std::regex("\n"), " "); //将换行改为空格 
+		//name = std::regex_replace(name,std::regex("\n"), " "); //将换行改为空格
+		if (name.empty())
+			name = target->getType()->getText();
 		std::string nameStr = "Name : " + name;
 		//名字 
 
@@ -95,7 +97,6 @@ void TargetHud::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		//float length = DrawUtils::getTextWidth(&std::string("Name : abcdefghijklmno"), 1.f);
 		float length = 89.f;
 		float currentLength = DrawUtils::getTextWidth(&nameStr, 1.f);
-		//logF("currentLength = %f", currentLength);
 		if (currentLength > length)
 			length = currentLength;
 

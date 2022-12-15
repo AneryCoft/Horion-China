@@ -38,12 +38,16 @@ void C_LocalPlayer::setGameModeType(int gma) {
 	this->setC_PlayerGameType(gma);
 }
 
+bool Level::hasBlock() {
+	return rayHitType == 0;
+}
+
 bool Level::hasEntity() {
 	return rayHitType == 1;
 }
 
 float C_Entity::getBlocksPerSecond() {
-	return getTicksPerSecond() * *g_Data.getClientInstance()->minecraft->timer;
+	return getBlocksPerTick() * *g_Data.getClientInstance()->minecraft->timer;
 }
 
 void C_Entity::lerpTo(vec3_t const &pos, vec2_t const &a2, int a3) { //lerpTo was removed from the Player vtable so this is how we are going to use it from now on

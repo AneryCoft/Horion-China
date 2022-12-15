@@ -17,17 +17,22 @@ static std::vector<C_Entity*> playerList;
 
 void findPlayer(C_Entity* currentEntity, bool isRegularEntitie) {
 	if (Target::isValidTarget(currentEntity))
-		playerList.push_back(currentEntity);
+		if (currentEntity->isPlayer())
+			playerList.push_back(currentEntity);
 }
 
 void HackerDetector::onTick(C_GameMode* gm) {
 	auto localPlayer = gm->player;
 
 	playerList.clear();
+
+	if (localPlayer == nullptr)
+		return;
+
 	g_Data.forEachValidEntity(findPlayer);
 
 	for (auto player : playerList) {
-		std::string playerName = Utils::onlyOneLine(player->getNameTag()->getText());
+		std::string playerName = player->playerName.getText();
 		//playerName = Utils::sanitize(playerName); //±àÂëÏÞÖÆ
 
 		float BPS = player->getBlocksPerSecond();

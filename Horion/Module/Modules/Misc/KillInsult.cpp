@@ -51,7 +51,7 @@ void KillInsult::onTick(C_GameMode* gm) {
 	if (!attackList.empty()) {
 		for (auto entity : attackList) {
 			if (entity != nullptr && !entity->isAlive()) {
-				std::string entityName = Utils::sanitize(Utils::onlyOneLine(entity->getNameTag()->getText()));
+				std::string entityName = entity->playerName.getText();
 				std::string insultText = InsultMessageVector[random(0, InsultMessageVector.size() - 1)];
 				std::string message = mention ? entityName + " " + insultText : insultText;
 

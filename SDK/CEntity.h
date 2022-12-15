@@ -34,6 +34,7 @@ private:
 	virtual void DONTREMOVEPLS();
 
 public:
+	bool hasBlock();
 	bool hasEntity();       //to not go trough the entity list twice
 	C_Entity* getEntity();  //returns the entity that the player is looking at
 	int getLevelTicks() {
@@ -220,13 +221,13 @@ public:
 	virtual __int64 setRot(vec2_t const&);                                                 // 27
 	virtual __int64 move(vec3_t const&);                                                   // 28
 	virtual __int64 move(__int64, vec3_t const&);                                          // 29
-	virtual __int64 getInterpolatedRidingPosition(float);                                   // 30
-	virtual __int64 getInterpolatedBodyRot(float);                                          // 31
-	virtual __int64 getInterpolatedHeadRot(float);                                          // 32
-	virtual __int64 getInterpolatedBodyYaw(float);                                          // 33
-	virtual __int64 getYawSpeedInDegreesPerSecond(void);                                    // 34
-	virtual __int64 getInterpolatedWalkAnimSpeed(float);                                    // 35
-	virtual __int64 getInterpolatedRidingOffset(float);                                     // 36
+	virtual float getInterpolatedRidingPosition(float);                                   // 30
+	virtual float getInterpolatedBodyRot(float);                                          // 31
+	virtual float getInterpolatedHeadRot(float);                                          // 32
+	virtual float getInterpolatedBodyYaw(float);                                          // 33
+	virtual float getYawSpeedInDegreesPerSecond(void);                                    // 34
+	virtual float getInterpolatedWalkAnimSpeed(float);                                    // 35
+	virtual float getInterpolatedRidingOffset(float);                                     // 36
 	virtual __int64 checkBlockCollisions(AABB const&, __int64);                            // 37
 	virtual __int64 updateEntityInside(AABB const&);                                       // 38
 	virtual __int64 updateEntityInside(void);                                               // 39
@@ -341,14 +342,14 @@ public:
 	virtual __int64 spawnAtLocation(C_Block const&, int, float);                           // 148
 	virtual __int64 spawnAtLocation(C_ItemStack const&, float);                            // 149
 	virtual __int64 despawn(void);                                                          // 150
-	virtual __int64 killed(C_Entity*);                                                     // 151
+	virtual void killed(C_Entity*);                                                     // 151
 	virtual __int64 awardKillScore(C_Entity*, int);                                        // 152
 	virtual __int64 setArmor(int, C_ItemStack const&);                                     // 153
 	virtual C_ItemStack* getArmor(int);                                                     // 154
 	virtual __int64 getAllArmor(void);                                                      // 155
-	virtual __int64 getArmorMaterialTypeInSlot(int);                                        // 156
+	virtual int getArmorMaterialTypeInSlot(int);                                        // 156
 	virtual __int64 getArmorMaterialTextureTypeInSlot(int);                                 // 157
-	virtual __int64 getArmorColorInSlot(int, int);                                          // 158
+	virtual int getArmorColorInSlot(int, int);                                          // 158
 	virtual __int64 getEquippedSlot(int);                                                   // 159
 	virtual __int64 setEquippedSlot(int, C_ItemStack const&);                              // 160
 	virtual __int64 getCarriedC_Item(void);                                                 // 161
@@ -430,8 +431,8 @@ public:
 	virtual __int64 onOrphan(void);                                                 // 236
 	virtual __int64 wobble(void);                                                   // 237
 	virtual bool wasHurt(void);                                                     // 238
-	virtual __int64 startSpinAttack(void);                                          // 239
-	virtual __int64 stopSpinAttack(void);                                           // 240
+	virtual void startSpinAttack(void);                                          // 239
+	virtual void stopSpinAttack(void);                                           // 240
 	virtual __int64 setDamageNearbyMobs(bool);                                      // 241
 	virtual __int64 renderDebugServerState(__int64);                                // 242
 	virtual __int64 reloadLootTable(void);                                          // 243
@@ -505,7 +506,7 @@ public:
 	virtual bool hasCaravanTail(void);                                               // 311
 	virtual __int64 getCaravanHead(void);                                            // 312
 	virtual __int64 getArmorValue(void);                                             // 313
-	virtual __int64 getArmorCoverPercentage(void);                                   // 314
+	virtual float getArmorCoverPercentage(void);                                   // 314
 	virtual __int64 hurtArmorSlots(__int64 const&, int, std::bitset<4ul> const&);  // 315
 	virtual __int64 setDamagedArmor(int, C_ItemStack const&);                       // 316
 	virtual __int64 sendArmorDamage(std::bitset<4ul> const&);                       // 317
@@ -574,10 +575,13 @@ public:
 		return *reinterpret_cast<float*>(this->getSpeed() + 0x84);
 	}
 
-	float getTicksPerSecond() {
+	float getBlocksPerTick() {
 		vec3_t targetPos = *this->getPos();
 		vec3_t targetPosOld = *this->getPosOld();
-		float hVel = sqrtf(((targetPos.x - targetPosOld.x) * (targetPos.x - targetPosOld.x)) + ((targetPos.z - targetPosOld.z) * (targetPos.z - targetPosOld.z)));
+		float hVel = sqrtf(static_cast<float>(
+			(pow((targetPos.x - targetPosOld.x), 2))
+			+ (pow((targetPos.y - targetPosOld.y), 2))
+			+ (pow((targetPos.z - targetPosOld.z), 2))));
 		return hVel;
 	}
 
@@ -638,6 +642,10 @@ public:
 		} __except (EXCEPTION_EXECUTE_HANDLER) {
 			return false;
 		}
+	}
+
+	TextHolder* getType() {
+		return (TextHolder*)((uintptr_t)(this) + 0x3F8);
 	}
 };
 #pragma pack(pop)
