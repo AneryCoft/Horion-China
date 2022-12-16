@@ -5,7 +5,7 @@ Teleport::Teleport() : IModule(0, Category::MISC, "Click a block to teleport to 
 		.addEntry(EnumEntry("Normal", 0))
 		.addEntry(EnumEntry("lerp", 1))
 		.addEntry(EnumEntry("MultiPacket", 2));
-		//.addEntry(EnumEntry("CubeCraft", 3));
+	//.addEntry(EnumEntry("CubeCraft", 3));
 	registerEnumSetting("Mode", &mode, 1);
 	registerBoolSetting("Only Hand", &onlyHand, onlyHand);
 	registerBoolSetting("Only Sneak", &onlySneak, onlySneak);
@@ -22,23 +22,35 @@ void Teleport::onTick(C_GameMode* gm) {
 	if (!GameData::canUseMoveKeys())
 		return;
 
-	if (onlyHand && g_Data.getLocalPlayer()->getSupplies()->inventory->getItemStack(g_Data.getLocalPlayer()->getSupplies()->selectedHotbarSlot)->item != nullptr)
+	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
+
+	vec3_t localPlayerPos = *localPlayer->getPos();
+
+	if (onlyHand && localPlayer->getSelectedItem()->item != nullptr)
 		return;
 
 	if (GameData::isRightClickDown() && !hasClicked) {
 		hasClicked = true;
 
-		vec3_ti block = g_Data.getLocalPlayer()->getlevel()->block;
-		if (block == vec3_ti(0, 0, 0)) return;
-		pos = block.toFloatVector();
-		pos.x += 0.5f;
-		pos.z += 0.5f;
+		Level* level = localPlayer->getlevel();
+
+		if (level->hasBlock()) {
+			vec3_ti block = level->block;
+			pos = block.toFloatVector();
+			pos.x += 0.5f;
+			pos.z += 0.5f;
+
+			pos.y += (localPlayerPos.y - localPlayer->getAABB()->lower.y) + 1;  // eye height + 1
+		}
+		else if (level->hasEntity()) {
+			pos = { level->getEntity()->getPos()->x,level->getEntity()->aabb.upper.y,level->getEntity()->getPos()->z };
+		}
 
 		tpPos = pos;
 		shouldTP = true;
 
-		if(onlySneak)
-		g_Data.getGuiData()->displayClientMessageF("%sTeleport position set to %sX: %.1f Y: %.1f Z: %.1f%s. Sneak to teleport!", GREEN, GRAY, pos.x, pos.y, pos.z, GREEN);
+		if (onlySneak)
+			g_Data.getGuiData()->displayClientMessageF("%sTeleport position set to %sX: %.1f Y: %.1f Z: %.1f%s. Sneak to teleport!", GREEN, GRAY, pos.x, pos.y, pos.z, GREEN);
 	}
 	if (!GameData::isRightClickDown())
 		hasClicked = false;
@@ -46,9 +58,6 @@ void Teleport::onTick(C_GameMode* gm) {
 	C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
 
 	if (shouldTP && !(!GameData::isKeyDown(*input->sneakKey) && onlySneak)) {
-		auto localPlayer = g_Data.getLocalPlayer();
-		auto localPlayerPos = *localPlayer->getPos();
-		tpPos.y += (localPlayerPos.y - gm->player->getAABB()->lower.y) + 1;  // eye height + 1
 		switch (mode.selected) {
 		case 0:
 		{
