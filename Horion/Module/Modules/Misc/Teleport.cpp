@@ -26,13 +26,13 @@ void Teleport::onTick(C_GameMode* gm) {
 
 	vec3_t localPlayerPos = *localPlayer->getPos();
 
+	Level* level = localPlayer->getlevel();
+
 	if (onlyHand && localPlayer->getSelectedItem()->item != nullptr)
 		return;
 
-	if (GameData::isRightClickDown() && !hasClicked) {
+	if (GameData::isRightClickDown() && !hasClicked && level->rayHitType != 3) {
 		hasClicked = true;
-
-		Level* level = localPlayer->getlevel();
 
 		if (level->hasBlock()) {
 			vec3_ti block = level->block;
@@ -52,6 +52,7 @@ void Teleport::onTick(C_GameMode* gm) {
 		if (onlySneak)
 			g_Data.getGuiData()->displayClientMessageF("%sTeleport position set to %sX: %.1f Y: %.1f Z: %.1f%s. Sneak to teleport!", GREEN, GRAY, pos.x, pos.y, pos.z, GREEN);
 	}
+
 	if (!GameData::isRightClickDown())
 		hasClicked = false;
 
