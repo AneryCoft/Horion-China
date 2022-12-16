@@ -37,7 +37,8 @@ void KillInsult::onAttack(C_Entity* attackedEnt) {
 	}
 
 	if (Target::isValidTarget(attackedEnt)) {
-		attackList.insert(attackedEnt);
+		if (attackedEnt->isPlayer())
+			attackList.insert(attackedEnt);
 	}
 }
 
@@ -47,7 +48,7 @@ void KillInsult::onTick(C_GameMode* gm) {
 		attackList.clear();
 		return;
 	}
-	
+
 	if (!attackList.empty()) {
 		for (auto entity : attackList) {
 			if (entity != nullptr && !entity->isAlive()) {
