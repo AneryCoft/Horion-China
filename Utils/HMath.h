@@ -5,6 +5,7 @@
 #include <cstdarg>
 #include <stdio.h>
 #include <string>
+#include <array>
 
 static constexpr float DEG_RAD2 = PI / 360.0f;
 static constexpr float DEG_RAD = 180.0f / PI;
@@ -25,18 +26,18 @@ struct vec2_t {
 	vec2_t() { x = y = 0; }
 	vec2_t(float a, float b) : x(a), y(b) {}
 	vec2_t(int a, int b) : x((float)a), y((float)b) {}
-	vec2_t &operator=(const vec2_t &copy) {
+	vec2_t& operator=(const vec2_t& copy) {
 		x = copy.x;
 		y = copy.y;
 		return *this;
 	}
 
-	static vec2_t fromAngle(float angle){
+	static vec2_t fromAngle(float angle) {
 		return vec2_t((float)-sin(angle), (float)cos(angle));
 	}
 
-	bool operator==(const vec2_t &o) const { return x == o.x && y == o.y; }
-	bool operator!=(const vec2_t &o) const { return x != o.x || y != o.y; }
+	bool operator==(const vec2_t& o) const { return x == o.x && y == o.y; }
+	bool operator!=(const vec2_t& o) const { return x != o.x || y != o.y; }
 
 	vec2_t sub(float f) {
 		return vec2_t(x - f, y - f);
@@ -48,19 +49,19 @@ struct vec2_t {
 		return vec2_t(x / f, y / f);
 	}
 
-	vec2_t div(const vec2_t &o) {
+	vec2_t div(const vec2_t& o) {
 		return vec2_t(x / o.x, y / o.y);
 	}
-	vec2_t mul(const vec2_t &o) {
+	vec2_t mul(const vec2_t& o) {
 		return vec2_t(x * o.x, y * o.y);
 	}
 	vec2_t mul(float f) {
 		return vec2_t(x * f, y * f);
 	}
-	vec2_t sub(const vec2_t &o) {
+	vec2_t sub(const vec2_t& o) {
 		return vec2_t(x - o.x, y - o.y);
 	}
-	vec2_t add(const vec2_t &o) {
+	vec2_t add(const vec2_t& o) {
 		return vec2_t(x + o.x, y + o.y);
 	}
 	vec2_t add(float o) {
@@ -74,14 +75,14 @@ struct vec2_t {
 		return div(magnitude());
 	}
 
-	vec2_t cross(){
+	vec2_t cross() {
 		return vec2_t(-y, x);
 	}
 
 	float dot(float ox, float oy) const { return x * ox + y * oy; }
 
 
-	float dot(const vec2_t &o) const { return x * o.x + y * o.y; }
+	float dot(const vec2_t& o) const { return x * o.x + y * o.y; }
 
 	vec2_t normAngles() {
 		float x = this->x;
@@ -115,18 +116,18 @@ struct vec3_t {
 	vec3_t(double a, double b, double c) : x((float)a), y((float)b), z((float)c) {}
 	vec3_t(float a, float b, float c) : x(a), y(b), z(c) {}
 	vec3_t(float a, float b) : x(a), y(b), z(0) {}
-	vec3_t(const vec2_t &copy, float zP) {
+	vec3_t(const vec2_t& copy, float zP) {
 		x = copy.x;
 		y = copy.y;
 		z = zP;
 	}
-	vec3_t(const vec3_t &copy) {
+	vec3_t(const vec3_t& copy) {
 		x = copy.x;
 		y = copy.y;
 		z = copy.z;
 	}
 
-	vec3_t &operator=(const vec3_t &copy) {
+	vec3_t& operator=(const vec3_t& copy) {
 		x = copy.x;
 		y = copy.y;
 		z = copy.z;
@@ -134,15 +135,15 @@ struct vec3_t {
 		return *this;
 	}
 
-	vec3_t(float *v) : x(v[0]), y(v[1]), z(v[2]) {}
+	vec3_t(float* v) : x(v[0]), y(v[1]), z(v[2]) {}
 
 	bool iszero() const { return x == 0 && y == 0 && z == 0; }
 
-	inline bool operator==(const vec3_t &o) const { return x == o.x && y == o.y && z == o.z; };
-	bool operator!=(const vec3_t &o) const { return x != o.x || y != o.y || z != o.z; };
+	inline bool operator==(const vec3_t& o) const { return x == o.x && y == o.y && z == o.z; };
+	bool operator!=(const vec3_t& o) const { return x != o.x || y != o.y || z != o.z; };
 	vec3_t operator-() const { return vec3_t(-x, -y, -z); };
 
-	vec3_t mul(const vec3_t &o) const {
+	vec3_t mul(const vec3_t& o) const {
 		return vec3_t(x * o.x, y * o.y, z * o.z);
 	};
 	vec3_t mul(float f) const {
@@ -157,7 +158,7 @@ struct vec3_t {
 	vec3_t div(float x1, float y1, float z1) const {
 		return vec3_t(x / x1, y / y1, z / z1);
 	};
-	vec3_t div(const vec3_t &o) const {
+	vec3_t div(const vec3_t& o) const {
 		return vec3_t(x / o.x, y / o.y, z / o.z);
 	};
 	vec3_t add(float f) const {
@@ -178,10 +179,10 @@ struct vec3_t {
 		return vec3_t(floorf(x), floorf(y), floorf(z));
 	};
 
-	vec3_t add(const vec3_t &o) const {
+	vec3_t add(const vec3_t& o) const {
 		return vec3_t(x + o.x, y + o.y, z + o.z);
 	}
-	vec3_t sub(const vec3_t &o) const {
+	vec3_t sub(const vec3_t& o) const {
 		return vec3_t(x - o.x, y - o.y, z - o.z);
 	}
 
@@ -204,7 +205,7 @@ struct vec3_t {
 		return ne;
 	}
 
-	vec3_t lerp(const vec3_t *other, float val) const {
+	vec3_t lerp(const vec3_t* other, float val) const {
 		vec3_t ne;
 		ne.x = x + val * (other->x - x);
 		ne.y = y + val * (other->y - y);
@@ -218,8 +219,8 @@ struct vec3_t {
 
 	float sqrxy() const { return x * x + y * y; }
 
-	float dot(const vec3_t &o) const { return x * o.x + y * o.y + z * o.z; }
-	float dotxy(const vec3_t &o) const { return x * o.x + y * o.y; }
+	float dot(const vec3_t& o) const { return x * o.x + y * o.y + z * o.z; }
+	float dotxy(const vec3_t& o) const { return x * o.x + y * o.y; }
 
 	float magnitude() const { return sqrtf(squaredlen()); }
 
@@ -227,11 +228,11 @@ struct vec3_t {
 		return div(magnitude());
 	}
 
-	float dist(const vec3_t &e) const {
+	float dist(const vec3_t& e) const {
 		return sub(e).magnitude();
 	}
 
-	float Get2DDist(const vec3_t &e) const {
+	float Get2DDist(const vec3_t& e) const {
 		float dx = e.x - x, dy = e.y - y;
 		return sqrtf(dx * dx + dy * dy);
 	}
@@ -239,10 +240,10 @@ struct vec3_t {
 	float magnitudexy() const { return sqrtf(x * x + y * y); }
 	float magnitudexz() const { return sqrtf(x * x + z * z); }
 
-	vec3_t cross(const vec3_t &b) {
+	vec3_t cross(const vec3_t& b) {
 		return vec3_t(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x);
 	}
-	float cxy(const vec3_t &a) { return x * a.y - y * a.x; }
+	float cxy(const vec3_t& a) { return x * a.y - y * a.x; }
 
 	vec2_t CalcAngle(vec3_t dst) {
 		vec3_t diff = dst.sub(*this);
@@ -254,6 +255,19 @@ struct vec3_t {
 
 		return angles;
 	}
+
+	vec2_t CalcBlockAngle(vec3_t blockPos, uint8_t face) {
+		static std::array<vec3_t, 6> faceList = {
+			vec3_t(0.f, -0.5f, 0.f), //0
+			vec3_t(0.f, 0.5f, 0.f), //1
+			vec3_t(0.f, 0.f, -0.5f), //2
+			vec3_t(0.f, 0.f, 0.5f), //3
+			vec3_t(-0.5f, 0.f, 0.f), //4
+			vec3_t(0.5f, 0.f, 0.f) //5
+		};
+
+		return this->CalcAngle(blockPos.add(0.5f).add(faceList[face]));
+	}
 };
 
 struct vec3_ti {
@@ -262,19 +276,19 @@ struct vec3_ti {
 	vec3_ti() { x = y = z = 0; }
 	vec3_ti(int a, int b, int c) : x(a), y(b), z(c) {}
 	vec3_ti(int a, int b) : x(a), y(b), z(0) {}
-	vec3_ti(const vec3_ti &copy) {
+	vec3_ti(const vec3_ti& copy) {
 		x = copy.x;
 		y = copy.y;
 		z = copy.z;
 	}
 
-	vec3_ti(const vec3_t &copy) {
+	vec3_ti(const vec3_t& copy) {
 		x = (int)copy.x;
 		y = (int)copy.y;
 		z = (int)copy.z;
 	}
 
-	vec3_ti &operator=(const vec3_ti &copy) {
+	vec3_ti& operator=(const vec3_ti& copy) {
 		x = copy.x;
 		y = copy.y;
 		z = copy.z;
@@ -282,7 +296,7 @@ struct vec3_ti {
 		return *this;
 	}
 
-	vec3_ti *operator=(const vec3_ti *copy) {
+	vec3_ti* operator=(const vec3_ti* copy) {
 		x = copy->x;
 		y = copy->y;
 		z = copy->z;
@@ -290,16 +304,16 @@ struct vec3_ti {
 		return this;
 	}
 
-	vec3_ti(int *v) : x(v[0]), y(v[1]), z(v[2]) {}
-	
+	vec3_ti(int* v) : x(v[0]), y(v[1]), z(v[2]) {}
+
 	vec3_t toVec3t() const {
 		return vec3_t(x, y, z);
 	}
 
 	bool iszero() const { return x == 0 && y == 0 && z == 0; }
 
-	bool operator==(const vec3_ti &o) const { return x == o.x && y == o.y && z == o.z; }
-	bool operator!=(const vec3_ti &o) const { return x != o.x || y != o.y || z != o.z; }
+	bool operator==(const vec3_ti& o) const { return x == o.x && y == o.y && z == o.z; }
+	bool operator!=(const vec3_ti& o) const { return x != o.x || y != o.y || z != o.z; }
 
 	vec3_ti add(vec3_ti o) const {
 		return vec3_ti(x + o.x, y + o.y, z + o.z);
@@ -321,7 +335,7 @@ struct vec3_ti {
 		return vec3_ti(x - o.x, y - o.y, z - o.z);
 	}
 
-	void set(vec3_ti *o) {
+	void set(vec3_ti* o) {
 		x = o->x;
 		y = o->y;
 		z = o->z;
@@ -343,12 +357,12 @@ struct vec4_t {
 		float v[4];
 	};
 	vec4_t() { x = 0, y = 0, z = 0, w = 0; }
-	explicit vec4_t(const vec3_t &p, float w = 0) : x(p.x), y(p.y), z(p.z), w(w){};
-	vec4_t(float x, float y, float z, float w) : x(x), y(y), z(z), w(w){};
-	float &operator[](int i) { return v[i]; };
+	explicit vec4_t(const vec3_t& p, float w = 0) : x(p.x), y(p.y), z(p.z), w(w) {};
+	vec4_t(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {};
+	float& operator[](int i) { return v[i]; };
 	float operator[](int i) const { return v[i]; };
 
-	__forceinline bool contains(vec2_t *point) {
+	__forceinline bool contains(vec2_t* point) {
 		if (point->x <= x || point->y <= y)
 			return false;
 
@@ -365,7 +379,7 @@ struct glmatrixf {
 	};
 
 	__forceinline float operator[](int i) const { return v[i]; }
-	__forceinline float &operator[](int i) { return v[i]; }
+	__forceinline float& operator[](int i) { return v[i]; }
 
 #define MULMAT(row, col) v[col + row] = x[row] * y[col] + x[row + 4] * y[col + 1] + x[row + 8] * y[col + 2] + x[row + 12] * y[col + 3];
 
@@ -391,8 +405,8 @@ struct glmatrixf {
 
 #undef MULMAT
 
-	glmatrixf *correct() {
-		glmatrixf *newMatPtr = new glmatrixf;
+	glmatrixf* correct() {
+		glmatrixf* newMatPtr = new glmatrixf;
 
 		for (int i = 0; i < 4; i++) {
 			newMatPtr->v[i * 4 + 0] = v[0 + i];
@@ -403,7 +417,7 @@ struct glmatrixf {
 		return newMatPtr;
 	};
 
-	inline bool OWorldToScreen(vec3_t origin, vec3_t pos, vec2_t &screen, vec2_t fov, vec2_t displaySize) {
+	inline bool OWorldToScreen(vec3_t origin, vec3_t pos, vec2_t& screen, vec2_t fov, vec2_t displaySize) {
 		pos = pos.sub(origin);
 
 		float x = transformx(pos);
@@ -422,7 +436,7 @@ struct glmatrixf {
 		return true;
 	}
 
-	inline void mul(const glmatrixf &x, const glmatrixf &y) {
+	inline void mul(const glmatrixf& x, const glmatrixf& y) {
 		mul(x.v, y.v);
 	}
 
@@ -432,7 +446,7 @@ struct glmatrixf {
 		v[14] += z;
 	}
 
-	inline void translate(const vec3_t &o) {
+	inline void translate(const vec3_t& o) {
 		translate(o.x, o.y, o.z);
 	}
 
@@ -451,14 +465,14 @@ struct glmatrixf {
 		v[11] *= z;
 	}
 
-	inline void invertnormal(vec3_t &dir) const {
+	inline void invertnormal(vec3_t& dir) const {
 		vec3_t n(dir);
 		dir.x = n.x * v[0] + n.y * v[1] + n.z * v[2];
 		dir.y = n.x * v[4] + n.y * v[5] + n.z * v[6];
 		dir.z = n.x * v[8] + n.y * v[9] + n.z * v[10];
 	}
 
-	inline void invertvertex(vec3_t &pos) const {
+	inline void invertvertex(vec3_t& pos) const {
 		vec3_t p(pos);
 		p.x -= v[12];
 		p.y -= v[13];
@@ -468,26 +482,26 @@ struct glmatrixf {
 		pos.z = p.x * v[8] + p.y * v[9] + p.z * v[10];
 	}
 
-	inline void transform(const vec3_t &in, vec4_t &out) const {
+	inline void transform(const vec3_t& in, vec4_t& out) const {
 		out.x = transformx(in);
 		out.y = transformy(in);
 		out.z = transformz(in);
 		out.w = transformw(in);
 	}
 
-	__forceinline float transformx(const vec3_t &p) const {
+	__forceinline float transformx(const vec3_t& p) const {
 		return p.x * v[0] + p.y * v[4] + p.z * v[8] + v[12];
 	}
 
-	__forceinline float transformy(const vec3_t &p) const {
+	__forceinline float transformy(const vec3_t& p) const {
 		return p.x * v[1] + p.y * v[5] + p.z * v[9] + v[13];
 	}
 
-	__forceinline float transformz(const vec3_t &p) const {
+	__forceinline float transformz(const vec3_t& p) const {
 		return p.x * v[2] + p.y * v[6] + p.z * v[10] + v[14];
 	}
 
-	__forceinline float transformw(const vec3_t &p) const {
+	__forceinline float transformw(const vec3_t& p) const {
 		return p.x * v[3] + p.y * v[7] + p.z * v[11] + v[15];
 	}
 
@@ -496,10 +510,10 @@ struct glmatrixf {
 	}
 
 	//assault cube world2screen
-	vec3_t transform(glmatrixf *matrix, vec3_t &totransform) {
+	vec3_t transform(glmatrixf* matrix, vec3_t& totransform) {
 		return vec3_t(matrix->transformx(totransform),
-					  matrix->transformy(totransform),
-					  matrix->transformz(totransform))
+			matrix->transformy(totransform),
+			matrix->transformz(totransform))
 			.div(matrix->transformw(totransform));
 	}
 
@@ -534,22 +548,22 @@ struct AABB {
 	//bool isZero = false;
 	//char padding[3];
 	AABB() {}
-	AABB(vec3_t l, vec3_t h) : lower(l), upper(h){};
-	AABB(const AABB &aabb) {
+	AABB(vec3_t l, vec3_t h) : lower(l), upper(h) {};
+	AABB(const AABB& aabb) {
 		lower = vec3_t(aabb.lower);
 		upper = vec3_t(aabb.upper);
 	}
 	AABB(vec3_t lower, float width, float height, float eyeHeight) {
 		lower = lower.sub(vec3_t(width, eyeHeight * 2, width).div(2));
 		this->lower = lower;
-		this->upper = {lower.x + width, lower.y + height, lower.z + width};
+		this->upper = { lower.x + width, lower.y + height, lower.z + width };
 	}
 
-	inline bool operator==(const AABB &rhs) const {
+	inline bool operator==(const AABB& rhs) const {
 		return lower == rhs.lower && upper == rhs.upper;
 	}
 
-	bool isFullBlock(){
+	bool isFullBlock() {
 		auto diff = lower.sub(upper);
 		return fabsf(diff.y) == 1 && fabsf(diff.x) == 1 && fabsf(diff.z) == 1;
 	}
@@ -569,13 +583,13 @@ struct AABB {
 
 	bool intersects(AABB aabb) {
 		return aabb.upper.x > lower.x && upper.x > aabb.lower.x &&
-			   aabb.upper.y > lower.y && upper.y > aabb.lower.y &&
-			   aabb.upper.z > lower.z && upper.z > aabb.lower.z;
+			aabb.upper.y > lower.y && upper.y > aabb.lower.y &&
+			aabb.upper.z > lower.z && upper.z > aabb.lower.z;
 	}
 
 	bool intersectsXZ(AABB aabb) {
 		return aabb.upper.x > lower.x && upper.x > aabb.lower.x &&
-			   aabb.upper.z > lower.z && upper.z > aabb.lower.z;
+			aabb.upper.z > lower.z && upper.z > aabb.lower.z;
 	}
 };
 

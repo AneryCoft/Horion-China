@@ -10,7 +10,7 @@ private:
 	bool rotations = false;
 	float timer = 50.f;
 	bool needRotations = false;
-	bool autoBlock = false;
+	bool autoBlocks = false;
 	bool renderBlocks = false;
 	SettingEnum mode;
 public:

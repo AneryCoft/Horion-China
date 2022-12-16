@@ -9,7 +9,7 @@ Tower::Tower() : IModule(0, Category::WORLD, "Like scaffold, but vertically and 
 	registerEnumSetting("Mode", &mode, 0);
 	registerFloatSetting("Motion", &motion, motion, 0.3f, 1.f);
 	registerFloatSetting("Timer", &timer, timer, 20.f, 100.f);
-	registerBoolSetting("AutoBlocks", &autoBlock, autoBlock);
+	registerBoolSetting("AutoBlocks", &autoBlocks, autoBlocks);
 	registerBoolSetting("RenderBlocks", &renderBlocks, renderBlocks);
 	registerBoolSetting("Rotations", &rotations, rotations);
 }
@@ -33,11 +33,11 @@ void Tower::onTick(C_GameMode* gm) {
 	static auto scaffoldMod = moduleMgr->getModule<Scaffold>();
 	auto selectedItem = localPlayer->getSelectedItem();
 	if (!selectedItem->isValid() || !(*selectedItem->item)->isBlock()) {
-		if (scaffoldMod->calcCount() == 0)
+		//if (scaffoldMod->calcBlocksCount() == 0)
 			return;
 
-		if (autoBlock) {
-			scaffoldMod->selectedBlock();
+		if (autoBlocks) {
+			//scaffoldMod->selectedBlocks();
 		}
 		else {
 			return;
