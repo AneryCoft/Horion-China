@@ -620,7 +620,7 @@ public:
 				uint8_t last_char = 0ui8;
 				for (; fallbackSize < Size && i + fallbackSize <= rangeEnd; ++fallbackSize) {
 					if (szSignature[fallbackSize] != 0xffffui16 && *reinterpret_cast<uint8_t*>(i + fallbackSize) != szSignature[fallbackSize]) {  // '?' or the same
-						last_char = szSignature[fallbackSize];
+						last_char = static_cast<uint8_t>( szSignature[fallbackSize]);
 						break;
 					}
 				}
@@ -653,3 +653,85 @@ public:
 		return 0;
 	}
 };
+
+namespace base64_imme { // Base64
+
+	inline static constexpr std::string_view Base64Alphabet{ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/" };
+
+	// https://stackoverflow.com/a/34571089/3158571
+	// Base64 Encode
+	template <size_t N>
+	static constexpr auto Base64Encode_imme(const std::string_view s) noexcept -> std::array<char, N> {
+		std::array<char, N> bytes{};
+
+		int32_t valb = -6;
+		uint32_t val = 0ui32;
+		size_t posOut = 0;
+
+		for (size_t i = 0; i < s.length(); ++i) {
+			val = (val << 8) + s[i];
+			valb += 8;
+			for (; valb >= 0; valb -= 6)
+				bytes[posOut++] = Base64Alphabet[(val >> valb) & 0x3Fui32];
+		}
+
+		if (valb > -6)
+			bytes[posOut++] = Base64Alphabet[(((uint64_t)val << 8) >> (valb + 8)) & 0x3Fui32];
+
+		const int32_t equalsize = 4 - posOut % 4;
+		if (equalsize == 2) {
+			bytes[bytes.size() - 3] = '=';
+			bytes[bytes.size() - 2] = '=';
+		}
+		else if (equalsize == 1)
+			bytes[bytes.size() - 2] = '=';
+		bytes.back() = 0;  // Last digit modified '0'
+		return bytes;
+	}
+
+	static constexpr auto Base64EncodeFixedLength(const std::string_view s) noexcept -> size_t {
+		return (s.length() + 2) / 3 * 4 + 1;
+	}
+
+	// Base64Decode
+	constexpr auto Base64DecodeTable() noexcept -> std::array<char, 256> {
+		std::array<char, 256> Table{};
+		for (size_t i = 0; i < 256; ++i)
+			Table[i] =255;
+		for (uint8_t i = 0; i < 64; ++i)
+			Table[Base64Alphabet[i]] = i;
+		return Table;
+	}
+
+	template <size_t N>
+	constexpr auto Base64Decode_imme(const std::string_view s) noexcept -> std::array<char, N> {
+		constexpr auto Table = Base64DecodeTable();
+		std::array<char, N> bytes{};
+		int32_t valb = -8;
+		uint32_t val = 0ui32;
+		for (size_t i = 0, posOut = 0; i < s.length() && Table[s[i]] != 255ui8; ++i) {
+			val = (val << 6) + Table[s[i]];
+			valb += 6;
+			if (valb >= 0) {
+				bytes[posOut++] = (val >> valb) & 0xFFui32;
+				valb -= 8;
+			}
+		}
+		bytes.back() = 0i8;  // Last digit modified '0'
+		return bytes;
+	}
+
+	// Infer the decoded string length from the end
+	constexpr auto Base64DecodeFixedLength(const std::string_view s) noexcept -> size_t {
+		const auto len = (s.length() / 4) * 3 + 1;  // Add '0' to the last digit
+		if (s[s.length() - 2] == '=')
+			return len - 2;
+		else if (s[s.length() - 1] == '=')
+			return len - 1;
+		else
+			return len;
+	}
+}  // namespace base64imme
+
+#define B64EncodeResult(x) base64_imme::Base64Encode_imme<base64_imme::Base64EncodeFixedLength(x)>(x)
+#define B64DecodeResult(x) base64_imme::Base64Decode_imme<base64_imme::Base64DecodeFixedLength(x)>(x)
