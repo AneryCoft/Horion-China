@@ -50,7 +50,7 @@ void CommandMgr::initCommands() {
 	commandList.push_back(new PathCommand());
 
 #ifdef _DEBUG
-	commandList.push_back(new TestCommand());
+	//commandList.push_back(new TestCommand());
 #endif
 }
 

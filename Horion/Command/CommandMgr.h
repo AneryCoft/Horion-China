@@ -34,10 +34,6 @@
 #include "Commands/ScriptCommand.h"
 #include "Commands/PathCommand.h"
 
-#ifdef _DEBUG
-#include "Commands/TestCommand.h"
-#endif
-
 #include <algorithm>
 #include <string>
 #include <vector>
