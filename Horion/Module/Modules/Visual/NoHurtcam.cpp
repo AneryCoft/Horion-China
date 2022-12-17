@@ -11,14 +11,13 @@ const char* NoHurtcam::getModuleName() {
 }
 
 uintptr_t NoHurtcam::getAddr() {
-	return Utils::getBase() + 0X29B34E0;
+	return Utils::getBase() + 0x29B35E1;
 }
 
 void NoHurtcam::onEnable(){
-//	if (!*buf) memcpy(buf, (void*)getAddr(), 5);
-	Utils::patchBytes((unsigned char*)getAddr(), (unsigned char*)"\xc3\x90\x90\x90\x90", 5);
+	Utils::nopBytes((unsigned char*)getAddr(), 8);
 }
 
 void NoHurtcam::onDisable(){
-	Utils::patchBytes((unsigned char*)getAddr(), (unsigned char*)"\x48\x89\x5c\x24\x18", 5);
+	Utils::patchBytes((unsigned char*)getAddr(), (unsigned char*)"\x66\x0F\x6E\x8B\x3C\x07\x00\x00", 8);
 }
