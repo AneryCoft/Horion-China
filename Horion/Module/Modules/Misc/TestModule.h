@@ -10,7 +10,9 @@ private:
 	bool localInfo = false;
 	bool blockInfo = false;
 	bool killAura = false;
+	
 public:
+	bool lagBackCheaker = false;
 	float float1 = 0;
 	int int1 = 0;
 	bool bool1 = true;

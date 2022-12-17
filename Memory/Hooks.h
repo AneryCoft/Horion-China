@@ -204,6 +204,8 @@ private:
 	std::unique_ptr<FuncHook> LevelRendererPlayer__renderNameTagsHook;
 	//std::unique_ptr<FuncHook> Actor_killedHook;
 	//std::unique_ptr<FuncHook> Actor_setSprintingHook;
+	//std::unique_ptr<FuncHook> Actor_animateHurtHook;
+	//std::unique_ptr<FuncHook> Actor_attackAnimationHook;
 };
 
 extern Hooks g_Hooks;

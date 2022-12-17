@@ -1208,7 +1208,7 @@ void Hooks::Actor_swing(C_Entity* _this) {
 			C_AnimatePacket packet;
 			packet.entityRuntimeId = g_Data.getLocalPlayer()->entityRuntimeId;
 			packet.action = 1;
-			packet.rowingTime = 8.376486f;
+			packet.rowingTime = 0.f;
 			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&packet);
 			return;
 		}
@@ -1688,6 +1688,13 @@ float Hooks::getDestroySpeed(C_Player* _this, C_Block& block) {
 
 void Hooks::setPos(C_Entity* ent, vec3_t& pos) {
 	auto func = g_Hooks.setPosHook->GetFastcall<void, C_Entity*, vec3_t&>();
+
+	static auto testModule = moduleMgr->getModule<TestModule>();
+	if (testModule->isEnabled()) {
+		if (testModule->lagBackCheaker) {
+			logF("LagBack");
+		}
+	}
 
 	func(ent, pos);
 }

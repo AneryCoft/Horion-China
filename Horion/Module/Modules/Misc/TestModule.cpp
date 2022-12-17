@@ -19,6 +19,7 @@ TestModule::TestModule() : IModule(0, Category::MISC, "For testing purposes only
 	registerBoolSetting("LocalInfo", &localInfo, localInfo);
 	registerBoolSetting("BlockInfo", &blockInfo, blockInfo);
 	registerBoolSetting("KillAura", &killAura, killAura);
+	registerBoolSetting("LagBackCheaker", &lagBackCheaker, lagBackCheaker);
 
 	registerFloatSetting("float1", &float1, 0, -10, 10);
 	registerIntSetting("int1", &int1, 0, -10, 10);
@@ -41,16 +42,16 @@ void TestModule::onEnable() {
 }
 
 void TestModule::onTick(C_GameMode* gm) {
-	if (localInfo) {
-		logF("ScreenName = %s", g_Data.getScreenName.c_str());
-	}
+	auto localPlayer = g_Data.getLocalPlayer();
 
-	if (g_Data.getLocalPlayer() == nullptr) {
+	if (localPlayer == nullptr) {
 		return;
 	}
 
+	
+
 	if (itemInfo) {
-		auto selectedItem = g_Data.getLocalPlayer()->getSelectedItem();
+		auto selectedItem = localPlayer->getSelectedItem();
 
 		if (selectedItem->isValid()) {
 			logF("ItemID=%i extraData=%i name=%s tileName=%s", (
@@ -74,19 +75,18 @@ void TestModule::onTick(C_GameMode* gm) {
 	}
 
 	if (localInfo) {
-		auto localPlayer = g_Data.getLocalPlayer();
 		//logF("ArmorColor = %i", g_Data.getLocalPlayer()->getArmorColorInSlot(0,0));
 		logF("ScreenName=%s", g_Data.getScreenName.c_str());
 		float yawSpeedInDegreesPerTick = localPlayer->getYawSpeedInDegreesPerSecond() / *g_Data.getClientInstance()->minecraft->timer;
 		logF("YawSpeed=%f", yawSpeedInDegreesPerTick);
 		//logF("RayHitType=%i", localPlayer->level->rayHitType); //0方块 1实体 2? 3无
 		logF("Motion(X=%f Y=%f Z=%f)", localPlayer->velocity.x, localPlayer->velocity.y, localPlayer->velocity.z);
-		logF("yaw2 = %f,yawUnused1 = %f yawUnused2 = %f bodyYaw = %f oldBodyYaw = %f", g_Data.getLocalPlayer()->yaw2, g_Data.getLocalPlayer()->yawUnused1, g_Data.getLocalPlayer()->yawUnused2, g_Data.getLocalPlayer()->bodyYaw, g_Data.getLocalPlayer()->oldBodyYaw);
+		logF("yaw2 = %f,yawUnused1 = %f yawUnused2 = %f bodyYaw = %f oldBodyYaw = %f", localPlayer->yaw2, localPlayer->yawUnused1, localPlayer->yawUnused2, localPlayer->bodyYaw, localPlayer->oldBodyYaw);
 	}
 
 	if (blockInfo) {
-		Level* level = g_Data.getLocalPlayer()->level;
-		auto levelBlock = g_Data.getLocalPlayer()->region->getBlock(level->block)->toLegacy();
+		Level* level = localPlayer->level;
+		auto levelBlock = localPlayer->region->getBlock(level->block)->toLegacy();
 		if (!level->rayHitType) {
 			logF("BlockPos(X=%i,Y=%i,Z=%i) BlockID=%i BlockName=%s Face=%i"
 				, level->block.x, level->block.y, level->block.z,
