@@ -156,8 +156,9 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	float startY = tabgui ? 6 * f : 0.f;
 	if (tabgui && scriptMgr.getNumEnabledScripts() > 0)
 		startY += f;
+	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 
-	if (g_Data.getLocalPlayer() != nullptr) {
+	if (localPlayer != nullptr) {
 		// FPS
 		if (fps) {
 			std::string fpsText = "FPS: " + std::to_string(g_Data.getFPS());
@@ -201,7 +202,7 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		// Speed
 		if (speed) {
 			char str[16];
-			sprintf_s(str, 16, "%.1f", g_Data.getLocalPlayer()->getBlocksPerSecond()); //仅保留一位小数
+			sprintf_s(str, 16, "%.1f", localPlayer->getBlocksPerSecond()); //仅保留一位小数
 			std::string speedText = "Speed: " + std::string(str);
 
 			vec4_t rectPos = vec4_t(2.5f, startY + 5.f * scale, len, startY + 15.f * scale);
@@ -224,8 +225,8 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 		// Angle
 #ifdef _DEBUG
 		if (angle) {
-			std::string coordsPitch = "Pitch: " + std::to_string((int)floorf(g_Data.getLocalPlayer()->pitch));
-			std::string coordsYaw = "Yaw: " + std::to_string((int)floorf(g_Data.getLocalPlayer()->yaw));
+			std::string coordsPitch = "Pitch: " + std::to_string((int)floorf(localPlayer->pitch));
+			std::string coordsYaw = "Yaw: " + std::to_string((int)floorf(localPlayer->yaw));
 			vec4_t rectPos = vec4_t(2.5f, startY + 5.f * scale, len, startY + 25.f * scale);
 			vec2_t textPos = vec2_t(rectPos.x + 1.5f, rectPos.y + 1.f);
 			switch (ClientThemes->Theme.selected) {
@@ -248,7 +249,7 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 
 		// Coordinates
 		if (coordinates) {
-			vec3_t* pos = g_Data.getLocalPlayer()->getPos();
+			vec3_t* pos = localPlayer->getPos();
 
 			std::string coordsX = "X: " + std::to_string((int)floorf(pos->x));
 			std::string coordsY = "Y: " + std::to_string((int)floorf(pos->y));
@@ -277,7 +278,6 @@ void HudModule::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 			static float constexpr scale = 1.f;
 			static float constexpr opacity = 0.25f;
 			static float constexpr spacing = scale + 15.f;
-			C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 			float x = windowSize.x / 2.f + 5.f;
 			float y = windowSize.y - 57.5f;
 			float y1 = windowSize.y - 63.5f;
