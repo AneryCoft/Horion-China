@@ -20,48 +20,30 @@ const char* Disabler::getModuleName() {
 
 void Disabler::onTick(C_GameMode* gm) {
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
-	vec3_t* localPlayerPos = localPlayer->getPos();
 
 	if (localPlayer == nullptr) {
 		return;
 	}
 
+	vec3_t* localPlayerPos = localPlayer->getPos();
+
 	++tick;
 
-	/*if (mode.selected == 2) {
-		if (!localPlayer->onGround && abs(localPlayer->velocity.y) > 0.1f) {
-			if (tick >= 30) {
-				C_MovePlayerPacket movePacket;
-				movePacket.Position = localPlayerPos->add(0.f, 15.f, 0.f);
-				movePacket.onGround = true;
-				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
-				movePacket.Position = *localPlayerPos;
-				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
-				tick = 0;
-				//clientMessageF("send packet");
-			}
-		}
-		else {
-			tick = 20;
-		}
-	}
-	else */if (mode.selected == 3) {
-	//if (localPlayer->velocity.magnitude() > 0.1f) {
+	if (mode.selected == 3 || mode.selected == 2) {
+		//if (localPlayer->velocity.magnitude() > 0.1f) {
 		C_MovePlayerPacket movePacket;
-		movePacket.onGround = false;
+		movePacket.onGround = true;
 		movePacket.Position = *localPlayerPos;
-		/*movePacket.pitch = localPlayer->pitch;
+		movePacket.pitch = localPlayer->pitch;
 		movePacket.yaw = localPlayer->bodyYaw;
-		movePacket.headYaw = localPlayer->yawUnused1;*/
+		movePacket.headYaw = localPlayer->yawUnused1;
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
 		//}
 	}
 	else if (mode.selected == 4) {
-		//if (g_Data.getRakNetInstance()->serverIp.getTextLength() < 1) {
 		if (attackTime.hasTimedElapsed(1000.f / 10.f, true)) {
 			g_Data.getCGameMode()->attack(localPlayer);
 		}
-		//}
 	}
 }
 
@@ -80,17 +62,22 @@ void Disabler::onSendPacket(C_Packet* packet, bool& cancelSend) {
 				cancelSend = true;
 		} //ÈÆ¹ýEaseCation·þÎñÆ÷CPS¼ì²â 
 	}
-	else if (mode.selected == 2) {
-		if (tick >= 20) {
-			if (abs(g_Data.getLocalPlayer()->velocity.y) > 0.1f) {
-				if (packet->isInstanceOf<C_MovePlayerPacket>()) {
-					C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
-					movePacket->Position = movePacket->Position.add(-100.f);
-				}
+	/*else if (mode.selected == 2) {
+		static bool isUpOrDown = false;
+
+		if (abs(g_Data.getLocalPlayer()->velocity.y) > 0.1f) {
+			isUpOrDown = true;
+		}
+
+		if (packet->isInstanceOf<C_MovePlayerPacket>()) {
+			if (isUpOrDown && (tick >= 40 || abs(g_Data.getLocalPlayer()->velocity.y) < 0.1f)) {
+				C_MovePlayerPacket* movePacket = reinterpret_cast<C_MovePlayerPacket*>(packet);
+				movePacket->Position = movePacket->Position.add(-100.f);
 				tick = 0;
+				isUpOrDown = false;
 			}
 		}
-	}
+	}*/
 	else if (mode.selected == 3) {
 		if (packet->isInstanceOf<NetworkLatencyPacket>()) {
 			cancelSend = true;
