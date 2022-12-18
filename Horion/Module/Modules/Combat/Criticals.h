@@ -3,8 +3,10 @@
 #include "../Module.h"
 
 class Criticals : public IModule {
-public:
+private:
 	SettingEnum mode;
+	int hurttime = 10;
+public:
 
 	Criticals();
 	~Criticals();
@@ -12,5 +14,5 @@ public:
 	// Inherited via IModule
 	virtual const char* getModuleName() override;
 	virtual void onSendPacket(C_Packet* packet, bool& cancelSend) override;
-	virtual void onAttack(C_Entity*) override;
+	virtual void onAttack(C_Entity* attackEnt) override;
 };
