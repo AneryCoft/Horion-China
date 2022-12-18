@@ -11,10 +11,8 @@ const char* Godmode::getModuleName() {
 }
 
 void Godmode::onTick(C_GameMode* gm) {
-	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
-	if (localPlayer == nullptr)
+	if (g_Data.getLocalPlayer() == nullptr)
 		return;
 
-	C_MovePlayerPacket movePacket(localPlayer, localPlayer->getPos()->add(99999.f));
-	g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
+	g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&C_MovePlayerPacket(g_Data.getLocalPlayer(), vec3_t(FLT_MAX, FLT_MAX, FLT_MAX)));
 }
