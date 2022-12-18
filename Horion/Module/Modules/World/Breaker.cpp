@@ -68,12 +68,13 @@ void findEntityBed(C_Entity* currentEntity, bool isRegularEntitie) {
 	std::string entityName = currentEntity->getNameTag()->getText();
 
 	if (
-		(currentEntity->getEntityTypeId() == 256 &&
+		/*(currentEntity->getEntityTypeId() == 256 &&
 			((currentEntity->height > 0.79f && currentEntity->height < 0.81f)
-				&& (currentEntity->width > 0.79f && currentEntity->width < 0.81f) //小型宝藏(0.8*0.8) 
+				&& (currentEntity->width > 0.79f && currentEntity->width < 0.81f) //小型宝藏(0.8*0.8)
 				|| (currentEntity->height > 2.39f && currentEntity->height < 2.41f)
-				&& (currentEntity->width > 2.39f && currentEntity->width < 2.41f)) //12V12中的大型宝藏(2.4*2.4) 
-			&& breakerMod->treasures)
+				&& (currentEntity->width > 2.39f && currentEntity->width < 2.41f)) //12V12中的大型宝藏(2.4*2.4)
+			&& breakerMod->treasures)*/
+		(!strcmp(currentEntity->getType()->getText(), "treasure") && breakerMod->treasures)
 		|| (entityName.find("'s Bed") != std::string::npos && breakerMod->lifeboatBeds)
 		|| ((currentEntity->height > 1.24f && currentEntity->height < 1.26f)
 			&& (currentEntity->width > 0.39 && currentEntity->width < 0.41) //1.25*0.4 
@@ -121,7 +122,7 @@ void Breaker::onTick(C_GameMode* gm) {
 		vec3_ti blockPos = blockList.begin()->first;
 
 		if (rotations) {
-			angle = localPos.CalcAngle(blockPos.toVec3t());
+			angle = localPos.CalcAngle(blockPos.toVec3t().add(0.5f));
 			shouldRotation = true;
 		}
 
@@ -147,7 +148,7 @@ void Breaker::onTick(C_GameMode* gm) {
 
 	if (!entityBedList.empty()) {
 		if (rotations) {
-			angle = localPlayer->getPos()->CalcAngle(*entityBedList[0]->getPos());
+			angle = localPlayer->getPos()->CalcAngle(entityBedList[0]->aabb.centerPoint());
 			shouldRotation = true;
 		}
 		if (delayTime.hasTimedElapsed(delay, true)) {
