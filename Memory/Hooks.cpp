@@ -1689,12 +1689,14 @@ float Hooks::getDestroySpeed(C_Player* _this, C_Block& block) {
 void Hooks::setPos(C_Entity* ent, vec3_t& pos) {
 	auto func = g_Hooks.setPosHook->GetFastcall<void, C_Entity*, vec3_t&>();
 
+#ifdef DEBUG
 	static auto testModule = moduleMgr->getModule<TestModule>();
 	if (testModule->isEnabled()) {
 		if (testModule->lagBackCheaker) {
 			logF("LagBack");
 		}
 	}
+#endif
 
 	func(ent, pos);
 }
