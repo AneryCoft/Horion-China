@@ -29,16 +29,22 @@ void Disabler::onTick(C_GameMode* gm) {
 
 	++tick;
 
-	if (mode.selected == 3 || mode.selected == 2) {
+	C_MovePlayerPacket movePacket;
+
+	movePacket.Position = *localPlayerPos;
+	movePacket.pitch = localPlayer->pitch;
+	movePacket.yaw = localPlayer->bodyYaw;
+	movePacket.headYaw = localPlayer->yawUnused1;
+
+	if (mode.selected == 2) {
 		//if (localPlayer->velocity.magnitude() > 0.1f) {
-		C_MovePlayerPacket movePacket;
 		movePacket.onGround = true;
-		movePacket.Position = *localPlayerPos;
-		movePacket.pitch = localPlayer->pitch;
-		movePacket.yaw = localPlayer->bodyYaw;
-		movePacket.headYaw = localPlayer->yawUnused1;
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
 		//}
+	}
+	else if (mode.selected == 3) {
+		movePacket.onGround = false;
+		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
 	}
 	else if (mode.selected == 4) {
 		if (attackTime.hasTimedElapsed(1000.f / 10.f, true)) {

@@ -14,23 +14,28 @@ public:
 	Zoom() : IModule(0x0, Category::VISUAL, "Zoom in or out!") {
 		registerFloatSetting("Strength", &strength, strength, 0.f, 1.f);
 	};
+
 	~Zoom(){};
+
+	virtual const char* getModuleName() override {
+		return "Zoom";
+	}
 
 	bool Zoom::isFlashMode() {
 		return true;
 	}
+
 	void onEnable() {
 		zooming = true;
 	}
-	void onLevelRender() {
-		if (g_Data.getLocalPlayer() != nullptr && g_Data.isInGame())
-			g_Data.getLocalPlayer()->setFieldOfViewModifier(strength);
-	}
+
 	void onDisable() {
 		g_Data.getLocalPlayer()->setFieldOfViewModifier(OGFov);
 		target = g_Data.fov;
 	}
-	virtual const char* getModuleName() override {
-		return "Zoom";
+
+	void onLevelRender() {
+		if (g_Data.getLocalPlayer() != nullptr)
+			g_Data.getLocalPlayer()->setFieldOfViewModifier(strength);
 	}
 };

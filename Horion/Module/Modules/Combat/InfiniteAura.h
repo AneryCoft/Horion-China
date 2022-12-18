@@ -12,7 +12,7 @@ private:
 	SettingEnum mode;
 	SettingEnum packetMode;
 public:
-	std::vector<C_Entity*> targetList;
+	std::vector<C_Entity*> targetList = {};
 	float range = 100.f;
 
 	InfiniteAura();

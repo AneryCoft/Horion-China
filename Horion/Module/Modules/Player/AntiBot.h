@@ -15,7 +15,7 @@ public:
 	bool invisibleCheck = true;
 	bool entityIdCheck = true;
 	bool moveCheck = true;
-	bool modeCheck = true;
+	bool modeCheck = false;
 	bool advanceCheck = false; //可以绕fap, ng, 反作弊检测或挂机假人
 	//bool nameCheckPlus = false;
 

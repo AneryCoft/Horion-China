@@ -172,6 +172,10 @@ public:
 private:
 	char pad_08F8[140];  //0x08F8
 public:
+	bool canTakeDamage; //0x096C 
+private:
+	char pad_0x096D[11]; //0x096D
+public:
 	bool canFly;  //0x0984
 private:
 	char pad_0985[1667];  //0x0985

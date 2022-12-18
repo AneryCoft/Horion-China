@@ -310,10 +310,10 @@ void Killaura::onTick(C_GameMode* gm) {
 
 		if (rotations.selected != 0) {
 			/*vec3_t centrePos = {
-		targetList[switchTarget]->getPos()->x,
-		targetList[switchTarget]->aabb.lower.y + targetList[switchTarget]->height / 2,
-		targetList[switchTarget]->getPos()->z
-			};*/
+	targetList[switchTarget]->getPos()->x,
+	targetList[switchTarget]->aabb.lower.y + targetList[switchTarget]->height / 2,
+	targetList[switchTarget]->getPos()->z
+		};*/
 			vec3_t centrePos = targetList[switchTarget]->aabb.centerPoint();
 			//vec3_t upperPos = targetList[switchTarget]->aabb.upper;
 			//vec3_t lowerPos = targetList[switchTarget]->aabb.lower;

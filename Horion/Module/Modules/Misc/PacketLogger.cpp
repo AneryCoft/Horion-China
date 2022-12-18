@@ -30,7 +30,7 @@ void PacketLogger::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	}
 	if (packet->isInstanceOf<C_PlayerActionPacket>()) {
 		auto packets = reinterpret_cast<C_PlayerActionPacket*>(packet);
-		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s action=%i face=%i blockPos(X=%i Y=%i Z=%i)", packetName, packets->action, packets->face, packets->blockPosition.x, packets->blockPosition.y, packets->blockPosition.z);
+		g_Data.getClientInstance()->getGuiData()->displayClientMessageF("%s entityRuntimeId=%i action=%i face=%i blockPos(X=%i Y=%i Z=%i)", packetName, packets->entityRuntimeId, packets->action, packets->face, packets->blockPosition.x, packets->blockPosition.y, packets->blockPosition.z);
 		return;
 	}
 	if (packet->isInstanceOf<LevelSoundEventPacket>()) {

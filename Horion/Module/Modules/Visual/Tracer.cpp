@@ -34,10 +34,8 @@ void Tracer::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	g_Data.forEachEntity([&](C_Entity* ent, bool valid) {
 		if (Target::isValidTarget(ent) && g_Data.canUseMoveKeys()) {
 			vec2_t target;
-			vec2_t screenSize;
-			screenSize.x = g_Data.getGuiData()->widthGame;
-			screenSize.y = g_Data.getGuiData()->heightGame;
-			refdef2->OWorldToScreen(g_Data.getClientInstance()->levelRenderer->getOrigin(), ent->eyePos0, target, g_Data.getClientInstance()->getFov(), screenSize);
+			vec2_t screenSize(g_Data.getGuiData()->widthGame, g_Data.getGuiData()->heightGame);
+			refdef2->OWorldToScreen(g_Data.getClientInstance()->levelRenderer->getOrigin(), *ent->getPos(), target, g_Data.getClientInstance()->getFov(), screenSize);
 			vec2_t mid((screenSize.x / 2), (screenSize.y / 2));
 			if (target != vec2_t(0, 0)) {
 				DrawUtils::setColor(red / 255.f, green / 255.f, blue / 255.f, 1);

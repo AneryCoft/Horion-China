@@ -178,6 +178,9 @@ bool Target::isValidTarget(C_Entity* ent) {
 
 				if (localHelmet->isValid() && targetHelmet->isValid()) {
 					if (localHelmet->getItem()->itemId == 335 && targetHelmet->getItem()->itemId == 335) { //玩家是否有穿皮革帽子
+						/*if (localPlayer->getArmorColorInSlot(0, 0) == ent->getArmorColorInSlot(0, 0))
+							return false;*/
+
 						if (localHelmet->tag != nullptr && targetHelmet->tag != nullptr) {
 							if (targetHelmet->tag->equals(*localHelmet->tag)) //直接比较了NBT
 								return false;
@@ -185,10 +188,6 @@ bool Target::isValidTarget(C_Entity* ent) {
 					}
 				}
 			}
-				  /*case 2: {
-					  if (localPlayer->getArmorColorInSlot(0, 0) == ent->getArmorColorInSlot(0, 0))
-						  return false;
-				  }*/
 			}
 		}
 	}
