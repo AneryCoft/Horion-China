@@ -63,6 +63,7 @@
 #include "Modules/Movement/Step.h"
 #include "Modules/Movement/Velocity.h"
 
+//#include "Modules/Player/AntiAFK.h"
 #include "Modules/Player/AntiBot.h"
 #include "Modules/Player/AutoArmor.h"
 #include "Modules/Player/AutoFish.h"

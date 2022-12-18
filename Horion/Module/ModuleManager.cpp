@@ -129,6 +129,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoTool()));
 		moduleList.push_back(std::shared_ptr<IModule>(new ArrayListModule()));
 		moduleList.push_back(std::shared_ptr<IModule>(new KillInsult()));
+		//moduleList.push_back(std::shared_ptr<IModule>(new AntiAFK()));
 
 #ifdef _DEBUG
 		moduleList.push_back(std::shared_ptr<IModule>(new PacketLogger()));

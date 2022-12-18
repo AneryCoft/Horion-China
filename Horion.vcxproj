@@ -277,6 +277,7 @@
     <ClCompile Include="Horion\Module\Modules\Misc\KillInsult.cpp" />
     <ClCompile Include="Horion\Module\Modules\Movement\AirJump.cpp" />
     <ClCompile Include="Horion\Module\Modules\Movement\AirSwim.cpp" />
+    <ClCompile Include="Horion\Module\Modules\Player\AntiAFK.cpp" />
     <ClCompile Include="Horion\Module\Modules\Player\AntiBot.cpp" />
     <ClCompile Include="Horion\Module\Modules\Misc\AntiImmobile.cpp" />
     <ClCompile Include="Horion\Module\Modules\Movement\AntiVoid.cpp" />
@@ -480,6 +481,7 @@
     <ClInclude Include="Horion\Module\Modules\Misc\KillInsult.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\AirJump.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\AirSwim.h" />
+    <ClInclude Include="Horion\Module\Modules\Player\AntiAFK.h" />
     <ClInclude Include="Horion\Module\Modules\Player\AntiBot.h" />
     <ClInclude Include="Horion\Module\Modules\Misc\AntiImmobile.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\AntiVoid.h" />
