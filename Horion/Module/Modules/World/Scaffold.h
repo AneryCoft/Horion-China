@@ -43,9 +43,9 @@ public:
 	virtual const char* getModuleName() override;
 	virtual void onEnable() override;
 	virtual void onDisable() override;
-	virtual void onTick(C_GameMode* gm) override;
+	//virtual void onTick(C_GameMode* gm) override;
 	virtual void onPreRender(C_MinecraftUIRenderContext* renderCtx) override;
 	virtual void onPlayerTick(C_Player* player) override;
 	virtual void onSendPacket(C_Packet* packet, bool&) override;
-	//virtual void onGetPickRange() override;
+	virtual void onGetPickRange() override;
 };

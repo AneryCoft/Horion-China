@@ -154,7 +154,7 @@ int Scaffold::calcBlocksCount() {
 	return blockCount;
 }
 
-void Scaffold::onTick(C_GameMode* gm) {
+void Scaffold::onGetPickRange() {
 	//needRotation = false;
 
 	C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
@@ -239,7 +239,7 @@ void Scaffold::onTick(C_GameMode* gm) {
 		vec3_t blockBelowBelow = blockBelow.sub(0.f, 1.f, 0.f);
 
 		if (!tryScaffold(blockBelow) && !tryScaffold(blockBelowBelow)) {
-			if (speed > 0.05f) {  // Are we actually walking?
+			if (speed > 0.01f) {  // Are we actually walking?
 				blockBelow.z -= velocity.z * 0.4f;
 				blockBelowBelow.z -= velocity.z * 0.4f;
 				if (!tryScaffold(blockBelow) && !tryScaffold(blockBelowBelow)) {
@@ -265,7 +265,7 @@ void Scaffold::onTick(C_GameMode* gm) {
 		blockBelow.z += sin(cal) * 0.8f;  // Block 1 ahead the player
 
 		if (!tryScaffold(blockBelow)) {
-			if (speed > 0.05f) {  // Are we actually walking?
+			if (speed > 0.01f) {  // Are we actually walking?
 				blockBelow.z -= velocity.z * 0.8f;
 				if (!tryScaffold(blockBelow)) {
 					blockBelow.x -= velocity.x * 0.8f;
