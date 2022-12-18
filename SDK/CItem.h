@@ -245,7 +245,7 @@ public:
 			return true;
 		//The Hive SkyWars Kits中的职业道具
 
-		if (itemId >= -749 && itemId <= -746)
+		if (itemId >= -776 && itemId <= -773)
 			return true; //The Hive的四种爆炸盒子
 
 		//用id检测物品不容易误判
@@ -318,22 +318,22 @@ public:
 		if (itemId == 247)
 			return false; //下界反应核
 
-		if (itemId == -746)
+		if (itemId == 30)
+			return false; //蜘蛛网
+
+		if (itemId == -773)
 			return false; //Forzen Boom Box
 
-		if (itemId == -747)
+		if (itemId == -774)
 			return false; //Knockback Boom Box
 
-		if (itemId == -748)
+		if (itemId == -775)
 			return false; //Poison Boom Box
 
-		if (itemId == -749)
+		if (itemId == -776)
 			return false; //Boom Box
 
 		//以上为The Hive服务器的道具
-
-		if (itemId == 30)
-			return false; //蜘蛛网
 
 		auto val = *reinterpret_cast<__int64***>(reinterpret_cast<__int64>(this) + 0x1A0);
 		return val != nullptr && *val != nullptr;
