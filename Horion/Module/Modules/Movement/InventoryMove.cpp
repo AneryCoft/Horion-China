@@ -9,64 +9,27 @@ InventoryMove::~InventoryMove() {
 const char* InventoryMove::getModuleName() {
 	return ("InvMove");
 }
+void InventoryMove ::onEnable()
+{
+	Utils::patchBytes((unsigned char*)Utils::getBase() + 0xF49C60, (unsigned char*)"\x48\xb8\x01\x00\x00\x00\x00\x00\x00\x00\xc3", 11);
+}
 
+void InventoryMove::onDisable()
+{//直接修改这个函数 可能会导致某些问题 但为了方便暂时这样
+	Utils::patchBytes((unsigned char*)Utils::getBase() + 0xF49C60, (unsigned char*)"\x48\x8b\x49\x08\x48\x8b\x01\x48\xff\xa0\xc0", 11);
+}
 void InventoryMove::onTick(C_GameMode* gm) {
-	/*if (g_Data.getLocalPlayer()->canOpenContainerScreen())
-		return;*/
-	if (g_Data.canUseMoveKeys() || g_Data.getLocalPlayer() == nullptr)
-		return;
-
 	if (strcmp(g_Data.getScreenName.c_str(), "chat_screen") == 0)
 		return;
 
+	// onTick 可能有些输入延迟
 	C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
-
-	if (input == nullptr)
-		return;
-
-	float speed = 0.284f;
-	float yaw = gm->player->yaw;
-
-	if (GameData::isKeyDown(*input->spaceBarKey) && gm->player->onGround)
-		gm->player->jumpFromGround();
-
-	if (GameData::isKeyDown(*input->forwardKey) && GameData::isKeyDown(*input->backKey))
-		return;
-	else if (GameData::isKeyDown(*input->forwardKey) && GameData::isKeyDown(*input->rightKey) && !GameData::isKeyDown(*input->leftKey)) {
-		yaw += 45.f;
-		keyPressed = true;
-	} else if (GameData::isKeyDown(*input->forwardKey) && GameData::isKeyDown(*input->leftKey) && !GameData::isKeyDown(*input->rightKey)) {
-		yaw -= 45.f;
-		keyPressed = true;
-	} else if (GameData::isKeyDown(*input->backKey) && GameData::isKeyDown(*input->rightKey) && !GameData::isKeyDown(*input->leftKey)) {
-		yaw += 135.f;
-		keyPressed = true;
-	} else if (GameData::isKeyDown(*input->backKey) && GameData::isKeyDown(*input->leftKey) && !GameData::isKeyDown(*input->rightKey)) {
-		yaw -= 135.f;
-		keyPressed = true;
-	} else if (GameData::isKeyDown(*input->forwardKey)) {
-		keyPressed = true;
-	} else if (GameData::isKeyDown(*input->backKey)) {
-		yaw += 180.f;
-		keyPressed = true;
-	} else if (GameData::isKeyDown(*input->rightKey) && !GameData::isKeyDown(*input->leftKey)) {
-		yaw += 90.f;
-		keyPressed = true;
-	} else if (GameData::isKeyDown(*input->leftKey) && !GameData::isKeyDown(*input->rightKey)) {
-		yaw -= 90.f;
-		keyPressed = true;
-	}
-	if (yaw >= 180)
-		yaw -= 360.f;
-
-	float calcYaw = (yaw + 90) * (PI / 180);
-	//float calcPitch = (gm->player->pitch) * -(PI / 180);
-	vec3_t moveVec;
-	moveVec.x = cos(calcYaw) * speed;
-	moveVec.y = gm->player->velocity.y;
-	moveVec.z = sin(calcYaw) * speed;
-	if (keyPressed) {
-		gm->player->lerpMotion(moveVec);
-		keyPressed = false;
-	}
+	((C_MoveInputHandler*)gm->player->getMoveInputHandler())->forward = GameData::isKeyDown(*input->forwardKey);
+	((C_MoveInputHandler*)gm->player->getMoveInputHandler())->backward = GameData::isKeyDown(*input->backKey);
+	((C_MoveInputHandler*)gm->player->getMoveInputHandler())->left = GameData::isKeyDown(*input->leftKey);
+	((C_MoveInputHandler*)gm->player->getMoveInputHandler())->right = GameData::isKeyDown(*input->rightKey);
+	((C_MoveInputHandler*)gm->player->getMoveInputHandler())->isSneakDown = GameData::isKeyDown(*input->sneakKey);
+	*(bool*)(((__int64)((__int64)(((__int64)((__int64)&((C_MoveInputHandler*)gm->player->getMoveInputHandler())->forward))) - 4))) = GameData::isKeyDown(*input->spaceBarKey);
+	//if (gm->player->onGround && GameData::isKeyDown(*input->spaceBarKey))
+	//	gm->player->jumpFromGround();
 }

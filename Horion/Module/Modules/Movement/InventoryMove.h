@@ -3,9 +3,6 @@
 #include "../Module.h"
 
 class InventoryMove : public IModule {
-private:
-	bool keyPressed = false;
-
 public:
 	InventoryMove();
 	~InventoryMove();
@@ -13,4 +10,6 @@ public:
 	// Inherited via IModule
 	virtual const char* getModuleName() override;
 	virtual void onTick(C_GameMode* gm) override;
+	virtual void onEnable() override;
+	virtual void onDisable() override;
 };
