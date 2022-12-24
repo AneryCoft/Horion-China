@@ -11,7 +11,7 @@ Speed::Speed() : IModule(VK_NUMPAD2, Category::MOVEMENT, "Speed up!") {
 	registerFloatSetting("VanillaSpeed", &vanillaSpeed, vanillaSpeed, 0.1f, 5.f);
 	registerFloatSetting("MaxSpeed", &maxSpeed, maxSpeed, 0.1f, 1.f);
 	registerFloatSetting("MinSpeed", &minSpeed, minSpeed, 0.1f, 1.f);
-	registerFloatSetting("LowhopMotion", &lowhopMotion, lowhopMotion, 0.1f, 5.f);
+	registerFloatSetting("LowhopMotion", &lowhopMotion, lowhopMotion, 0.1f, 1.f);
 	registerFloatSetting("FrictionDuration", &duration, duration, 0.2f, 1.5f);
 	registerFloatSetting("Timer", &timer, timer, 10.f, 40.f);
 }
