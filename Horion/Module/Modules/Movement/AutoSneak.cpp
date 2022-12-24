@@ -15,24 +15,19 @@ void AutoSneak::onTick(C_GameMode* gm) {
 	if (!doSilent) {
 		if (g_Data.canUseMoveKeys()) {
 			C_GameSettingsInput* input = g_Data.getClientInstance()->getGameSettingsInput();
+
 			if (GameData::isKeyDown(*input->sneakKey)) {
-				if (press == 0 || press == 1) {
-					g_Data.getClientInstance()->getMoveTurnInput()->isSneakDown = true;
-					press = 1;
-				}
-				else if (press == 2) {
-					press = 3;
+				if (canToggle) {
+					isSneak = !isSneak;
+					canToggle = false;
 				}
 			}
 			else {
-				if (press == 1 || press == 2) {
-					g_Data.getClientInstance()->getMoveTurnInput()->isSneakDown = true;
-					press = 2;
-				}
-				else if (press == 3) {
-					g_Data.getClientInstance()->getMoveTurnInput()->isSneakDown = false;
-					press = 0;
-				}
+				canToggle = true;
+			}
+
+			if (isSneak) {
+				g_Data.getClientInstance()->getMoveTurnInput()->isSneakDown = true;
 			}
 		}
 	}

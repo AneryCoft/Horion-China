@@ -4,7 +4,8 @@
 class AutoSneak : public IModule {
 private:
 	bool doSilent = false;
-	int press = 0;
+	bool canToggle = false;
+	bool isSneak = false;
 
 public:
 	AutoSneak();
