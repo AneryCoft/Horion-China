@@ -37,6 +37,7 @@ void NameTags::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	if (std::time(nullptr) < g_Hooks.connecttime + 1)
 		return;
 
+	if (ingameNametagSetting != nullptr) {
 		if (!gotPrevSetting) {
 			lastSetting = *ingameNametagSetting;
 			gotPrevSetting = true;
@@ -44,6 +45,7 @@ void NameTags::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 		else {
 			*ingameNametagSetting = gameName;  //修改原版游戏的玩家名字
 		}
+	}
 
 	if (g_Data.getLocalPlayer() == nullptr || !GameData::canUseMoveKeys())
 		return;
