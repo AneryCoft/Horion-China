@@ -33,11 +33,11 @@ void Tower::onTick(C_GameMode* gm) {
 	static auto scaffoldMod = moduleMgr->getModule<Scaffold>();
 	auto selectedItem = localPlayer->getSelectedItem();
 	if (!selectedItem->isValid() || !(*selectedItem->item)->isBlock()) {
-		//if (scaffoldMod->calcBlocksCount() == 0)
+		if (scaffoldMod->calcBlocksCount() == 0)
 			return;
 
 		if (autoBlocks) {
-			//scaffoldMod->selectedBlocks();
+			scaffoldMod->selectedBlocks();
 		}
 		else {
 			return;
