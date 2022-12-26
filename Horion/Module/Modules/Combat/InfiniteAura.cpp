@@ -5,13 +5,14 @@ InfiniteAura::InfiniteAura() : IModule(0, Category::COMBAT, "Killaura but with i
 		.addEntry(EnumEntry("Single", 0))
 		.addEntry(EnumEntry("Multi", 1));
 	registerEnumSetting("Mode", &mode, 0);
-	packetMode = SettingEnum(this)
+	/*packetMode = SettingEnum(this)
 		.addEntry(EnumEntry("Normal", 0))
 		.addEntry(EnumEntry("CubeCraft", 1));
-	registerEnumSetting("Packet", &packetMode, 0);
+	registerEnumSetting("Packet", &packetMode, 0);*/
 	registerFloatSetting("TPDistance", &tpDistance, tpDistance, 1.f, 20.f);
 	registerFloatSetting("Range", &range, range, 15.f, 128.f);
 	registerIntSetting("CPS", &CPS, CPS, 1, 20);
+	registerBoolSetting("RenderPos", &renderPos, renderPos);
 }
 
 InfiniteAura::~InfiniteAura() {
@@ -45,6 +46,8 @@ void InfiniteAura::onTick(C_GameMode* gm) {
 	if (!targetList.empty() && CPSTime.hasTimedElapsed(1000.f / (float)CPS, true)) {
 		C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
 
+		posList.clear();
+
 		std::sort(targetList.begin(), targetList.end(), [](const C_Entity* lhs, const C_Entity* rhs) {
 			vec3_t localPlayerPos = *g_Data.getLocalPlayer()->getPos();
 			C_Entity* current = const_cast<C_Entity*>(lhs);
@@ -63,33 +66,34 @@ void InfiniteAura::onTick(C_GameMode* gm) {
 		vec3_t localPlayerPos = *localPlayer->getPos();
 
 		//bool cubecraftMode = strcmp(g_Data.getRakNetInstance()->serverIp.getText(), "mco.cubecraft.net") == 0;
-		bool cubecraftMode = mode.selected == 1;
 
-		if (cubecraftMode) {
-			C_MovePlayerPacket movePlayerPacket(localPlayer, localPlayerPos);
-			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePlayerPacket);
+		/*
+		C_MovePlayerPacket movePlayerPacket(localPlayer, localPlayerPos);
+		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePlayerPacket);
 
-			C_PlayerActionPacket actionPacket;
-			actionPacket.action = 8; //跳跃
-			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&actionPacket);
+		C_PlayerActionPacket actionPacket;
+		actionPacket.action = 8; //跳跃
+		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&actionPacket);
 
-			localPlayerPos.y += 0.35f;
+		localPlayerPos.y += 0.35f;
 
-			movePlayerPacket = C_MovePlayerPacket(localPlayer, localPlayerPos);
-			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePlayerPacket);
-		}
+		movePlayerPacket = C_MovePlayerPacket(localPlayer, localPlayerPos);
+		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePlayerPacket);
+
+		posList.push_back(localPlayerPos);
+		*/
 
 		for (auto target : targetList) {
 			vec3_t targetPos = *target->getPos();
-			
+
 			vec3_t tpPos = vec3_t(targetPos.x - teleportX, targetPos.y, targetPos.z - teleportZ);
 
-			if (!cubecraftMode) {
-				float times = localPlayerPos.dist(tpPos) / tpDistance; //需要传送的次数
-				for (int n = 0; n < times; n++) {
-					vec3_t offs = tpPos.sub(localPlayerPos).div(times).mul(n);
-					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&C_MovePlayerPacket(localPlayer, localPlayerPos.add(offs)));
-				}
+			float times = localPlayerPos.dist(tpPos) / tpDistance; //需要传送的次数
+			for (int n = 0; n < times; n++) {
+				vec3_t offs = tpPos.sub(localPlayerPos).div(times).mul(n);
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&C_MovePlayerPacket(localPlayer, localPlayerPos.add(offs)));
+
+				posList.push_back(localPlayerPos.add(offs));
 			}
 
 			movePacket = C_MovePlayerPacket(localPlayer, tpPos);
@@ -100,17 +104,17 @@ void InfiniteAura::onTick(C_GameMode* gm) {
 			//转头
 			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
 
+			posList.push_back(tpPos);
+
 			localPlayer->swingArm();
 			g_Data.getCGameMode()->attack(target);
 
 			//回来
-			if(!cubecraftMode){
-				localPlayerPos = *localPlayer->getPos();
-				int backTimes = tpPos.dist(localPlayerPos) / tpDistance;
-				for (int n = 0; n < backTimes; n++) {
-					vec3_t offs = tpPos.sub(localPlayerPos).div(backTimes).mul(n);
-					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&C_MovePlayerPacket(localPlayer, localPlayerPos.add(offs)));
-				}
+			localPlayerPos = *localPlayer->getPos();
+			int backTimes = tpPos.dist(localPlayerPos) / tpDistance;
+			for (int n = 0; n < backTimes; n++) {
+				vec3_t offs = tpPos.sub(localPlayerPos).div(backTimes).mul(n);
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&C_MovePlayerPacket(localPlayer, localPlayerPos.add(offs)));
 			}
 
 			movePacket = C_MovePlayerPacket(localPlayer, *localPlayer->getPos());
@@ -119,7 +123,19 @@ void InfiniteAura::onTick(C_GameMode* gm) {
 			if (mode.selected == 0) {
 				break;
 			}
-		}	
+		}
+	}
+}
+
+void InfiniteAura::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
+	if (!GameData::canUseMoveKeys())
+		return;
+
+	if (!posList.empty() && renderPos) {
+		for (auto pos : posList) {
+			DrawUtils::setColor(1, 1, 1, 0.8f);
+			DrawUtils::drawBox(pos.sub(0.3f, 1.62f, 0.3f), pos.add(0.3f, 0.18f, 0.3f), 0.3f, false);
+		}
 	}
 }
 
@@ -128,6 +144,7 @@ void InfiniteAura::onEnable() {
 		this->setEnabled(false);
 	}
 
+	posList.clear();
 	CPSTime.resetTime();
 	//计时器初始化
 }
