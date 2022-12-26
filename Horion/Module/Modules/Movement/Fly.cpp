@@ -11,8 +11,8 @@ Fly::Fly() : IModule('F', Category::MOVEMENT, "Fly to the sky") {
 		.addEntry(EnumEntry("AirWalk", 6))
 		.addEntry(EnumEntry("Jump", 7))
 		//.addEntry(EnumEntry("The Hive", 7));
-		.addEntry(EnumEntry("Old CubeCraft", 8))
-		.addEntry(EnumEntry("CubeCraft", 9));
+		.addEntry(EnumEntry("Old CubeCraft", 8));
+		//.addEntry(EnumEntry("CubeCraft", 9));
 	registerEnumSetting("Mode", &mode, 4);
 	registerFloatSetting("Horizontal Speed", &horizontalSpeed, horizontalSpeed, 0.1f, 10.f);
 	registerFloatSetting("Vertical Speed", &verticalSpeed, verticalSpeed, 0.1f, 10.f);
@@ -43,18 +43,14 @@ void Fly::onEnable() {
 	}*/
 
 	switch (mode.selected) {
-	case 1:
-		g_Data.getLocalPlayer()->setPos((*g_Data.getLocalPlayer()->getPos()).add(vec3_t(0, 1, 0)));
-		break;
 	case 7:
 		y = g_Data.getLocalPlayer()->aabb.lower.y;
-		/*case 7:
-			hiveSpeedIndex = 0;
-			hiveVelocity = 0;
-			enabledTick = 0;
-			g_Data.getLocalPlayer()->jumpFromGround();
-			*/
+		break;
+	case 8:
+		g_Data.getLocalPlayer()->setPos((*g_Data.getLocalPlayer()->getPos()).add(vec3_t(0, 1, 0)));
+		break;
 	}
+
 	if (elytraSpoof) {
 		C_PlayerActionPacket actionPacket;
 		actionPacket.action = 15;  //开启鞘翅
@@ -77,6 +73,7 @@ void Fly::onDisable() {
 	case 5:
 		g_Data.getLocalPlayer()->aabb.upper.y = g_Data.getLocalPlayer()->aabb.lower.y + 1.8f;
 	case 4:
+	case 8:
 	case 9:
 		g_Data.getLocalPlayer()->velocity = vec3_t(0.f, 0.f, 0.f);
 		break;
@@ -134,9 +131,8 @@ void Fly::onTick(C_GameMode* gm) {
 	} break;
 	case 5:
 		gm->player->aabb.upper.y = gm->player->aabb.lower.y - 1.8f;
-	case 9:
+	//case 9:
 	case 4:
-	case 1:
 		gm->player->velocity = vec3_t(0.f, 0.f, 0.f);
 		break;
 	case 6:
@@ -259,12 +255,11 @@ void Fly::onMove(C_MoveInputHandler* input) {
 				localPlayer->velocity.z = 0.f;
 			}*/
 
-	case 9:
+	/*case 9:
 	{
 		vec3_t moveVec;
 		float calcYaw = (localPlayer->yaw + 90) * (PI / 180);
 		vec2_t moveVec2d = { input->forwardMovement, -input->sideMovement };
-		//bool pressed = moveVec2d.magnitude() > 0.01f;
 		float c = cos(calcYaw);
 		float s = sin(calcYaw);
 		moveVec2d = { moveVec2d.x * c - moveVec2d.y * s, moveVec2d.x * s + moveVec2d.y * c };
@@ -285,14 +280,14 @@ void Fly::onMove(C_MoveInputHandler* input) {
 			gameTick = 0;
 		}
 		else {
-			g_Data.getClientInstance()->minecraft->setTimerSpeed(80.f);
+			g_Data.getClientInstance()->minecraft->setTimerSpeed(100.f);
 			moveVec.x = moveVec2d.x * 0.1f;
 			moveVec.y = 0.f;
 			moveVec.z = moveVec2d.y * 0.1f;
 		}
 
 		localPlayer->lerpMotion(moveVec);
-	}break;
+	}break;*/
 	}
 }
 

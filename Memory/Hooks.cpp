@@ -855,7 +855,17 @@ void Hooks::LoopbackPacketSender_sendToServer(C_LoopbackPacketSender* a, C_Packe
 	}
 
 	if (disablerMod->isEnabled()) {
-		if (disablerMod->mode.selected == 4) {
+		if (disablerMod->mode.selected == 3) {
+			if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
+				PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
+				authInputPacket->velocity = vec3_t(0.f, 0.f, 0.f);
+				for (int i = 0; i < 20; i++) {
+					oFunc(a, authInputPacket);
+				}
+				return;
+			}
+		}
+		else if (disablerMod->mode.selected == 4) {
 			auto& packetHolder = disablerMod->packetQueue;
 			while (!packetHolder.empty())
 			{

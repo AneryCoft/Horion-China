@@ -29,22 +29,27 @@ void Disabler::onTick(C_GameMode* gm) {
 
 	++tick;
 
-	C_MovePlayerPacket movePacket;
-
-	movePacket.Position = *localPlayerPos;
-	movePacket.pitch = localPlayer->pitch;
-	movePacket.yaw = localPlayer->bodyYaw;
-	movePacket.headYaw = localPlayer->yawUnused1;
-
 	if (mode.selected == 2) {
-		//if (localPlayer->velocity.magnitude() > 0.1f) {
+		C_MovePlayerPacket movePacket;
+		movePacket.Position = *localPlayerPos;
+		movePacket.pitch = localPlayer->pitch;
+		movePacket.yaw = localPlayer->bodyYaw;
+		movePacket.headYaw = localPlayer->yawUnused1;
 		movePacket.onGround = true;
 		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
-		//}
 	}
 	else if (mode.selected == 3) {
+		//if (localPlayer->velocity.magnitude() > 0.1f) {
+		C_MovePlayerPacket movePacket;
+		movePacket.Position = *localPlayerPos;
+		movePacket.pitch = localPlayer->pitch;
+		movePacket.yaw = localPlayer->bodyYaw;
+		movePacket.headYaw = localPlayer->yawUnused1;
 		movePacket.onGround = false;
-		g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
+		for (int i = 0; i < 20; i++) {
+			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
+		}
+		//}
 	}
 	else if (mode.selected == 4) {
 		if (attackTime.hasTimedElapsed(1000.f / 10.f, true)) {
@@ -54,10 +59,10 @@ void Disabler::onTick(C_GameMode* gm) {
 }
 
 void Disabler::onSendPacket(C_Packet* packet, bool& cancelSend) {
-	if (mode.selected == 0 || mode.selected == 3) {
+	if (mode.selected == 0) {
 		if (packet->isInstanceOf<PlayerAuthInputPacket>()) {
 			PlayerAuthInputPacket* authInputPacket = reinterpret_cast<PlayerAuthInputPacket*>(packet);
-			authInputPacket->velocity = vec3_t(0.f, 0.f, 0.f);
+			authInputPacket->velocity = vec3_t(0.1f, 0.1f, 0.1f);
 		}
 	}
 	else if (mode.selected == 1) {
