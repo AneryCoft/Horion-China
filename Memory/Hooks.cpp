@@ -1263,7 +1263,7 @@ float Hooks::GameMode_getPickRange(C_GameMode* _this, __int64 a2, char a3) {
 __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager, void* a3, TextHolder* selfSignedId, TextHolder* serverAddress, __int64 clientRandomId, TextHolder* skinId, SkinData* skinData, __int64 capeData, CoolSkinData* coolSkinStuff, TextHolder* deviceId, int inputMode, int uiProfile, int guiScale, TextHolder* languageCode, bool sendEduModeParams, TextHolder* tenantId, __int64 unused, TextHolder* platformUserId, TextHolder* thirdPartyName, bool thirdPartyNameOnly, TextHolder* platformOnlineId, TextHolder* platformOfflineId, TextHolder* capeId) {
 	static auto oFunc = g_Hooks.ConnectionRequest_createHook->GetFastcall<__int64, __int64, __int64, void*, TextHolder*, TextHolder*, __int64, TextHolder*, SkinData*, __int64, CoolSkinData*, TextHolder*, int, int, int, TextHolder*, bool, TextHolder*, __int64, TextHolder*, TextHolder*, bool, TextHolder*, TextHolder*, TextHolder*>();
 	static auto EditionFakerMod = moduleMgr->getModule<EditionFaker>();
-	static auto RandomDeviceIdMod = moduleMgr->getModule<RandomDeviceId>();
+	static auto RandomGameIdMod = moduleMgr->getModule<RandomGameId>();
 
 	void* deviceModelAddress = (void*)FindSignature("44 65 76 69 63 65 4D 6F 64 65 6C 00 00 00 00 00 44 65");
 
@@ -1277,26 +1277,30 @@ __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager
 	else if (EditionFakerMod->deviceModel) {
 		Utils::patchBytes((BYTE*)((uintptr_t)deviceModelAddress), (BYTE*)"\x44", 1);
 	}
-
-	TextHolder uuid;
-	if (RandomDeviceIdMod->isEnabled()) {
-
-		std::string uuidtemp = RandomDeviceIdMod->GetUUID();
+	
+	if (RandomGameIdMod->isEnabled()) {
+		std::string uuidtemp = RandomGameIdMod->GetUUID();
 		for (auto& i : uuidtemp)
 			i = tolower(i);
+		TextHolder uuid;
 		uuid.setText(uuidtemp);
-		//deviceId = uuid;
+		deviceId = new TextHolder(uuid);
+
+		static std::default_random_engine random(time(NULL));
+		std::uniform_int_distribution<long long> distribution;
+		clientRandomId = distribution(random);
 	}
 	//deviceId->setText(RandomDeviceIdMod->GetUUID());
 
+	logF("DeviceId: %s", deviceId->getText());
+
+	logF("ClientRandomId: %lld", clientRandomId);
 
 	auto geoOverride = g_Data.getCustomGeoOverride();
 
 	g_Hooks.connecttime = std::time(nullptr);
 
 	logF("Connection Request: InputMode: %i UiProfile: %i GuiScale: %i", inputMode, uiProfile, guiScale);
-
-	logF("DeviceId: %s", RandomDeviceIdMod->isEnabled() ? uuid.getText() : deviceId->getText());
 
 	if (g_Data.allowWIPFeatures()) {
 
@@ -1367,7 +1371,7 @@ __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager
 		}
 
 		//  newGeometryData == nullptr ? skinResourcePatch : newSkinResourcePatch, newGeometryData == nullptr ? skinGeometryData : newGeometryData, skinAnimationData, isPremiumSkin, isPersonaSkin,
-		__int64 res = oFunc(_this, privateKeyManager, a3, selfSignedId, serverAddress, clientRandomId, skinId, (newGeometryData == nullptr && !std::get<0>(texOverride)) ? skinData : newSkinData, capeData, coolSkinStuff, RandomDeviceIdMod->isEnabled() ? &uuid : deviceId, inputMode, uiProfile, guiScale, languageCode, sendEduModeParams, tenantId, unused, platformUserId, fakeName != nullptr ? fakeName : thirdPartyName, fakeName != nullptr ? true : thirdPartyNameOnly, platformOnlineId, platformOfflineId, capeId);
+		__int64 res = oFunc(_this, privateKeyManager, a3, selfSignedId, serverAddress, clientRandomId, skinId, (newGeometryData == nullptr && !std::get<0>(texOverride)) ? skinData : newSkinData, capeData, coolSkinStuff, deviceId, inputMode, uiProfile, guiScale, languageCode, sendEduModeParams, tenantId, unused, platformUserId, fakeName != nullptr ? fakeName : thirdPartyName, fakeName != nullptr ? true : thirdPartyNameOnly, platformOnlineId, platformOfflineId, capeId);
 
 		if (newGeometryData != nullptr) {
 			memcpy(&coolSkinStuff->skinResourcePatch, &resourcePatchBackup, sizeof(TextHolder));
@@ -1390,7 +1394,7 @@ __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager
 	}
 	else {
 		TextHolder* fakeName = g_Data.getFakeName();
-		__int64 res = oFunc(_this, privateKeyManager, a3, selfSignedId, serverAddress, clientRandomId, skinId, skinData, capeData, coolSkinStuff, RandomDeviceIdMod->isEnabled() ? &uuid : deviceId, inputMode, uiProfile, guiScale, languageCode, sendEduModeParams, tenantId, unused, platformUserId, fakeName != nullptr ? fakeName : thirdPartyName, fakeName != nullptr ? true : thirdPartyNameOnly, platformOnlineId, platformOfflineId, capeId);
+		__int64 res = oFunc(_this, privateKeyManager, a3, selfSignedId, serverAddress, clientRandomId, skinId, skinData, capeData, coolSkinStuff, deviceId, inputMode, uiProfile, guiScale, languageCode, sendEduModeParams, tenantId, unused, platformUserId, fakeName != nullptr ? fakeName : thirdPartyName, fakeName != nullptr ? true : thirdPartyNameOnly, platformOnlineId, platformOfflineId, capeId);
 		return res;
 	}
 }

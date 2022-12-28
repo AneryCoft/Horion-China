@@ -101,7 +101,7 @@
 #include "Modules/Misc/HackerDetector.h"
 #include "Modules/Misc/KillInsult.h"
 #include "Modules/Misc/NoPacket.h"
-#include "Modules/Misc/RandomDeviceId.h"
+#include "Modules/Misc/RandomGameId.h"
 #include "Modules/Misc/Spammer.h"
 #include "Modules/Misc/Teleport.h"
 #include "Modules/Misc/Timer.h"

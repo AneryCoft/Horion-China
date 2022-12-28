@@ -307,7 +307,7 @@
     <ClCompile Include="Horion\Module\Modules\Visual\Swing.cpp" />
     <ClCompile Include="Horion\Module\Modules\Combat\InfiniteAura.cpp" />
     <ClCompile Include="Horion\Module\Modules\Client\InventoryView.cpp" />
-    <ClCompile Include="Horion\Module\Modules\Misc\RandomDeviceId.cpp" />
+    <ClCompile Include="Horion\Module\Modules\Misc\RandomGameId.cpp" />
     <ClCompile Include="Horion\Module\Modules\Visual\BlockOutline.cpp" />
     <ClCompile Include="Horion\Module\Modules\Visual\StorageESP.cpp" />
     <ClCompile Include="Horion\Module\Modules\Player\ChestStealer.cpp" />
@@ -560,7 +560,7 @@
     <ClInclude Include="Horion\Module\Modules\Misc\PacketLogger.h" />
     <ClInclude Include="Horion\Module\Modules\Movement\Phase.h" />
     <ClInclude Include="Horion\Module\Modules\Client\Radar.h" />
-    <ClInclude Include="Horion\Module\Modules\Misc\RandomDeviceId.h" />
+    <ClInclude Include="Horion\Module\Modules\Misc\RandomGameId.h" />
     <ClInclude Include="Horion\Module\Modules\Combat\Reach.h" />
     <ClInclude Include="Horion\Module\Modules\World\Scaffold.h" />
     <ClInclude Include="Horion\Module\Modules\Misc\Spammer.h" />

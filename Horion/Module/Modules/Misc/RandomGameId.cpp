@@ -1,17 +1,16 @@
-#include "RandomDeviceId.h"
-#include <combaseapi.h>
+#include "RandomGameId.h"
 
-RandomDeviceId::RandomDeviceId() : IModule(0, Category::MISC, "Random DeviceId Spoof Servers") {
+RandomGameId::RandomGameId() : IModule(0, Category::MISC, "Random DeviceId and ClientId spoof servers") {
 }
 
-RandomDeviceId::~RandomDeviceId() {
+RandomGameId::~RandomGameId() {
 }
 
-const char* RandomDeviceId::getModuleName() {
-	return ("RandomDeviceId");
+const char* RandomGameId::getModuleName() {
+	return ("RandomGameId");
 }
 
-std::string RandomDeviceId::GetUUID() {
+std::string RandomGameId::GetUUID() {
 	constexpr size_t GUID_LEN = 64;
 	char buffer[GUID_LEN];
 

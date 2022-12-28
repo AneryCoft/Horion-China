@@ -1,12 +1,11 @@
 #pragma once
 #include "../Module.h"
-#include <random>
-#include <iomanip>
+#include <combaseapi.h>
 
-class RandomDeviceId : public IModule {
+class RandomGameId : public IModule {
 public:
-	RandomDeviceId();
-	~RandomDeviceId();
+	RandomGameId();
+	~RandomGameId();
 
 	static std::string GetUUID();
 
