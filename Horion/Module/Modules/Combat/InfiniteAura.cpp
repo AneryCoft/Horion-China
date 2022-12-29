@@ -58,10 +58,8 @@ void InfiniteAura::onTick(C_GameMode* gm) {
 		float calcYaw = (localPlayer->yaw + 90) * (PI / 180);
 		float calcPitch = (localPlayer->pitch) * -(PI / 180);
 
-		float teleportX = cos(calcYaw) * cos(calcPitch) * 3.7f;
-		float teleportZ = sin(calcYaw) * cos(calcPitch) * 3.7f;
-
-		C_MovePlayerPacket movePacket;
+		float teleportX = cos(calcYaw) * cos(calcPitch) * 3.f;
+		float teleportZ = sin(calcYaw) * cos(calcPitch) * 3.f;
 
 		vec3_t localPlayerPos = *localPlayer->getPos();
 
@@ -88,41 +86,28 @@ void InfiniteAura::onTick(C_GameMode* gm) {
 
 			vec3_t tpPos = vec3_t(targetPos.x - teleportX, targetPos.y, targetPos.z - teleportZ);
 
-			float times = localPlayerPos.dist(tpPos) / tpDistance; //需要传送的次数
-			for (int n = 0; n < times; n++) {
-				vec3_t offs = tpPos.sub(localPlayerPos).div(times).mul(n);
-				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&C_MovePlayerPacket(localPlayer, localPlayerPos.add(offs)));
+			int times = ceil(localPlayerPos.dist(tpPos) / tpDistance); //需要传送的次数
 
-				posList.push_back(localPlayerPos.add(offs));
+			for (int n = 1; n <= times; n++) {
+				vec3_t pos = localPlayerPos.add(tpPos.sub(localPlayerPos).div(times).mul(n));
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&C_MovePlayerPacket(localPlayer, pos));
+
+				posList.push_back(pos);
 			}
-
-			movePacket = C_MovePlayerPacket(localPlayer, tpPos);
-			vec2_t angle = localPlayer->getPos()->CalcAngle(*target->getPos());
-			movePacket.pitch = angle.x;
-			movePacket.headYaw = angle.y;
-			movePacket.yaw = angle.y;
-			//转头
-			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
-
-			posList.push_back(tpPos);
 
 			localPlayer->swingArm();
 			g_Data.getCGameMode()->attack(target);
 
 			//回来
 			localPlayerPos = *localPlayer->getPos();
-			int backTimes = tpPos.dist(localPlayerPos) / tpDistance;
-			for (int n = 0; n < backTimes; n++) {
-				vec3_t offs = tpPos.sub(localPlayerPos).div(backTimes).mul(n);
-				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&C_MovePlayerPacket(localPlayer, localPlayerPos.add(offs)));
+			for (int n = 1; n <= times; n++) {
+				vec3_t pos = tpPos.add(localPlayerPos.sub(tpPos).div(times).mul(n));
+				g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&C_MovePlayerPacket(localPlayer, pos));
 			}
-
-			movePacket = C_MovePlayerPacket(localPlayer, *localPlayer->getPos());
-			g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&movePacket);
 
 			if (mode.selected == 0) {
 				break;
-			}
+			} //Single
 		}
 	}
 }
