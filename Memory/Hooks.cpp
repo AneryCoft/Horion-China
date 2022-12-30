@@ -1113,10 +1113,11 @@ float Hooks::GetGamma(uintptr_t* a1) {
 	static auto nameTagMod = moduleMgr->getModule<NameTags>();
 	static auto zoomMod = moduleMgr->getModule<Zoom>();
 	static auto noParticlesMod = moduleMgr->getModule<NoParticles>();
+	static auto swingMod = moduleMgr->getModule<Swing>();
 
 	uintptr_t** list = (uintptr_t**)a1;
 
-	char obtainedSettings = 0;
+	uint16_t obtainedSettings = 0;
 	bool hadIt = false;
 	for (uint16_t i = 3; i < 450; i++) {
 		if (list[i] == nullptr) continue;
@@ -1157,7 +1158,14 @@ float Hooks::GetGamma(uintptr_t* a1) {
 			*disableRenderParticles = noParticlesMod->isEnabled();
 			obtainedSettings++;
 		} //更改开发版中的游戏设置
-		if (obtainedSettings == 4) break;
+		else if (!strcmp(settingname->getText(), "gfx_viewbobbing")) {
+			bool* viewbobbing = (bool*)((uintptr_t)list[i] + 16);
+			if (swingMod->isEnabled() && swingMod->blockMode.selected)
+				*viewbobbing = true;
+			obtainedSettings++;
+		} //视角摇晃
+
+		if (obtainedSettings == 5) break;
 	}
 
 	if (xrayMod->isEnabled())
