@@ -115,7 +115,7 @@ void ModuleManager::initModules() {
 		moduleList.push_back(std::shared_ptr<IModule>(new AutoGapple()));
 		moduleList.push_back(std::shared_ptr<IModule>(new FastDig()));
 		moduleList.push_back(std::shared_ptr<IModule>(new BowSpam()));
-		moduleList.push_back(std::shared_ptr<IModule>(new RandomGameId()));
+		moduleList.push_back(std::shared_ptr<IModule>(new RandomConnectionId()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Breadcrumbs()));
 		moduleList.push_back(std::shared_ptr<IModule>(new Swing()));
 		moduleList.push_back(std::shared_ptr<IModule>(new TPAura()));

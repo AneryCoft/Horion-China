@@ -1,16 +1,16 @@
-#include "RandomGameId.h"
+#include "RandomConnectionId.h"
 
-RandomGameId::RandomGameId() : IModule(0, Category::MISC, "Random DeviceId and ClientId spoof servers") {
+RandomConnectionId::RandomConnectionId() : IModule(0, Category::MISC, "Random DeviceId and ClientId spoof servers") {
 }
 
-RandomGameId::~RandomGameId() {
+RandomConnectionId::~RandomConnectionId() {
 }
 
-const char* RandomGameId::getModuleName() {
-	return ("RandomGameId");
+const char* RandomConnectionId::getModuleName() {
+	return ("RandomConnectionId");
 }
 
-std::string RandomGameId::GetUUID() {
+std::string RandomConnectionId::GetUUID() {
 	constexpr size_t GUID_LEN = 64;
 	char buffer[GUID_LEN];
 

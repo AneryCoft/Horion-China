@@ -2,10 +2,10 @@
 #include "../Module.h"
 #include <combaseapi.h>
 
-class RandomGameId : public IModule {
+class RandomConnectionId : public IModule {
 public:
-	RandomGameId();
-	~RandomGameId();
+	RandomConnectionId();
+	~RandomConnectionId();
 
 	static std::string GetUUID();
 
