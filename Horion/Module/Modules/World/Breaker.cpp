@@ -39,7 +39,7 @@ void Breaker::findBlocks() {
 				short blockId = g_Data.getLocalPlayer()->region->getBlock(blockPos)->toLegacy()->blockId;
 
 				if ((blockId == 26 && beds) ||
-					(blockId == 122 && eggs) ||
+					((blockId == 122 || blockId == 1000) && eggs) ||
 					(blockId == 92 && cakes) ||
 					(blockId == 54 && chests) ||
 					(blockId == 458 && barrels) ||
@@ -175,7 +175,7 @@ void Breaker::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 				DrawUtils::setColor(45 / 255.f, 1 / 255.f, 51 / 255.f, 1);
 				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
 			} //龙蛋 
-			else if (blockId == 92) {
+			else if (blockId == 122 || blockId == 1000/*z_cubecraftcustom_chest_block ID:1000*/) {
 				DrawUtils::setColor(199 / 255.f, 97 / 255.f, 36 / 255.f, 1);
 				DrawUtils::drawBox(renderPos, renderPos.add(1.f), thick, false);
 			} //蛋糕 
