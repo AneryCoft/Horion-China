@@ -30,7 +30,7 @@ void AutoClicker::onTick(C_GameMode* gm) {
 
 	if (CPSTime.hasTimedElapsed(1000.f / CPS, true)) {
 		C_LocalPlayer* localPlayer = g_Data.getLocalPlayer();
-		Level* level = g_Data.getLocalPlayer()->level;
+		Level* level = localPlayer->level;
 		C_ItemStack* selectedItem = localPlayer->getSelectedItem();
 
 		if (leftClick && (GameData::isLeftClickDown() || !hold)) {
@@ -44,7 +44,7 @@ void AutoClicker::onTick(C_GameMode* gm) {
 			if (level->hasEntity()) {
 				gm->attack(level->getEntity());
 			}
-			else if (localPlayer->region->getBlock(level->block)->toLegacy()->blockId == 0) {
+			else if (level->hasBlock()) {
 				LevelSoundEventPacket packet;
 				packet.pos = *localPlayer->getPos();
 				packet.sound = 42;
@@ -65,7 +65,7 @@ void AutoClicker::onTick(C_GameMode* gm) {
 			g_Data.rightclickCount++;
 
 			if (selectedItem->item != nullptr && (*selectedItem->item)->isBlock()) {
-				if (level->rayHitType == 0) {
+				if (level->hasBlock()) {
 					gm->buildBlock(new vec3_ti(level->block), level->blockSide, true);
 				}
 			}
