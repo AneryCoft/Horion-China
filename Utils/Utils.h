@@ -236,9 +236,9 @@ static inline void ImSwap(T& a, T& b) {
 #else
 #define FindSignatureOld(szSignature) Utils::FindSignatureModule("Minecraft.Windows.exe", szSignature)
 
-#define FindSignature(x) Utils::FindSignatureModuleNew(Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x))
+#define FindSignature(x) []() { constexpr auto temp = Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x); return Utils::FindSignatureModuleNew(temp); }()
 
-#define FindSignatureAsync(x) std::async(std::launch::async | std::launch::deferred, Utils::FindSignatureModuleNew<Utils::StrToSignatureSize(x)>, Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x))
+#define FindSignatureAsync(x) []() {constexpr auto temp = Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x); return std::async(std::launch::async | std::launch::deferred, Utils::FindSignatureModuleNew<Utils::StrToSignatureSize(x)>, temp);}()
 
 #endif
 
