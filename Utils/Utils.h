@@ -229,16 +229,16 @@ static inline void ImSwap(T& a, T& b) {
 #ifdef JM_XORSTR_HPP
 #define FindSignatureOld(szSignature) Utils::FindSignatureModule("Minecraft.Windows.exe", szSignature)
 
-#define FindSignature(x) Utils::FindSignatureModuleNew(Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x))
+#define FindSignature(x) []() { constexpr auto temp = Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x); constexpr auto table = Utils::Pretreatment(temp); return Utils::FindSignatureModuleNew(temp, table); }()
 
-#define FindSignatureAsync(x) std::async(std::launch::async | std::launch::deferred, Utils::FindSignatureModuleNew<Utils::StrToSignatureSize(x)>, Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x))
+#define FindSignatureAsync(x) []() {constexpr auto temp = Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x); constexpr auto table = Utils::Pretreatment(temp); return std::async(std::launch::async | std::launch::deferred, Utils::FindSignatureModuleNew<Utils::StrToSignatureSize(x)>, temp, table);}()
 
 #else
 #define FindSignatureOld(szSignature) Utils::FindSignatureModule("Minecraft.Windows.exe", szSignature)
 
-#define FindSignature(x) []() { constexpr auto temp = Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x); return Utils::FindSignatureModuleNew(temp); }()
+#define FindSignature(x) []() { constexpr auto temp = Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x); constexpr auto table = Utils::Pretreatment(temp); return Utils::FindSignatureModuleNew(temp, table); }()
 
-#define FindSignatureAsync(x) []() {constexpr auto temp = Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x); return std::async(std::launch::async | std::launch::deferred, Utils::FindSignatureModuleNew<Utils::StrToSignatureSize(x)>, temp);}()
+#define FindSignatureAsync(x) []() {constexpr auto temp = Utils::StrToSignatureArray<Utils::StrToSignatureSize(x)>(x); constexpr auto table = Utils::Pretreatment(temp); return std::async(std::launch::async | std::launch::deferred, Utils::FindSignatureModuleNew<Utils::StrToSignatureSize(x)>, temp, table);}()
 
 #endif
 
@@ -594,8 +594,8 @@ public:
 		return result;
 	}
 
-	template <size_t Size>
-	_NODISCARD static uintptr_t FindSignatureModuleNew(const std::array<uint16_t, Size> szSignature) noexcept {  // Find the 'times' occurrence in memory
+template <size_t Size>
+	_NODISCARD static uintptr_t FindSignatureModuleNew(const std::array<uint16_t, Size> szSignature, std::array<size_t, 256> Table) noexcept {  // Find the 'times' occurrence in memory
 		//======================
 		// GetModuleHandleA
 		static const auto rangeStart = (uintptr_t)GetModuleHandleA("Minecraft.Windows.exe");
@@ -611,7 +611,7 @@ public:
 		if (Size >= rangeEnd - rangeStart + 1) 
 			return 0;
 
-		const auto Table = Pretreatment<Size>(szSignature);  // Pretreatment Table
+		//const auto Table = Pretreatment<Size>(szSignature);  // Pretreatment Table
 
 		for (uintptr_t i = rangeStart; i <= rangeEnd;) {
 			size_t move_back_size = 0;
