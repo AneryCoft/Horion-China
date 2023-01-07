@@ -10,7 +10,7 @@ Breaker::Breaker() : IModule(VK_NUMPAD9, Category::WORLD, "Destroys certain bloc
 	registerFloatSetting("lineWidth", &thick, thick, 0.1f, 0.8f);
 	registerBoolSetting("TargetESP", &targetEsp, targetEsp);
 	registerBoolSetting("Rotations", &rotations, rotations);
-	//registerBoolSetting("ThroughBlock", &throughBlock, throughBlock);
+	registerBoolSetting("ThroughBlock", &throughBlock, throughBlock);
 	registerBoolSetting("Beds", &beds, beds);
 	registerBoolSetting("DragonEggs", &eggs, eggs);
 	registerBoolSetting("Cakes", &cakes, cakes);
@@ -37,18 +37,33 @@ void Breaker::findBlocks() {
 			for (int y = (int)pos->y - range; y < pos->y + range; y++) {
 				vec3_ti blockPos = vec3_ti(x, y, z);
 				short blockId = g_Data.getLocalPlayer()->region->getBlock(blockPos)->toLegacy()->blockId;
-
+				
 				if ((blockId == 26 && beds) ||
 					((blockId == 122 || blockId == 1000) && eggs) ||
 					(blockId == 92 && cakes) ||
 					(blockId == 54 && chests) ||
 					(blockId == 458 && barrels) ||
-					((blockId == 73 || blockId == 74) && redStone)) {
-					/*if (!throughBlock && !g_Data.getLocalPlayer()->canSee(blockPos.toVec3t())) {
-						continue;
-					}*/
+					((blockId == 73 || blockId == 74) && redStone && g_Data.getLocalPlayer()->getHealth() < 15)) {
+					if (!throughBlock) {
+						static std::array<vec3_t, 6> faceList = {
+						vec3_t(0.f, -0.5f, 0.f), //0
+						vec3_t(0.f, 0.5f, 0.f), //1
+						vec3_t(0.f, 0.f, -0.5f), //2
+						vec3_t(0.f, 0.f, 0.5f), //3
+						vec3_t(-0.5f, 0.f, 0.f), //4
+						vec3_t(0.5f, 0.f, 0.f) //5
+						};
 
-					blockList.emplace_back(blockPos, blockId);
+						for (int i = 0; i < 6; i++) {
+							if (g_Data.getLocalPlayer()->canSee(blockPos.toVec3t().add(0.5f).add(faceList[i]))) {
+								blockList.emplace_back(blockPos, blockId, i);
+								break;
+							}
+						}
+					}
+					else {
+						blockList.emplace_back(blockPos, blockId, 1);
+					}
 				}
 			}
 		}
@@ -115,30 +130,30 @@ void Breaker::onTick(C_GameMode* gm) {
 	if (!blockList.empty()) {
 		vec3_t localPos = *g_Data.getLocalPlayer()->getPos();
 
-		std::sort(blockList.begin(), blockList.end(), [localPos](std::pair<vec3_ti, short>& lhs, std::pair<vec3_ti, short>& rhs) {
-			return localPos.dist(lhs.first.toFloatVector()) < localPos.dist(rhs.first.toFloatVector());
+		std::sort(blockList.begin(), blockList.end(), [localPos](auto& lhs, auto& rhs) {
+			return localPos.dist(std::get<vec3_ti>(lhs).toFloatVector()) < localPos.dist(std::get<vec3_ti>(rhs).toFloatVector());
 			}); //距离优先 
 
-		vec3_ti blockPos = blockList.begin()->first;
+		vec3_ti blockPos = std::get<vec3_ti>(blockList[0]);
 
 		if (rotations) {
-			angle = localPos.CalcAngle(blockPos.toVec3t().add(0.5f));
+			angle = localPos.CalcBlockAngle(blockPos.toVec3t(), std::get<uint8_t>(blockList[0]));
 			shouldRotation = true;
 		}
 
 		if (delayTime.hasTimedElapsed(delay, true)) {
-			bool isRedStoneOre = blockList.begin()->second == 73 || blockList.begin()->second == 74;
+			bool isRedStoneOre = std::get<short>(blockList[0]) == 73 || std::get<short>(blockList[0]) == 74;
 			if (isRedStoneOre)
 				selectPickaxe();
 
 			if (action.selected == 0) {
 				bool isDestroyedOut = false;
-				gm->startDestroyBlock(blockPos, 1, isDestroyedOut);
-				gm->destroyBlock(&blockPos, 1);
+				gm->startDestroyBlock(blockPos, std::get<uint8_t>(blockList[0]), isDestroyedOut);
+				gm->destroyBlock(&blockPos, std::get<uint8_t>(blockList[0]));
 				gm->stopDestroyBlock(blockPos);
 			}
 			else if (action.selected == 1) {
-				gm->buildBlock(&blockPos, 1, true);
+				gm->buildBlock(&blockPos, std::get<uint8_t>(blockList[0]), true);
 			}
 
 			if (isRedStoneOre)
@@ -164,8 +179,8 @@ void Breaker::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 
 	if (targetEsp) {
 		if (!blockList.empty()) {
-			vec3_t renderPos = (blockList.begin()->first).toVec3t();
-			short blockId = blockList.begin()->second;
+			vec3_t renderPos = (std::get<vec3_ti>(blockList[0])).toVec3t();
+			short blockId = std::get<short>(blockList[0]);
 
 			if (blockId == 26) {
 				DrawUtils::setColor(133 / 255.f, 16 / 255.f, 14 / 255.f, 1);

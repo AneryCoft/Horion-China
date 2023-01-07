@@ -27,7 +27,7 @@ private:
 	void selectPickaxe();
 
 public:
-	std::vector<std::pair<vec3_ti, short>> blockList;
+	std::vector<std::tuple<vec3_ti, short, uint8_t>> blockList;
 	std::vector<C_Entity*> entityBedList;
 
 	int range = 5;
