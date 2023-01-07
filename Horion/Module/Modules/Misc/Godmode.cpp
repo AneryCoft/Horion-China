@@ -1,6 +1,6 @@
 #include "Godmode.h"
 
-Godmode::Godmode() : IModule(0, Category::MISC, "You won't die.") {
+Godmode::Godmode() : IModule(0, Category::MISC, "You won't die on EaseCation.") {
 }
 
 Godmode::~Godmode() {
@@ -14,5 +14,5 @@ void Godmode::onTick(C_GameMode* gm) {
 	if (g_Data.getLocalPlayer() == nullptr)
 		return;
 
-	g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&C_MovePlayerPacket(g_Data.getLocalPlayer(), vec3_t(FLT_MAX, FLT_MAX, FLT_MAX)));
+	g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&C_MovePlayerPacket(g_Data.getLocalPlayer(), g_Data.getLocalPlayer()->getPos()->add(66666)));
 }
