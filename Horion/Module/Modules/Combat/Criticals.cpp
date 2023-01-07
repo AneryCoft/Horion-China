@@ -6,6 +6,7 @@ Criticals::Criticals() : IModule(0, Category::COMBAT, "Each hit becomes a critic
 		.addEntry(EnumEntry("AuthInputPacket", 1))
 		.addEntry(EnumEntry("LowHop", 2))
 		.addEntry(EnumEntry("Jump", 3));
+		//.addEntry(EnumEntry("Particles", 4));
 	registerEnumSetting("Mode", &mode, 0);
 	registerIntSetting("HurtTime", &hurttime, hurttime, 0, 10);
 }
