@@ -1274,16 +1274,21 @@ __int64 Hooks::ConnectionRequest_create(__int64 _this, __int64 privateKeyManager
 	static auto RandomLoginIDMod = moduleMgr->getModule<RandomLoginID>();
 
 	void* deviceModelAddress = (void*)FindSignature("44 65 76 69 63 65 4D 6F 64 65 6C 00 00 00 00 00 44 65");
+	void* platformOfflineIdAddress = (void*)FindSignature("50 6C 61 74 66 6F 72 6D 4F 66 66 6C 69 6E 65 49 64 00 00 00 00 00 00 00 50 72 65 6D 69 75 6D 53 6B 69 6E");
 
 	if (EditionFakerMod->isEnabled()) {
 		inputMode = EditionFakerMod->getFakedInputMode();
-		if (EditionFakerMod->deviceModel)
-			Utils::patchBytes((BYTE*)((uintptr_t)deviceModelAddress), (BYTE*)"\x40", 1);
-		else
-			Utils::patchBytes((BYTE*)((uintptr_t)deviceModelAddress), (BYTE*)"\x44", 1);
+		if (EditionFakerMod->deviceModel) {
+			TextHolder deviceModel("Horion China");
+			platformOfflineId = new TextHolder(deviceModel);
+
+			Utils::nopBytes((BYTE*)deviceModelAddress, 1);
+			Utils::patchBytes((BYTE*)((uintptr_t)platformOfflineIdAddress), (BYTE*)"\x44\x65\x76\x69\x63\x65\x4D\x6F\x64\x65\x6C\x00\x00\x00\x00\x00\x00", 17);
+		}
 	}
-	else if (EditionFakerMod->deviceModel) {
+	else {
 		Utils::patchBytes((BYTE*)((uintptr_t)deviceModelAddress), (BYTE*)"\x44", 1);
+		Utils::patchBytes((BYTE*)((uintptr_t)platformOfflineIdAddress), (BYTE*)"\x50\x6C\x61\x74\x66\x6F\x72\x6D\x4F\x66\x66\x6C\x69\x6E\x65\x49\x64", 17);
 	}
 
 	if (RandomLoginIDMod->isEnabled()) {

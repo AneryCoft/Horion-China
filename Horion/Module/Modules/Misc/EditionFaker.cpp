@@ -25,7 +25,7 @@ EditionFaker::EditionFaker() : IModule(0, Category::MISC, "Fakes your device,inp
 		.addEntry(EnumEntry("Gamepad", 3))
 		.addEntry(EnumEntry("Motion controller", 4));
 	registerEnumSetting("InputMode", &inputMode, 2);
-	registerBoolSetting("Null DeviceModel", &deviceModel, deviceModel);
+	registerBoolSetting("Fake DeviceModel", &deviceModel, deviceModel);
 }
 
 EditionFaker::~EditionFaker() {
