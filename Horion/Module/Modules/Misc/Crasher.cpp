@@ -35,9 +35,9 @@ void Crasher::onTick(C_GameMode* gm) {
 	else if (mode.selected == 1) {
 		g_Data.forEachEntity([](C_Entity* entity, bool valid) {
 			if (entity->isPlayer()) {
-				for (int i = 0; i < 100; i++) {
+				for (int i = 0; i < 437; i++) {
 					LevelSoundEventPacket soundEventPacket;
-					soundEventPacket.sound = 104; //ÒôÀÖ³ªÆ¬ Blocks
+					soundEventPacket.sound = i;
 					soundEventPacket.pos = *entity->getPos();
 					g_Data.getClientInstance()->loopbackPacketSender->sendToServer(&soundEventPacket);
 				}
