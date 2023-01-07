@@ -3,7 +3,7 @@
 HudModule::HudModule() : IModule(0, Category::CLIENT, "Displays things like the ArrayList/TabGUI.") {
 	registerBoolSetting("TabGui", &tabgui, tabgui);
 	registerBoolSetting("ArrayList", &arraylist, arraylist);
-	registerBoolSetting("Notifications", &notifications, notifications);
+	//registerBoolSetting("Notifications", &notifications, notifications);
 	registerBoolSetting("Watermark", &watermark, watermark);
 	registerBoolSetting("Coordinates", &coordinates, coordinates);
 	registerBoolSetting("Show Armor", &displayArmor, displayArmor);
