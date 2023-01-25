@@ -31,4 +31,7 @@ Minecraft基岩版 1.18.12
 * 即使提交 也经常提交打滑代码 Shit代码 垃圾绕过代码
 * 本人于2023.1逐渐转向JAVA Kotlin 并开发ProtoHax 虽然还对项目进行更新 但已经不进行提交 这是停更的直接原因
 
+##构建好的在哪里
+[Horion-China-Release](https://github.com/AneryCoft/Horion-China-Release)
+
 # 如果你对客户端有什么怨言 你也不必说了 我不想听
