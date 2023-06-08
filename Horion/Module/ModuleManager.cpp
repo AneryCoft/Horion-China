@@ -192,7 +192,12 @@ void ModuleManager::onWorldTick(C_GameMode* gameMode) {
 	for (auto& mod : moduleList) {
 		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
-			mod->onWorldTick(gameMode);
+			try {
+				[&] {__try {
+				mod->onWorldTick(gameMode);
+			} __except (EXCEPTION_EXECUTE_HANDLER) {} }();
+			} catch (...) {
+			}
 	}
 }
 
@@ -203,7 +208,12 @@ void ModuleManager::onTick(C_GameMode* gameMode) {
 	for (auto& mod : moduleList) {
 		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
-			mod->onTick(gameMode);
+			try {
+				[&] {__try {
+				mod->onTick(gameMode);
+			} __except (EXCEPTION_EXECUTE_HANDLER) {} }();
+			} catch (...) {
+			}
 	}
 }
 
@@ -215,7 +225,12 @@ void ModuleManager::onAttack(C_Entity* attackEnt) {
 	for (auto& mod : moduleList) {
 		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
-			mod->onAttack(attackEnt);
+			try {
+			[&] {__try {
+				mod->onAttack(attackEnt);
+			} __except (EXCEPTION_EXECUTE_HANDLER) { } }();
+			} catch (...) {
+			}
 	}
 }
 
@@ -225,7 +240,12 @@ void ModuleManager::onKeyUpdate(int key, bool isDown) {
 	auto lock = lockModuleList();
 	for (auto& mod : moduleList) {
 		auto look = std::shared_lock(mod->iModuleLook);
-		mod->onKeyUpdate(key, isDown);
+		try {
+			[&] {__try {
+			mod->onKeyUpdate(key, isDown);
+		} __except (EXCEPTION_EXECUTE_HANDLER) { } }();
+		} catch (...) {
+		}
 	}
 }
 
@@ -237,7 +257,12 @@ void ModuleManager::onPreRender(C_MinecraftUIRenderContext* renderCtx) {
 	for (auto& mod : moduleList) {
 		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
-			mod->onPreRender(renderCtx);
+			try {
+			[&] {__try {
+				mod->onPreRender(renderCtx);
+			} __except (EXCEPTION_EXECUTE_HANDLER) { } }();
+			} catch (...) {
+			}
 	}
 }
 
@@ -249,7 +274,12 @@ void ModuleManager::onPostRender(C_MinecraftUIRenderContext* renderCtx) {
 	for (auto& mod : moduleList) {
 		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
-			mod->onPostRender(renderCtx);
+			try {
+			[&] {__try {
+				mod->onPostRender(renderCtx);
+			} __except (EXCEPTION_EXECUTE_HANDLER) { } }();
+			} catch (...) {
+			}
 	}
 }
 
@@ -260,7 +290,12 @@ void ModuleManager::onSendPacket(C_Packet* packet, bool& cancelSend) {
 	for (auto& it : moduleList) {
 		auto look = std::shared_lock(it->iModuleLook);
 		if (it->isEnabled() || it->callWhenDisabled())
-			it->onSendPacket(packet, cancelSend);
+			try {
+			[&] {__try {
+				it->onSendPacket(packet, cancelSend);
+			} __except (EXCEPTION_EXECUTE_HANDLER) { } }();
+			} catch (...) {
+			}
 	}
 }
 
@@ -287,7 +322,12 @@ void ModuleManager::onMove(C_MoveInputHandler* hand) {
 	for (auto& it : moduleList) {
 		auto look = std::shared_lock(it->iModuleLook);
 		if (it->isEnabled() || it->callWhenDisabled())
-			it->onMove(hand);
+			try {
+			[&] {__try {
+				it->onMove(hand);
+			} __except (EXCEPTION_EXECUTE_HANDLER) { } }();
+			} catch (...) {
+			}
 	}
 }
 void ModuleManager::onLevelRender() {
@@ -297,7 +337,12 @@ void ModuleManager::onLevelRender() {
 	for (auto& it : moduleList) {
 		auto look = std::shared_lock(it->iModuleLook);
 		if (it->isEnabled() || it->callWhenDisabled())
-			it->onLevelRender();
+			try {
+			[&] {__try {
+				it->onLevelRender();
+			} __except (EXCEPTION_EXECUTE_HANDLER) {} }();
+			} catch (...) {
+			}
 	}
 }
 void ModuleManager::onPlayerTick(C_Player* player) {
@@ -307,7 +352,12 @@ void ModuleManager::onPlayerTick(C_Player* player) {
 	for (auto& mod : moduleList) {
 		auto look = std::shared_lock(mod->iModuleLook);
 		if (mod->isEnabled() || mod->callWhenDisabled())
-			mod->onPlayerTick(player);
+			try {
+			[&] {__try {
+				mod->onPlayerTick(player);
+			} __except (EXCEPTION_EXECUTE_HANDLER) {} }();
+			} catch (...) {
+			}
 	}
 }
 void ModuleManager::onGetPickRange() {
@@ -317,7 +367,12 @@ void ModuleManager::onGetPickRange() {
 	for (auto& it : moduleList) {
 		auto look = std::shared_lock(it->iModuleLook);
 		if (it->isEnabled() || it->callWhenDisabled())
-			it->onGetPickRange();
+			try {
+			[&] {__try {
+				it->onGetPickRange();
+			} __except (EXCEPTION_EXECUTE_HANDLER) {} }();
+			} catch (...) {
+			}
 	}
 }
 
